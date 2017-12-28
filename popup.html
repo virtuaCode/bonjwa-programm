@@ -1,0 +1,147 @@
+<!doctype html>
+<html>
+
+<head>
+  <title>Bonjwa Programm</title>
+  <meta charset="utf-8" />
+  <style type="text/css">
+    html,
+    body {
+      font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+      padding: 0 0;
+      margin: 0px 0px;
+      min-width: 320px;
+    }
+
+    h1 {
+      font-size: 15px;
+    }
+
+    .header {
+      background-color: #219662;
+      padding: 10px 5px;
+      display: flex;
+      font-size: 18px;
+      font-weight: bold;
+      color: white;
+      text-align: right;
+      align-items: center;
+      justify-content: space-around;
+    }
+
+    .header img {
+      width: 32px;
+      height: 32px;
+    }
+
+    .nav {
+      align-items: center;
+      display: flex;
+      justify-content: space-between;
+      background-color: black;
+      color: white;
+      font-size: 15px;
+      font-weight: bold;
+    }
+
+    #prev {
+      padding: 15px 25px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    #prev:hover {
+      background-color: #333;
+    }
+
+    #day {
+      padding: 15px;
+    }
+
+    #next {
+      padding: 15px 25px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    #next:hover {
+      background-color: #333;
+    }
+
+    #status {
+      font-size: 16px;
+      background: #eee;
+      font-weight: lighter;
+      text-align: center;
+      padding: 35px 0;
+      color: #333;
+      display: none;
+    }
+
+    .show {
+      display: block !important;
+    }
+
+    #table {
+      overflow-y: auto;
+      max-height: 440px;
+    }
+
+    .row {
+      display: flex;
+      border-bottom: 1px dotted #bbb;
+    }
+
+    .left {
+      display: flex;
+      flex: 0 0 110px;
+      background-color: #eee;
+      color: black;
+      font-weight: bold;
+    }
+
+    .right {
+      flex: 1;
+    }
+
+    .live .left {
+      background: #219662;
+      color: #fff;
+    }
+
+    .live .right {
+      background: #37a172;
+      color: #fff;
+    }
+
+    .time {
+      padding: 10px;
+      margin: auto auto;
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    .topic {
+      padding: 10px;
+      text-align: center;
+    }
+  </style>
+
+  <script src="popup.js"></script>
+</head>
+
+<body>
+  <div class="header">
+    <img src="bonjwa.jpg" alt="bonjwa">
+    <span>BONJWA PROGRAMM</span>
+  </div>
+  <div class="nav">
+    <div id="prev">◀</div>
+    <div id="day"></div>
+    <div id="next">▶</div>
+  </div>
+  <div id="status"></div>
+  <div id="table"></div>
+</body>
+
+</html>
