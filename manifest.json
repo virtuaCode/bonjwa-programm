@@ -1,15 +1,23 @@
 {
-    "manifest_version": 2,
-  
-    "name": "Bonjwa Programm",
-    "short_name": "Bonjwa Prog.",
-    "description": "Displays the latest schedule for the Bonjwa Twitch channel",
-    "version": "0.0.1",
-    "browser_action": {
-      "default_icon": "icon.png",
-      "default_popup": "popup.html"
-    },
-    "permissions": [
-      "https://viceair.com:8443/"
-    ]
-  }
+  "manifest_version": 2,
+  "name": "Bonjwa Programm",
+  "short_name": "Bonjwa Prog.",
+  "author": "Michael Schmidt",
+  "description": "Displays the latest schedule for the Bonjwa Twitch channel",
+  "version": "0.0.1",
+  "browser_action": {
+    "default_icon": "icon.png",
+    "default_popup": "popup.html"
+  },
+  "icons": {
+    "48": "icon48.png"
+  },
+  "applications": {
+    "gecko": {
+      "update_url": "https://bnjw.viceair.com/static/updates.json"
+    }
+  },
+  "permissions": [
+    "https://bnjw.viceair.com/*"
+  ]
+}

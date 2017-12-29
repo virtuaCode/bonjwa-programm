@@ -14,7 +14,7 @@ function init() {
 
 function loadContent() {
   showStatus('LOADING...');
-  fetch("https://viceair.com:8443/broadcasts", {
+  fetch("https://bnjw.viceair.com/broadcasts", {
     method: 'get'
   }).then(function (response) {
     if (response.status !== 200) {
