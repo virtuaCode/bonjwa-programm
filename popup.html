@@ -7,12 +7,12 @@
   <style type="text/css">
     html,
     body {
-      font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-      padding: 0 0;
-      margin: 0px 0px;
-      width: 340px;
-      font-size: 13px;
       background-color: #fff;
+      font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+      font-size: 13px;
+      margin: 0px 0px;
+      padding: 0 0;
+      width: 340px;
     }
 
     h1 {
@@ -20,36 +20,36 @@
     }
 
     .header {
+      align-items: center;
       background-color: #219662;
-      padding: 10px 5px;
+      color: white;
       display: flex;
       font-size: 18px;
       font-weight: bold;
-      color: white;
-      text-align: right;
-      align-items: center;
       justify-content: space-around;
+      padding: 10px 5px;
+      text-align: right;
     }
 
     .header img {
-      width: 32px;
       height: 32px;
+      width: 32px;
     }
 
     .nav {
       align-items: center;
-      display: flex;
-      justify-content: space-between;
       background-color: black;
       color: white;
+      display: flex;
       font-size: 15px;
       font-weight: bold;
+      justify-content: space-between;
     }
 
     #prev {
-      padding: 15px 25px;
-      font-size: 18px;
       cursor: pointer;
+      font-size: 18px;
+      padding: 15px 25px;
     }
 
     #prev:hover {
@@ -65,9 +65,9 @@
     }
 
     #next {
-      padding: 15px 25px;
-      font-size: 18px;
       cursor: pointer;
+      font-size: 18px;
+      padding: 15px 25px;
     }
 
     #next:hover {
@@ -79,13 +79,13 @@
     }
 
     #status {
-      font-size: 16px;
       background: #eee;
-      font-weight: lighter;
-      text-align: center;
-      padding: 35px 20px;
       color: #333;
       display: none;
+      font-size: 16px;
+      font-weight: lighter;
+      padding: 35px 20px;
+      text-align: center;
     }
 
     .show {
@@ -93,20 +93,24 @@
     }
 
     #table {
-      overflow-y: auto;
       max-height: 360px;
+      overflow-y: auto;
     }
 
     .row {
-      display: flex;
       border-bottom: 1px dotted #bbb;
+      display: flex;
+    }
+
+    .row:last-child {
+      border-bottom: 0px dotted #bbb;
     }
 
     .left {
-      display: flex;
-      flex: 0 0 110px;
       background-color: #eee;
       color: black;
+      display: flex;
+      flex: 0 0 110px;
       font-weight: bold;
     }
 
@@ -125,8 +129,8 @@
     }
 
     .time {
-      padding: 10px;
       margin: auto auto;
+      padding: 10px;
       text-align: center;
       vertical-align: middle;
     }

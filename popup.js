@@ -1,6 +1,7 @@
+const globalDays = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
 let globalBroadcasts = [];
-let currentDay = new Date();
-currentDay.setHours(0, 0, 0, 0);
+let currentDate = new Date();
+currentDate.setHours(0, 0, 0, 0);
 
 document.addEventListener('DOMContentLoaded', () => {
   init();
@@ -14,9 +15,9 @@ function init() {
 
 function loadContent() {
   showStatus('LOADING...');
-  fetch("https://bnjw.viceair.com/broadcasts", {
+  fetch('https://bnjw.viceair.com/broadcasts', {
     method: 'get'
-  }).then(function (response) {
+  }).then((response) => {
     if (response.status !== 200) {
       console.error("wrong status code", response.status);
       showStatus('Serveranfrage ist fehlgeschlagen!');
@@ -24,17 +25,17 @@ function loadContent() {
     }
 
     response.json().then(body => {
-      globalBroadcasts = body.data.map(bc => {
+      const broadcasts = body.data.map(bc => {
         const { id, start, end, topic } = bc;
         return { id, start: new Date(start), end: new Date(end), topic };
       });
       hideStatus();
-      refreshBroadcasts();
+      setBroadcasts(broadcasts);
     }).catch(err => {
-      showStatus('Invalide Antwort vom Server!');
+      showStatus('Ungültige Antwort vom Server!');
       console.error('invalid response body');
     });
-  }).catch(function (err) {
+  }).catch((err) => {
     showStatus('Verbindungsaufbau zum Server ist fehlgeschlagen!')
     console.error(err);
   });
@@ -47,9 +48,14 @@ function initEventListeners() {
   prev.addEventListener('click', onClickPrev);
 }
 
+function setBroadcasts(broadcasts) {
+  globalBroadcasts = broadcasts;
+  refreshBroadcasts();
+}
+
 function refreshBroadcasts() {
-  const dayStart = new Date(currentDay.getTime());
-  const dayEnd = new Date(currentDay.getTime());
+  const dayStart = new Date(currentDate.getTime());
+  const dayEnd = new Date(currentDate.getTime());
   dayEnd.setDate(dayEnd.getDate() + 1);
 
   const bcs = globalBroadcasts.filter(bc => {
@@ -62,6 +68,7 @@ function refreshBroadcasts() {
   empty(table);
 
   table.appendChild(fragment);
+  scrollToActive();
 }
 
 function buildBroadcastsFragment(broadcasts) {
@@ -102,6 +109,18 @@ function buildBroadcastsFragment(broadcasts) {
   return fragment;
 }
 
+function scrollToActive() {
+  const table = document.getElementById('table');
+  const live = table.querySelector('.row.live')
+
+  table.scrollTop = 0;
+
+  if (live) {
+    const topPos = live.offsetTop;
+    table.scrollTop = topPos;
+  }
+}
+
 function onClickNext() {
   nextDay();
   refreshDate();
@@ -115,16 +134,16 @@ function onClickPrev() {
 }
 
 function nextDay() {
-  currentDay.setDate(currentDay.getDate() + 1);
+  currentDate.setDate(currentDate.getDate() + 1);
 }
 
 function prevDay() {
-  currentDay.setDate(currentDay.getDate() - 1);
+  currentDate.setDate(currentDate.getDate() - 1);
 }
 
 function refreshDate() {
   const day = document.getElementById('day');
-  day.innerText = currentDay.getDate() + '.' + (currentDay.getMonth() + 1) + '.' + currentDay.getFullYear();
+  day.innerText = globalDays[currentDate.getDay()] + ', ' + currentDate.getDate() + '.' + (currentDate.getMonth() + 1) + '.' + currentDate.getFullYear();
 }
 
 function showStatus(message) {

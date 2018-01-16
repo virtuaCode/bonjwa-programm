@@ -16,8 +16,5 @@
     "gecko": {
       "update_url": "https://bnjw.viceair.com/static/updates.json"
     }
-  },
-  "permissions": [
-    "https://bnjw.viceair.com/*"
-  ]
+  }
 }
