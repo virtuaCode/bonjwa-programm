@@ -6,11 +6,11 @@
   "description": "Displays the latest schedule for the Bonjwa Twitch channel",
   "version": "0.0.2",
   "browser_action": {
-    "default_icon": "icon.png",
-    "default_popup": "popup.html"
+    "default_icon": "icons/icon.png",
+    "default_popup": "popup/popup.html"
   },
   "icons": {
-    "48": "icon48.png"
+    "48": "icons/icon48.png"
   },
   "applications": {
     "gecko": {

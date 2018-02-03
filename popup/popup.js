@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function init() {
+  hideStatus();
   refreshDate();
   initEventListeners();
   loadContent();
@@ -46,6 +47,16 @@ function initEventListeners() {
   const prev = document.getElementById('prev');
   next.addEventListener('click', onClickNext);
   prev.addEventListener('click', onClickPrev);
+
+  document.addEventListener('keydown', (event) => {
+    const keyName = event.key;
+
+    if (keyName === 'ArrowRight') {
+      return onClickNext();
+    } else if (keyName === 'ArrowLeft') {
+      return onClickPrev();
+    }
+  }, false);
 }
 
 function setBroadcasts(broadcasts) {
@@ -59,7 +70,7 @@ function refreshBroadcasts() {
   dayEnd.setDate(dayEnd.getDate() + 1);
 
   const bcs = globalBroadcasts.filter(bc => {
-    return dayStart <= bc.start && dayEnd >= bc.end;
+    return bc.start >= dayStart && bc.end <= dayEnd;
   });
 
   const fragment = buildBroadcastsFragment(bcs);
@@ -148,13 +159,13 @@ function refreshDate() {
 
 function showStatus(message) {
   const status = document.getElementById('status');
-  status.className = 'show';
+  status.className = '';
   status.innerText = message;
 }
 
 function hideStatus() {
   const status = document.getElementById('status');
-  status.className = '';
+  status.className = 'hidden';
 }
 
 function empty(e) {

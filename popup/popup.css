@@ -1,0 +1,146 @@
+html,
+body {
+    background-color: #fff;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-size: 13px;
+    margin: 0px 0px;
+    padding: 0 0;
+    min-width: 360px;
+}
+
+h1 {
+    font-size: 15px;
+}
+
+.container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    align-items: center;
+    background-color: #219662;
+    color: white;
+    display: flex;
+    font-size: 18px;
+    font-weight: bold;
+    justify-content: center;
+    padding: 10px 5px;
+    text-align: right;
+}
+
+.header img {
+    height: 32px;
+    width: 32px;
+    margin-right: 1rem;
+}
+
+.nav {
+    align-items: center;
+    background-color: black;
+    color: white;
+    display: flex;
+    font-size: 15px;
+    font-weight: bold;
+    justify-content: space-between;
+}
+
+#prev {
+    cursor: pointer;
+    font-size: 18px;
+    padding: 15px 25px;
+}
+
+#prev:hover {
+    background-color: #333;
+}
+
+.prev::before {
+    content: '◀';
+}
+
+#day {
+    padding: 15px;
+}
+
+#next {
+    cursor: pointer;
+    font-size: 18px;
+    padding: 15px 25px;
+}
+
+#next:hover {
+    background-color: #333;
+}
+
+.next::before {
+    content: '▶';
+}
+
+#status {
+    background: #eee;
+    color: #333;
+    font-size: 16px;
+    font-weight: lighter;
+    padding: 35px 20px;
+    text-align: center;
+    flex: 1 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hidden {
+    display: none !important;
+}
+
+#table {
+    max-height: 420px;
+    overflow-y: auto;
+}
+
+.row {
+    border-bottom: 1px dotted #bbb;
+    display: flex;
+}
+
+.row:last-child {
+    border-bottom: 0px dotted #bbb;
+}
+
+.left {
+    background-color: #eee;
+    color: black;
+    display: flex;
+    flex: 0 0 110px;
+    font-weight: bold;
+}
+
+.right {
+    background-color: #fff;
+    color: black;
+    flex: 1;
+}
+
+.live .left {
+    background: #219662;
+    color: #fff;
+}
+
+.live .right {
+    background: #37a172;
+    color: #fff;
+}
+
+.time {
+    margin: auto auto;
+    padding: 10px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.topic {
+    padding: 10px;
+    text-align: center;
+}
