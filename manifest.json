@@ -14,7 +14,6 @@
   },
   "applications": {
     "gecko": {
-      "id": "bonjwa.programm@bnjw.viceair.com",
       "update_url": "https://bnjw.viceair.com/static/updates.json"
     }
   }
