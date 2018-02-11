@@ -1,4 +1,5 @@
-const globalDays = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
+const DAY_NAMES = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
+const BROADCASTS_URL = 'https://bnjw.viceair.com/broadcasts'; 
 let globalBroadcasts = [];
 let currentDate = new Date();
 currentDate.setHours(0, 0, 0, 0);
@@ -16,11 +17,11 @@ function init() {
 
 function loadContent() {
   showStatus('LOADING...');
-  fetch('https://bnjw.viceair.com/broadcasts', {
+  fetch(BROADCASTS_URL, {
     method: 'get'
   }).then((response) => {
     if (response.status !== 200) {
-      console.error("wrong status code", response.status);
+      console.error('wrong status code', response.status);
       showStatus('Serveranfrage ist fehlgeschlagen!');
       return;
     }
@@ -91,20 +92,20 @@ function buildBroadcastsFragment(broadcasts) {
 
     const live = now >= broadcast.start && now < broadcast.end;
 
-    const row = document.createElement("div");
+    const row = document.createElement('div');
     row.className = 'row' + (live ? ' live' : '');
 
-    const left = document.createElement("div");
+    const left = document.createElement('div');
     left.className = 'left';
 
-    const right = document.createElement("div");
+    const right = document.createElement('div');
     right.className = 'right';
 
-    const time = document.createElement("div");
+    const time = document.createElement('div');
     time.className = 'time';
-    time.innerText = broadcast.start.getHours() + ":00 - " + broadcast.end.getHours() + ":00";
+    time.innerText = broadcast.start.getHours() + ':00 - ' + broadcast.end.getHours() + ':00';
 
-    const topic = document.createElement("div");
+    const topic = document.createElement('div');
     topic.className = 'topic';
     topic.innerText = broadcast.topic;
 
@@ -154,7 +155,7 @@ function prevDay() {
 
 function refreshDate() {
   const day = document.getElementById('day');
-  day.innerText = globalDays[currentDate.getDay()] + ', ' + currentDate.getDate() + '.' + (currentDate.getMonth() + 1) + '.' + currentDate.getFullYear();
+  day.innerText = DAY_NAMES[currentDate.getDay()] + ', ' + currentDate.getDate() + '.' + (currentDate.getMonth() + 1) + '.' + currentDate.getFullYear();
 }
 
 function showStatus(message) {
