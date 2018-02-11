@@ -1,11 +1,11 @@
 # Bonjwa Programm
 Displays the latest schedule for the [Bonjwa Twitch channel](https://www.twitch.tv/bonjwa)
 
-Bonjwa Programm ist eine WebExtention für den FireFox Browser, die den aktuellen Programmplan für den Bonjwa Twitch Channel bereitstellt.
+Bonjwa Programm ist eine WebExtention für den **FireFox** Browser, die den aktuellen Programmplan für den Bonjwa Twitch Channel bereitstellt.
 
 ## Downloads
 
-Bald verfügbar...
+Die neuste Version befindet sich unter [Releases](https://github.com/virtuaCode/bonjwa-programm/releases). Einfach die oberste Installationsdatei (bonjwa_programm-0.0.x-an+fx.xpi) herunterladen und installieren.
 
 ## Screenshots
 
