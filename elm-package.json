@@ -4,7 +4,7 @@
     "repository": "https://github.com/virtuaCode/bonjwa-programm.git",
     "license": "BSD3",
     "source-directories": [
-        "./src/popup/"
+        "./src"
     ],
     "exposed-modules": [],
     "dependencies": {
