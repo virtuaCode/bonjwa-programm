@@ -11360,6 +11360,10 @@ var _virtuaCode$bonjwa_programm$Popup$subtractDay = function (date) {
 var _virtuaCode$bonjwa_programm$Popup$addDay = function (date) {
 	return A3(_justinmimbs$elm_date_extra$Date_Extra$add, _justinmimbs$elm_date_extra$Date_Extra$Day, 1, date);
 };
+var _virtuaCode$bonjwa_programm$Popup$addDays = F2(
+	function (days, date) {
+		return A3(_justinmimbs$elm_date_extra$Date_Extra$add, _justinmimbs$elm_date_extra$Date_Extra$Day, days, date);
+	});
 var _virtuaCode$bonjwa_programm$Popup$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$none;
 };
@@ -11479,9 +11483,9 @@ var _virtuaCode$bonjwa_programm$Popup$viewMessage = function (message) {
 			_1: {ctor: '[]'}
 		});
 };
-var _virtuaCode$bonjwa_programm$Popup$Model = F2(
-	function (a, b) {
-		return {date: a, broadcasts: b};
+var _virtuaCode$bonjwa_programm$Popup$Model = F3(
+	function (a, b, c) {
+		return {date: a, offset: b, broadcasts: c};
 	});
 var _virtuaCode$bonjwa_programm$Popup$Broadcast = F4(
 	function (a, b, c, d) {
@@ -11554,10 +11558,7 @@ var _virtuaCode$bonjwa_programm$Popup$update = F2(
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{
-								date: _elm_lang$core$Maybe$Just(
-									_virtuaCode$bonjwa_programm$Popup$addDay(_p10._0))
-							}),
+							{offset: model.offset + 1}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				}
@@ -11570,10 +11571,7 @@ var _virtuaCode$bonjwa_programm$Popup$update = F2(
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
-							{
-								date: _elm_lang$core$Maybe$Just(
-									_virtuaCode$bonjwa_programm$Popup$subtractDay(_p11._0))
-							}),
+							{offset: model.offset - 1}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				}
@@ -11652,7 +11650,7 @@ var _virtuaCode$bonjwa_programm$Popup$ReceiveInitialDate = function (a) {
 var _virtuaCode$bonjwa_programm$Popup$requestInit = A2(_elm_lang$core$Task$perform, _virtuaCode$bonjwa_programm$Popup$ReceiveInitialDate, _elm_lang$core$Date$now);
 var _virtuaCode$bonjwa_programm$Popup$init = {
 	ctor: '_Tuple2',
-	_0: A2(_virtuaCode$bonjwa_programm$Popup$Model, _elm_lang$core$Maybe$Nothing, _virtuaCode$bonjwa_programm$Popup$Fetching),
+	_0: A3(_virtuaCode$bonjwa_programm$Popup$Model, _elm_lang$core$Maybe$Nothing, 0, _virtuaCode$bonjwa_programm$Popup$Fetching),
 	_1: _virtuaCode$bonjwa_programm$Popup$requestInit
 };
 var _virtuaCode$bonjwa_programm$Popup$PrevDay = {ctor: 'PrevDay'};
@@ -11803,7 +11801,13 @@ var _virtuaCode$bonjwa_programm$Popup$view = function (model) {
 	var dateString = A2(
 		_elm_lang$core$Maybe$withDefault,
 		'',
-		A2(_elm_lang$core$Maybe$map, _virtuaCode$bonjwa_programm$Popup$formatDate, model.date));
+		A2(
+			_elm_lang$core$Maybe$map,
+			function (date) {
+				return _virtuaCode$bonjwa_programm$Popup$formatDate(
+					A2(_virtuaCode$bonjwa_programm$Popup$addDays, model.offset, date));
+			},
+			model.date));
 	var _p12 = model.broadcasts;
 	switch (_p12.ctor) {
 		case 'Fetching':
@@ -11820,7 +11824,8 @@ var _virtuaCode$bonjwa_programm$Popup$view = function (model) {
 					_virtuaCode$bonjwa_programm$Popup$viewMessage('Programm wird geladen...'));
 			} else {
 				var _p14 = _p13._0;
-				var todaysBroadcasts = A2(_virtuaCode$bonjwa_programm$Popup$filterBroadcasts, _p14, _p12._0);
+				var offsetDate = A2(_virtuaCode$bonjwa_programm$Popup$addDays, model.offset, _p14);
+				var todaysBroadcasts = A2(_virtuaCode$bonjwa_programm$Popup$filterBroadcasts, offsetDate, _p12._0);
 				var viewBroadcasts = A2(
 					_elm_lang$core$List$map,
 					_virtuaCode$bonjwa_programm$Popup$toViewBroadcast(_p14),

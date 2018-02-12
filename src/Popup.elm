@@ -26,6 +26,7 @@ main =
 
 type alias Model =
     { date : Maybe Date
+    , offset : Int
     , broadcasts : BroadcastState
     }
     
@@ -34,7 +35,7 @@ type BroadcastState = Fetching | Failed Http.Error | Success Broadcasts
 
 init : ( Model, Cmd Msg )
 init =
-    ( Model Nothing Fetching
+    ( Model Nothing 0 Fetching
     , requestInit 
     )
 
@@ -97,14 +98,14 @@ update msg model =
                 Nothing -> 
                     ( model, Cmd.none )
                 Just date -> 
-                    ( { model | date = Just (addDay date) }, Cmd.none )
+                    ( { model | offset = model.offset + 1 }, Cmd.none )
         
         PrevDay -> 
             case model.date of
                 Nothing -> 
                     ( model, Cmd.none )
                 Just date -> 
-                    ( { model | date = Just (subtractDay date) }, Cmd.none )
+                    ( { model | offset = model.offset - 1 }, Cmd.none )
     
         ReceiveInitialDate date ->
             ( { model | date = Just date }, requestBroadcasts )
@@ -129,7 +130,7 @@ update msg model =
 view : Model -> Html Msg
 view model =
     let
-        dateString = Maybe.map formatDate model.date |> Maybe.withDefault ""
+        dateString = Maybe.map (\date -> date |> addDays model.offset |> formatDate) model.date |> Maybe.withDefault ""
     in    
         case model.broadcasts of            
             Fetching ->
@@ -141,7 +142,8 @@ view model =
                         viewContainer dateString (viewMessage "Programm wird geladen...")
                     Just date ->    
                         let
-                            todaysBroadcasts = filterBroadcasts date broadcasts 
+                            offsetDate = addDays model.offset date
+                            todaysBroadcasts = filterBroadcasts offsetDate broadcasts 
                             viewBroadcasts = List.map (toViewBroadcast date) todaysBroadcasts
                         in
                             viewContainer dateString (viewBroadcastTable viewBroadcasts)
@@ -225,6 +227,10 @@ requestDate : Cmd Msg
 requestDate =
     Task.perform ReceiveDate Date.now
     
+addDays : Int -> Date -> Date
+addDays days date =
+    Date.Extra.add Day days date
+
 addDay : Date -> Date
 addDay date =
     Date.Extra.add Day 1 date
