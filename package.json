@@ -1,0 +1,27 @@
+{
+  "name": "bonjwa-schedule",
+  "version": "0.0.5",
+  "description": "Displays the latest schedule for the Bonjwa Twitch channel",
+  "scripts": {
+    "build": "elm-make ./src/Popup.elm --warn --output=./dist/popup/elm.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/virtuaCode/bonjwa-programm.git"
+  },
+  "keywords": [
+    "bonjwa",
+    "programm",
+    "addon",
+    "firefox"
+  ],
+  "author": "Michael Schmidt",
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/virtuaCode/bonjwa-programm/issues"
+  },
+  "homepage": "https://github.com/virtuaCode/bonjwa-programm#readme",
+  "dependencies": {
+    "elm": "^0.18.0"
+  }
+}
