@@ -1,3 +1,5 @@
+<img src="dist/icons/icon48.png" align="left" />
+
 # Bonjwa Programm
 Displays the latest schedule for the [Bonjwa Twitch channel](https://www.twitch.tv/bonjwa)
 
