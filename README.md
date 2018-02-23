@@ -1,4 +1,5 @@
-# Bonjwa Programm
+# Bonjwa Programm ![Icon](dist/icons/icon48.png?raw=true "Popup")
+
 Displays the latest schedule for the [Bonjwa Twitch channel](https://www.twitch.tv/bonjwa)
 
 Bonjwa Programm ist eine WebExtension für den **Firefox** Browser, die den aktuellen Programmplan für den Bonjwa Twitch Channel bereitstellt.
