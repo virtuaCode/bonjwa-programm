@@ -1,4 +1,10 @@
 document.addEventListener('DOMContentLoaded', function() {
     const div = document.getElementById('main');
-    Elm.Popup.embed(div);
+    var app = Elm.Popup.embed(div);
+
+    app.ports.openTab.subscribe(function (url) {
+        var creating = browser.tabs.create({
+            url: url
+        });
+    });
 });

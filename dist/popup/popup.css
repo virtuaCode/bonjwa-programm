@@ -5,7 +5,7 @@ body {
     font-size: 13px;
     margin: 0px 0px;
     padding: 0 0;
-    min-width: 360px;
+    width: 360px;
 }
 
 h1 {
@@ -26,14 +26,49 @@ h1 {
     font-size: 18px;
     font-weight: bold;
     justify-content: center;
-    padding: 10px 5px;
     text-align: right;
+    min-height: 52px;
 }
 
 .header img {
     height: 32px;
     width: 32px;
-    margin-right: 1rem;
+    margin: 0rem 1rem;
+}
+
+.header .button {
+    display: flex;
+}
+
+.header .button img {
+    height: 24px;
+    width: 24px;
+    margin: 0rem 1rem;
+    cursor: pointer;
+}
+
+.header .back {
+    color: white;
+    display: flex;
+    align-content: center;
+    align-self: stretch;
+    transition: background-color 150ms ease-out;
+    cursor: pointer;
+}
+
+.header .back:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.header .back::before {
+    content: '◀';
+    color: white;
+    padding: 0px 25px;
+    align-self: center;
+}
+
+.header .title {
+    margin: 0 auto;
 }
 
 .nav {
@@ -44,16 +79,19 @@ h1 {
     font-size: 15px;
     font-weight: bold;
     justify-content: space-between;
+    min-height: 58px;
 }
 
 #prev {
     cursor: pointer;
     font-size: 18px;
     padding: 15px 25px;
+    transition: background-color 150ms ease-out;
+    cursor: pointer;
 }
 
 #prev:hover {
-    background-color: #333;
+    background-color: rgba(255, 255, 255, 0.2);
 }
 
 .prev::before {
@@ -68,10 +106,12 @@ h1 {
     cursor: pointer;
     font-size: 18px;
     padding: 15px 25px;
+    transition: background-color 150ms ease-out;
+    cursor: pointer;
 }
 
 #next:hover {
-    background-color: #333;
+    background-color: rgba(255, 255, 255, 0.2);
 }
 
 .next::before {
@@ -100,16 +140,16 @@ h1 {
     overflow-y: auto;
 }
 
-.row {
+#table .row {
     border-bottom: 1px dotted #bbb;
     display: flex;
 }
 
-.row:last-child {
-    border-bottom: 0px dotted #bbb;
+#table .row:last-child {
+    border-bottom: none;
 }
 
-.left {
+#table .left {
     background-color: #eee;
     color: black;
     display: flex;
@@ -117,30 +157,152 @@ h1 {
     font-weight: bold;
 }
 
-.right {
+#table .right {
     background-color: #fff;
     color: black;
     flex: 1;
 }
 
-.live .left {
+#table .live .left {
     background: #219662;
     color: #fff;
 }
 
-.live .right {
+#table .live .right {
     background: #37a172;
     color: #fff;
 }
 
-.time {
+#table .time {
     margin: auto auto;
     padding: 10px;
     text-align: center;
     vertical-align: middle;
 }
 
-.topic {
+#table .topic {
     padding: 10px;
     text-align: center;
+}
+
+#past-broadcasts #table {
+    max-height: 420px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+#past-broadcasts .item {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    border-bottom: 1px dotted lightgray;
+    background-color: white;
+    cursor: pointer;
+}
+
+#past-broadcasts .item:hover {
+    background-color: #f3f3f3;
+}
+
+#past-broadcasts .item:active {
+    background-color: #f3f3f3;
+}
+
+#past-broadcasts .item:last-child {
+    border-bottom: none;
+}
+
+#past-broadcasts .game {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+#past-broadcasts .mods {
+    font-size: 13px;
+    color: #6c757d;
+}
+
+#past-broadcasts .duration {
+    font-size: 10px;
+    font-weight: bold;
+    color: black;
+    margin-left: auto;
+}
+
+#past-broadcasts .date {
+    font-size: 10px;
+    font-weight: bold;
+    color: #219662;
+    padding: 2px 4px;
+    margin-left: auto;
+    border: 1px solid;
+}
+
+#past-broadcasts .bottom-line {
+    display: flex;
+    align-items: center;
+    justify-content: end;
+}
+
+#past-broadcasts .search {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border: none;
+    background: transparent;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    border-bottom: 2px solid white;
+    margin: 0 1rem;
+    display: block;
+    flex: 1;
+    min-width: 0;
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+    text-align: center;
+}
+
+#past-broadcasts .search-label {
+    margin-left: 1rem;
+}
+
+#past-broadcasts #cancel {
+    cursor: pointer;
+    font-size: 22px;
+    padding: 15px 25px;
+    transition: background-color 150ms ease-out;
+    cursor: pointer;
+}
+
+#past-broadcasts #cancel:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+#past-broadcasts .cancel::before {
+    content: '\00d7';
+}
+
+#past-broadcasts .top-line {
+    margin-bottom: 4px;
+}
+
+#past-broadcasts .flex {
+    display: -webkit-flex;
+    display: -moz-flex;
+    display: flex;
+    align-items: center;
+}
+
+#past-broadcasts .text-ellipsis {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+    margin-right: 1rem;
+}
+
+#past-broadcasts .nowrap {
+    white-space: nowrap;
 }

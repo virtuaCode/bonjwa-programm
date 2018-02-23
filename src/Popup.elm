@@ -1,16 +1,21 @@
 module Popup exposing (main)
 
+import Browser exposing (openTab)
+import Data.Broadcast exposing (..)
 import Date exposing (Date, Day(..))
-import Date.Extra exposing (Interval(..), floor, ceiling, isBetween)
+import Date.Extra exposing (Interval(..), ceiling, floor, isBetween)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import Http
-import Json.Decode exposing (Decoder, int, string, field, list)
-import Json.Decode.Extra exposing (date)
-import Json.Decode.Pipeline as JDP exposing (decode, required)
-import String exposing (padLeft)
+import Page.PastBroadcast
+import RemoteData exposing (RemoteData(..), WebData)
+import RemoteData.Http as Remote exposing (get)
+import Route exposing (Route(..))
 import Task
+import Util exposing (..)
+import Views.Container as Container
+import Views.Message as Message
+
 
 main : Program Never Model Msg
 main =
@@ -21,62 +26,65 @@ main =
         , subscriptions = subscriptions
         }
 
+
+
+-- Page
+
+
+type Page
+    = PastBroadcastsPage Page.PastBroadcast.Model
+
+
+
 -- MODEL
 
 
 type alias Model =
     { date : Maybe Date
     , offset : Int
-    , broadcasts : BroadcastState
+    , broadcasts : BroadcastsWebData
+    , subpage : Maybe Page
     }
-    
-type BroadcastState = Fetching | Failed Http.Error | Success Broadcasts
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( Model Nothing 0 Fetching
-    , requestInit 
+    ( Model Nothing 0 NotAsked Nothing
+    , requestInit
     )
+
+
 
 -- BROADCAST
 
-type alias Broadcast =
-    { id : Int
-    , start : Date
-    , end : Date
-    , topic : String
-    }
 
-type alias Broadcasts = List Broadcast
+styleBroadcasts : Date -> Broadcasts -> List (Styled Broadcast)
+styleBroadcasts time =
+    List.map (styleBroadcast time)
 
-toViewBroadcast : Date -> Broadcast -> ViewBroadcast
-toViewBroadcast time {start, end, topic} =
+
+styleBroadcast : Date -> Broadcast -> Styled Broadcast
+styleBroadcast time broadcast =
     let
-        now = Date.Extra.isBetween start end time
+        now =
+            isTimeBetweenBroadcast time broadcast
     in
-        ViewBroadcast (formatTimeRange start end) topic now
-
-type alias ViewBroadcast =
-    { time : String
-    , topic : String
-    , now : Bool
-    }
-
-type alias ViewBroadcasts = List ViewBroadcast
+    if now then
+        Primary broadcast
+    else
+        Secondary broadcast
 
 
-broadcastsDecoder : Decoder Broadcasts
-broadcastsDecoder =
-    (field "data" (Json.Decode.list broadcastDecoder))
+isTimeBetweenBroadcast : Date -> Broadcast -> Bool
+isTimeBetweenBroadcast time { start, end } =
+    Date.Extra.isBetween start end time
 
-broadcastDecoder : Decoder Broadcast
-broadcastDecoder =
-  JDP.decode Broadcast
-    |> JDP.required "id" int
-    |> JDP.required "start" date
-    |> JDP.required "end" date 
-    |> JDP.required "topic" string
+
+type Styled a
+    = Primary a
+    | Secondary a
+
+
 
 -- UPDATE
 
@@ -86,41 +94,92 @@ type Msg
     | PrevDay
     | ReceiveInitialDate Date
     | ReceiveDate Date
-    | FetchBroadcasts
-    | BroadcastResponse (Result Http.Error Broadcasts)
+    | ShowRoute Route
+    | OpenTab String
+    | PastBroadcastMsg Page.PastBroadcast.Msg
+    | BroadcastResponse BroadcastsWebData
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    case msg of
-        NextDay ->
+    let
+        toPage toModel toMsg subUpdate subMsg subModel =
+            let
+                ( newModel, newCmd ) =
+                    subUpdate subMsg subModel
+            in
+            ( { model | subpage = Just (toModel newModel) }, Cmd.map toMsg newCmd )
+    in
+    case ( msg, model.subpage ) of
+        ( NextDay, _ ) ->
             case model.date of
-                Nothing -> 
+                Nothing ->
                     ( model, Cmd.none )
-                Just date -> 
+
+                Just date ->
                     ( { model | offset = model.offset + 1 }, Cmd.none )
-        
-        PrevDay -> 
+
+        ( PrevDay, _ ) ->
             case model.date of
-                Nothing -> 
+                Nothing ->
                     ( model, Cmd.none )
-                Just date -> 
+
+                Just date ->
                     ( { model | offset = model.offset - 1 }, Cmd.none )
-    
-        ReceiveInitialDate date ->
+
+        ( OpenTab url, _ ) ->
+            ( model, openTab url )
+
+        ( ReceiveInitialDate date, _ ) ->
             ( { model | date = Just date }, requestBroadcasts )
-    
-        ReceiveDate date ->
+
+        ( ReceiveDate date, _ ) ->
             ( { model | date = Just date }, Cmd.none )
 
-        FetchBroadcasts ->
-            ( { model | broadcasts = Fetching }, requestBroadcasts )
+        ( BroadcastResponse data, _ ) ->
+            ( { model | broadcasts = data }, Cmd.none )
 
-        BroadcastResponse (Ok broadcasts) ->
-            ( { model | broadcasts = Success broadcasts }, Cmd.none )
+        ( ShowRoute route, _ ) ->
+            showRoute route model
 
-        BroadcastResponse (Err error) ->
-            ( { model | broadcasts = Failed error }, Cmd.none )
+        ( PastBroadcastMsg subMsg, Just (PastBroadcastsPage subModel) ) ->
+            --toPage PastBroadcastsPage PastBroadcastMsg Page.PastBroadcast.update subMsg subModel
+            --    ( { model | subpage = Page.PastBroadcast.update subMsg subModel }, Cmd.none )
+            let
+                ( ( pageModel, cmd ), msgFromPage ) =
+                    Page.PastBroadcast.update subMsg subModel
+
+                ( newModel, command ) =
+                    case msgFromPage of
+                        Page.PastBroadcast.NoOp ->
+                            { model | subpage = Just (PastBroadcastsPage pageModel) }
+                                => Cmd.map PastBroadcastMsg cmd
+
+                        Page.PastBroadcast.OpenTab link ->
+                            { model | subpage = Just (PastBroadcastsPage pageModel) }
+                                => Cmd.batch [ openTab link, Cmd.map PastBroadcastMsg cmd ]
+
+                        Page.PastBroadcast.Back ->
+                            { model | subpage = Nothing } => Cmd.map PastBroadcastMsg cmd
+            in
+            newModel
+                => command
+
+        ( _, _ ) ->
+            model
+                => Cmd.none
+
+
+showRoute : Route -> Model -> ( Model, Cmd Msg )
+showRoute route model =
+    case route of
+        Route.PastBroadcasts ->
+            let
+                ( pageModel, cmd ) =
+                    Page.PastBroadcast.init
+            in
+            { model | subpage = Just (PastBroadcastsPage pageModel) }
+                => Cmd.map PastBroadcastMsg cmd
 
 
 
@@ -129,85 +188,136 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
+    case model.subpage of
+        Nothing ->
+            viewProgramm model
+
+        Just (PastBroadcastsPage subModel) ->
+            Page.PastBroadcast.view subModel
+                |> Html.map PastBroadcastMsg
+
+
+
+-- Programm
+
+
+viewProgramm : Model -> Html Msg
+viewProgramm model =
     let
-        dateString = Maybe.map (\date -> date |> addDays model.offset |> formatDate) model.date |> Maybe.withDefault ""
-    in    
-        case model.broadcasts of            
-            Fetching ->
-                viewContainer dateString (viewMessage "Programm wird geladen...")
+        dateString =
+            model.date |> Maybe.map (addDays model.offset >> formatDate) >> Maybe.withDefault ""
 
-            Success broadcasts ->
-                case model.date of
-                    Nothing -> 
-                        viewContainer dateString (viewMessage "Programm wird geladen...")
-                    Just date ->    
-                        let
-                            offsetDate = addDays model.offset date
-                            todaysBroadcasts = filterBroadcasts offsetDate broadcasts 
-                            viewBroadcasts = List.map (toViewBroadcast date) todaysBroadcasts
-                        in
-                            viewContainer dateString (viewBroadcastTable viewBroadcasts)
+        content =
+            viewProgrammContent model.date model.offset model.broadcasts
+    in
+    viewProgrammContainer dateString content
 
-            Failed error ->
-                viewContainer dateString (viewMessage "Serveranfrage fehlgeschlagen!")
 
-viewContainer : String -> Html Msg -> Html Msg
-viewContainer dateString content =
-    div [ class "container"] 
-        [ div [ class "header" ] 
-            [ img [ src "../images/bonjwa.jpg", alt "Bonjwa Logo" ] []
-            , span [] [ text "BONJWA PROGRAMM" ]   
-            ]
-        , div [ class "nav" ] 
-            [ div [ id "prev", onClick PrevDay ] [ span [ class "prev" ] [] ]
-            , div [ id "day" ] [ text dateString ]
-            , div [ id "next", onClick NextDay ] [ span [ class "next" ] [] ]
-            ]
-        , content
+viewProgrammContent : Maybe Date -> Int -> BroadcastsWebData -> Html Msg
+viewProgrammContent date offset remoteData =
+    case ( remoteData, date ) of
+        ( NotAsked, _ ) ->
+            Message.view "Programm wird geladen..."
+
+        ( Loading, _ ) ->
+            Message.view "Serveranfrage fehlgeschlagen!"
+
+        ( Failure _, _ ) ->
+            Message.view "Serveranfrage fehlgeschlagen!"
+
+        ( Success _, Nothing ) ->
+            Message.view "Programm wird geladen..."
+
+        ( Success broadcasts, Just currentDate ) ->
+            let
+                offsetDate =
+                    addDays offset currentDate
+
+                visibleBroadcasts =
+                    broadcasts
+                        |> filterBroadcasts offsetDate
+                        |> sortBroadcasts
+                        |> styleBroadcasts currentDate
+            in
+            viewBroadcastTable visibleBroadcasts
+
+
+viewProgrammHeader : List (Html Msg)
+viewProgrammHeader =
+    [ img [ class "bonjwa-logo", src "../images/bonjwa.jpg", alt "Bonjwa Logo" ] []
+    , span [ class "title" ] [ text "BONJWA PROGRAMM" ]
+    , span [ class "button", onClick (ShowRoute Route.PastBroadcasts) ]
+        [ img [ src "../images/video_48_1x.png" ] []
         ]
+    ]
 
-viewNextButton : Html Msg
-viewNextButton =
-    button [ onClick NextDay ] [ text "Next" ]                
-                
-viewPrevButton : Html Msg
-viewPrevButton =
-    button [ onClick PrevDay ] [ text "Previous" ]
-    
-viewRefreshButton : Html Msg
-viewRefreshButton =
-    button [ onClick FetchBroadcasts ] [ text "Refresh" ]
 
-viewMessage : String -> Html Msg
-viewMessage message =
-    div [ id "status" ] [ text message ]
+viewProgrammNavigation : String -> List (Html Msg)
+viewProgrammNavigation date =
+    [ div [ id "prev", onClick PrevDay ] [ span [ class "prev" ] [] ]
+    , div [ id "day" ] [ text date ]
+    , div [ id "next", onClick NextDay ] [ span [ class "next" ] [] ]
+    ]
 
-viewBroadcastTable : ViewBroadcasts -> Html Msg
+
+viewProgrammContainer : String -> Html Msg -> Html Msg
+viewProgrammContainer date content =
+    Container.view
+        "programm-container"
+        viewProgrammHeader
+        (viewProgrammNavigation date)
+        content
+
+
+viewBroadcastTable : List (Styled Broadcast) -> Html Msg
 viewBroadcastTable broadcasts =
     let
-        rows = List.map viewBroadcastRow broadcasts
+        rows =
+            List.map viewBroadcastRow broadcasts
     in
-        div [ id "table" ] rows
-                
-viewBroadcastRow : ViewBroadcast -> Html Msg
-viewBroadcastRow { time, topic, now } =
+    div [ id "table" ] rows
+
+
+viewBroadcastRow : Styled Broadcast -> Html Msg
+viewBroadcastRow styledBroadcast =
     let
-        rowClass = String.join " " <| ["row"] ++ if now then ["live"] else []
+        ( rowClass, { start, end, topic } ) =
+            case styledBroadcast of
+                Primary broadcast ->
+                    ( "row live", broadcast )
+
+                Secondary broadcast ->
+                    ( "row", broadcast )
+
+        time =
+            formatTimeRange start end
     in
-        div [ class rowClass ] 
-            [ div [ class "left" ] [ div [ class "time" ] [ text time ] ]
-            , div [ class "right" ] [ div [ class "topic" ] [ text topic ] ]
-            ]
-                 
-filterBroadcasts : Date -> Broadcasts -> Broadcasts   
+    div [ class rowClass ]
+        [ div [ class "left" ] [ div [ class "time" ] [ text time ] ]
+        , div [ class "right" ] [ div [ class "topic" ] [ text topic ] ]
+        ]
+
+
+filterBroadcasts : Date -> Broadcasts -> Broadcasts
 filterBroadcasts today broadcasts =
     let
-        ceilingDate = Date.Extra.ceiling Day today
-        floorDate = Date.Extra.floor Day today
-        isToday = Date.Extra.isBetween floorDate ceilingDate
+        ceilingDate =
+            Date.Extra.ceiling Day today
+
+        floorDate =
+            Date.Extra.floor Day today
+
+        isToday =
+            Date.Extra.isBetween floorDate ceilingDate
     in
-        List.filter (\{start, end} -> isToday start && isToday end) broadcasts 
-  
+    List.filter (\{ start, end } -> isToday start && isToday end) broadcasts
+
+
+sortBroadcasts : Broadcasts -> Broadcasts
+sortBroadcasts =
+    List.sortWith (\a b -> Date.Extra.compare a.start b.start)
+
+
 
 -- SUBSCRIPTIONS
 
@@ -217,64 +327,19 @@ subscriptions model =
     Sub.none
 
 
+
 -- DATE
+
 
 requestInit : Cmd Msg
 requestInit =
     Task.perform ReceiveInitialDate Date.now
 
+
 requestDate : Cmd Msg
 requestDate =
     Task.perform ReceiveDate Date.now
-    
-addDays : Int -> Date -> Date
-addDays days date =
-    Date.Extra.add Day days date
 
-addDay : Date -> Date
-addDay date =
-    Date.Extra.add Day 1 date
-    
-subtractDay : Date -> Date
-subtractDay date =
-    Date.Extra.add Day (-1) date 
-    
-formatTimeRange : Date -> Date -> String
-formatTimeRange start end =
-    let
-        startTime = formatTime start
-        endTime = formatTime end
-    in
-        startTime ++ " - " ++ endTime
-
-formatTime : Date -> String
-formatTime date =
-    let
-        hour = padLeft 2 '0' <| toString <| Date.hour date
-        minute = padLeft 2 '0' <| toString <| Date.minute date
-    in
-        hour ++ ":" ++ minute    
-
-formatDate : Date -> String
-formatDate date =
-    let
-        dayName = formatDateDayName date
-        day = toString <| Date.day date
-        month = toString <| Date.Extra.monthNumber date
-        year = toString <| Date.year date
-    in
-        dayName ++ ", " ++ day ++ "." ++ month ++ "." ++ year    
-
-formatDateDayName : Date -> String
-formatDateDayName date =
-    case Date.dayOfWeek date of
-        Mon -> "Montag"
-        Tue -> "Dienstag"
-        Wed -> "Mittwoch"
-        Thu -> "Donnerstag"
-        Fri -> "Freitag"
-        Sat -> "Samstag"
-        Sun -> "Sonntag"
 
 
 -- HTTP
@@ -286,4 +351,4 @@ requestBroadcasts =
         url =
             "https://bnjw.viceair.com/broadcasts"
     in
-    Http.send BroadcastResponse (Http.get url broadcastsDecoder)
+    Remote.get url BroadcastResponse broadcastsDecoder

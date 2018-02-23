@@ -6763,6 +6763,195 @@ var _elm_lang$core$Regex$AtMost = function (a) {
 };
 var _elm_lang$core$Regex$All = {ctor: 'All'};
 
+var _elm_lang$dom$Native_Dom = function() {
+
+var fakeNode = {
+	addEventListener: function() {},
+	removeEventListener: function() {}
+};
+
+var onDocument = on(typeof document !== 'undefined' ? document : fakeNode);
+var onWindow = on(typeof window !== 'undefined' ? window : fakeNode);
+
+function on(node)
+{
+	return function(eventName, decoder, toTask)
+	{
+		return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback) {
+
+			function performTask(event)
+			{
+				var result = A2(_elm_lang$core$Json_Decode$decodeValue, decoder, event);
+				if (result.ctor === 'Ok')
+				{
+					_elm_lang$core$Native_Scheduler.rawSpawn(toTask(result._0));
+				}
+			}
+
+			node.addEventListener(eventName, performTask);
+
+			return function()
+			{
+				node.removeEventListener(eventName, performTask);
+			};
+		});
+	};
+}
+
+var rAF = typeof requestAnimationFrame !== 'undefined'
+	? requestAnimationFrame
+	: function(callback) { callback(); };
+
+function withNode(id, doStuff)
+{
+	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
+	{
+		rAF(function()
+		{
+			var node = document.getElementById(id);
+			if (node === null)
+			{
+				callback(_elm_lang$core$Native_Scheduler.fail({ ctor: 'NotFound', _0: id }));
+				return;
+			}
+			callback(_elm_lang$core$Native_Scheduler.succeed(doStuff(node)));
+		});
+	});
+}
+
+
+// FOCUS
+
+function focus(id)
+{
+	return withNode(id, function(node) {
+		node.focus();
+		return _elm_lang$core$Native_Utils.Tuple0;
+	});
+}
+
+function blur(id)
+{
+	return withNode(id, function(node) {
+		node.blur();
+		return _elm_lang$core$Native_Utils.Tuple0;
+	});
+}
+
+
+// SCROLLING
+
+function getScrollTop(id)
+{
+	return withNode(id, function(node) {
+		return node.scrollTop;
+	});
+}
+
+function setScrollTop(id, desiredScrollTop)
+{
+	return withNode(id, function(node) {
+		node.scrollTop = desiredScrollTop;
+		return _elm_lang$core$Native_Utils.Tuple0;
+	});
+}
+
+function toBottom(id)
+{
+	return withNode(id, function(node) {
+		node.scrollTop = node.scrollHeight;
+		return _elm_lang$core$Native_Utils.Tuple0;
+	});
+}
+
+function getScrollLeft(id)
+{
+	return withNode(id, function(node) {
+		return node.scrollLeft;
+	});
+}
+
+function setScrollLeft(id, desiredScrollLeft)
+{
+	return withNode(id, function(node) {
+		node.scrollLeft = desiredScrollLeft;
+		return _elm_lang$core$Native_Utils.Tuple0;
+	});
+}
+
+function toRight(id)
+{
+	return withNode(id, function(node) {
+		node.scrollLeft = node.scrollWidth;
+		return _elm_lang$core$Native_Utils.Tuple0;
+	});
+}
+
+
+// SIZE
+
+function width(options, id)
+{
+	return withNode(id, function(node) {
+		switch (options.ctor)
+		{
+			case 'Content':
+				return node.scrollWidth;
+			case 'VisibleContent':
+				return node.clientWidth;
+			case 'VisibleContentWithBorders':
+				return node.offsetWidth;
+			case 'VisibleContentWithBordersAndMargins':
+				var rect = node.getBoundingClientRect();
+				return rect.right - rect.left;
+		}
+	});
+}
+
+function height(options, id)
+{
+	return withNode(id, function(node) {
+		switch (options.ctor)
+		{
+			case 'Content':
+				return node.scrollHeight;
+			case 'VisibleContent':
+				return node.clientHeight;
+			case 'VisibleContentWithBorders':
+				return node.offsetHeight;
+			case 'VisibleContentWithBordersAndMargins':
+				var rect = node.getBoundingClientRect();
+				return rect.bottom - rect.top;
+		}
+	});
+}
+
+return {
+	onDocument: F3(onDocument),
+	onWindow: F3(onWindow),
+
+	focus: focus,
+	blur: blur,
+
+	getScrollTop: getScrollTop,
+	setScrollTop: F2(setScrollTop),
+	getScrollLeft: getScrollLeft,
+	setScrollLeft: F2(setScrollLeft),
+	toBottom: toBottom,
+	toRight: toRight,
+
+	height: F2(height),
+	width: F2(width)
+};
+
+}();
+
+var _elm_lang$dom$Dom$blur = _elm_lang$dom$Native_Dom.blur;
+var _elm_lang$dom$Dom$focus = _elm_lang$dom$Native_Dom.focus;
+var _elm_lang$dom$Dom$NotFound = function (a) {
+	return {ctor: 'NotFound', _0: a};
+};
+
 var _elm_lang$virtual_dom$VirtualDom_Debug$wrap;
 var _elm_lang$virtual_dom$VirtualDom_Debug$wrapWithFlags;
 
@@ -11283,9 +11472,602 @@ var _justinmimbs$elm_date_extra$Date_Extra$equalBy = F3(
 var _justinmimbs$elm_date_extra$Date_Extra$Second = {ctor: 'Second'};
 var _justinmimbs$elm_date_extra$Date_Extra$Millisecond = {ctor: 'Millisecond'};
 
-var _virtuaCode$bonjwa_programm$Popup$formatDateDayName = function (date) {
-	var _p0 = _elm_lang$core$Date$dayOfWeek(date);
-	switch (_p0.ctor) {
+var _krisajenkins$remotedata$RemoteData$isNotAsked = function (data) {
+	var _p0 = data;
+	if (_p0.ctor === 'NotAsked') {
+		return true;
+	} else {
+		return false;
+	}
+};
+var _krisajenkins$remotedata$RemoteData$isLoading = function (data) {
+	var _p1 = data;
+	if (_p1.ctor === 'Loading') {
+		return true;
+	} else {
+		return false;
+	}
+};
+var _krisajenkins$remotedata$RemoteData$isFailure = function (data) {
+	var _p2 = data;
+	if (_p2.ctor === 'Failure') {
+		return true;
+	} else {
+		return false;
+	}
+};
+var _krisajenkins$remotedata$RemoteData$isSuccess = function (data) {
+	var _p3 = data;
+	if (_p3.ctor === 'Success') {
+		return true;
+	} else {
+		return false;
+	}
+};
+var _krisajenkins$remotedata$RemoteData$withDefault = F2(
+	function ($default, data) {
+		var _p4 = data;
+		if (_p4.ctor === 'Success') {
+			return _p4._0;
+		} else {
+			return $default;
+		}
+	});
+var _krisajenkins$remotedata$RemoteData$Success = function (a) {
+	return {ctor: 'Success', _0: a};
+};
+var _krisajenkins$remotedata$RemoteData$succeed = _krisajenkins$remotedata$RemoteData$Success;
+var _krisajenkins$remotedata$RemoteData$prism = {
+	reverseGet: _krisajenkins$remotedata$RemoteData$Success,
+	getOption: function (data) {
+		var _p5 = data;
+		if (_p5.ctor === 'Success') {
+			return _elm_lang$core$Maybe$Just(_p5._0);
+		} else {
+			return _elm_lang$core$Maybe$Nothing;
+		}
+	}
+};
+var _krisajenkins$remotedata$RemoteData$Failure = function (a) {
+	return {ctor: 'Failure', _0: a};
+};
+var _krisajenkins$remotedata$RemoteData$fromResult = function (result) {
+	var _p6 = result;
+	if (_p6.ctor === 'Err') {
+		return _krisajenkins$remotedata$RemoteData$Failure(_p6._0);
+	} else {
+		return _krisajenkins$remotedata$RemoteData$Success(_p6._0);
+	}
+};
+var _krisajenkins$remotedata$RemoteData$asCmd = _elm_lang$core$Task$attempt(_krisajenkins$remotedata$RemoteData$fromResult);
+var _krisajenkins$remotedata$RemoteData$sendRequest = _elm_lang$http$Http$send(_krisajenkins$remotedata$RemoteData$fromResult);
+var _krisajenkins$remotedata$RemoteData$fromTask = function (_p7) {
+	return A2(
+		_elm_lang$core$Task$onError,
+		function (_p8) {
+			return _elm_lang$core$Task$succeed(
+				_krisajenkins$remotedata$RemoteData$Failure(_p8));
+		},
+		A2(_elm_lang$core$Task$map, _krisajenkins$remotedata$RemoteData$Success, _p7));
+};
+var _krisajenkins$remotedata$RemoteData$Loading = {ctor: 'Loading'};
+var _krisajenkins$remotedata$RemoteData$NotAsked = {ctor: 'NotAsked'};
+var _krisajenkins$remotedata$RemoteData$map = F2(
+	function (f, data) {
+		var _p9 = data;
+		switch (_p9.ctor) {
+			case 'Success':
+				return _krisajenkins$remotedata$RemoteData$Success(
+					f(_p9._0));
+			case 'Loading':
+				return _krisajenkins$remotedata$RemoteData$Loading;
+			case 'NotAsked':
+				return _krisajenkins$remotedata$RemoteData$NotAsked;
+			default:
+				return _krisajenkins$remotedata$RemoteData$Failure(_p9._0);
+		}
+	});
+var _krisajenkins$remotedata$RemoteData$toMaybe = function (_p10) {
+	return A2(
+		_krisajenkins$remotedata$RemoteData$withDefault,
+		_elm_lang$core$Maybe$Nothing,
+		A2(_krisajenkins$remotedata$RemoteData$map, _elm_lang$core$Maybe$Just, _p10));
+};
+var _krisajenkins$remotedata$RemoteData$mapError = F2(
+	function (f, data) {
+		var _p11 = data;
+		switch (_p11.ctor) {
+			case 'Success':
+				return _krisajenkins$remotedata$RemoteData$Success(_p11._0);
+			case 'Failure':
+				return _krisajenkins$remotedata$RemoteData$Failure(
+					f(_p11._0));
+			case 'Loading':
+				return _krisajenkins$remotedata$RemoteData$Loading;
+			default:
+				return _krisajenkins$remotedata$RemoteData$NotAsked;
+		}
+	});
+var _krisajenkins$remotedata$RemoteData$mapBoth = F2(
+	function (successFn, errorFn) {
+		return function (_p12) {
+			return A2(
+				_krisajenkins$remotedata$RemoteData$mapError,
+				errorFn,
+				A2(_krisajenkins$remotedata$RemoteData$map, successFn, _p12));
+		};
+	});
+var _krisajenkins$remotedata$RemoteData$andThen = F2(
+	function (f, data) {
+		var _p13 = data;
+		switch (_p13.ctor) {
+			case 'Success':
+				return f(_p13._0);
+			case 'Failure':
+				return _krisajenkins$remotedata$RemoteData$Failure(_p13._0);
+			case 'NotAsked':
+				return _krisajenkins$remotedata$RemoteData$NotAsked;
+			default:
+				return _krisajenkins$remotedata$RemoteData$Loading;
+		}
+	});
+var _krisajenkins$remotedata$RemoteData$andMap = F2(
+	function (wrappedValue, wrappedFunction) {
+		var _p14 = {ctor: '_Tuple2', _0: wrappedFunction, _1: wrappedValue};
+		_v10_5:
+		do {
+			_v10_4:
+			do {
+				_v10_3:
+				do {
+					_v10_2:
+					do {
+						switch (_p14._0.ctor) {
+							case 'Success':
+								switch (_p14._1.ctor) {
+									case 'Success':
+										return _krisajenkins$remotedata$RemoteData$Success(
+											_p14._0._0(_p14._1._0));
+									case 'Failure':
+										break _v10_2;
+									case 'Loading':
+										break _v10_4;
+									default:
+										return _krisajenkins$remotedata$RemoteData$NotAsked;
+								}
+							case 'Failure':
+								return _krisajenkins$remotedata$RemoteData$Failure(_p14._0._0);
+							case 'Loading':
+								switch (_p14._1.ctor) {
+									case 'Failure':
+										break _v10_2;
+									case 'Loading':
+										break _v10_3;
+									case 'NotAsked':
+										break _v10_3;
+									default:
+										break _v10_3;
+								}
+							default:
+								switch (_p14._1.ctor) {
+									case 'Failure':
+										break _v10_2;
+									case 'Loading':
+										break _v10_4;
+									case 'NotAsked':
+										break _v10_5;
+									default:
+										break _v10_5;
+								}
+						}
+					} while(false);
+					return _krisajenkins$remotedata$RemoteData$Failure(_p14._1._0);
+				} while(false);
+				return _krisajenkins$remotedata$RemoteData$Loading;
+			} while(false);
+			return _krisajenkins$remotedata$RemoteData$Loading;
+		} while(false);
+		return _krisajenkins$remotedata$RemoteData$NotAsked;
+	});
+var _krisajenkins$remotedata$RemoteData$map2 = F3(
+	function (f, a, b) {
+		return A2(
+			_krisajenkins$remotedata$RemoteData$andMap,
+			b,
+			A2(_krisajenkins$remotedata$RemoteData$map, f, a));
+	});
+var _krisajenkins$remotedata$RemoteData$map3 = F4(
+	function (f, a, b, c) {
+		return A2(
+			_krisajenkins$remotedata$RemoteData$andMap,
+			c,
+			A2(
+				_krisajenkins$remotedata$RemoteData$andMap,
+				b,
+				A2(_krisajenkins$remotedata$RemoteData$map, f, a)));
+	});
+var _krisajenkins$remotedata$RemoteData$append = F2(
+	function (a, b) {
+		return A2(
+			_krisajenkins$remotedata$RemoteData$andMap,
+			b,
+			A2(
+				_krisajenkins$remotedata$RemoteData$map,
+				F2(
+					function (v0, v1) {
+						return {ctor: '_Tuple2', _0: v0, _1: v1};
+					}),
+				a));
+	});
+var _krisajenkins$remotedata$RemoteData$update = F2(
+	function (f, remoteData) {
+		var _p15 = remoteData;
+		switch (_p15.ctor) {
+			case 'Success':
+				var _p16 = f(_p15._0);
+				var first = _p16._0;
+				var second = _p16._1;
+				return {
+					ctor: '_Tuple2',
+					_0: _krisajenkins$remotedata$RemoteData$Success(first),
+					_1: second
+				};
+			case 'NotAsked':
+				return {ctor: '_Tuple2', _0: _krisajenkins$remotedata$RemoteData$NotAsked, _1: _elm_lang$core$Platform_Cmd$none};
+			case 'Loading':
+				return {ctor: '_Tuple2', _0: _krisajenkins$remotedata$RemoteData$Loading, _1: _elm_lang$core$Platform_Cmd$none};
+			default:
+				return {
+					ctor: '_Tuple2',
+					_0: _krisajenkins$remotedata$RemoteData$Failure(_p15._0),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+		}
+	});
+
+var _ohanhi$remotedata_http$RemoteData_Http$queryEscape = function (string) {
+	return A2(
+		_elm_lang$core$String$join,
+		'+',
+		A2(
+			_elm_lang$core$String$split,
+			'%20',
+			_elm_lang$http$Http$encodeUri(string)));
+};
+var _ohanhi$remotedata_http$RemoteData_Http$queryPair = function (_p0) {
+	var _p1 = _p0;
+	return A2(
+		_elm_lang$core$Basics_ops['++'],
+		_ohanhi$remotedata_http$RemoteData_Http$queryEscape(_p1._0),
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			'=',
+			_ohanhi$remotedata_http$RemoteData_Http$queryEscape(_p1._1)));
+};
+var _ohanhi$remotedata_http$RemoteData_Http$url = F2(
+	function (baseUrl, args) {
+		var _p2 = args;
+		if (_p2.ctor === '[]') {
+			return baseUrl;
+		} else {
+			return A2(
+				_elm_lang$core$Basics_ops['++'],
+				baseUrl,
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					'?',
+					A2(
+						_elm_lang$core$String$join,
+						'&',
+						A2(_elm_lang$core$List$map, _ohanhi$remotedata_http$RemoteData_Http$queryPair, args))));
+		}
+	});
+var _ohanhi$remotedata_http$RemoteData_Http$request = F5(
+	function (config, method, url, successDecoder, body) {
+		return _elm_lang$http$Http$request(
+			{
+				method: method,
+				headers: config.headers,
+				url: url,
+				body: body,
+				expect: _elm_lang$http$Http$expectJson(successDecoder),
+				timeout: config.timeout,
+				withCredentials: config.withCredentials
+			});
+	});
+var _ohanhi$remotedata_http$RemoteData_Http$getRequest = F3(
+	function (config, url, decoder) {
+		return A5(_ohanhi$remotedata_http$RemoteData_Http$request, config, 'GET', url, decoder, _elm_lang$http$Http$emptyBody);
+	});
+var _ohanhi$remotedata_http$RemoteData_Http$toTask = function (request) {
+	return A2(
+		_elm_lang$core$Task$onError,
+		function (_p3) {
+			return _elm_lang$core$Task$succeed(
+				_krisajenkins$remotedata$RemoteData$Failure(_p3));
+		},
+		A2(
+			_elm_lang$core$Task$map,
+			_krisajenkins$remotedata$RemoteData$Success,
+			_elm_lang$http$Http$toTask(request)));
+};
+var _ohanhi$remotedata_http$RemoteData_Http$getTaskWithConfig = F3(
+	function (config, url, decoder) {
+		return _ohanhi$remotedata_http$RemoteData_Http$toTask(
+			A3(_ohanhi$remotedata_http$RemoteData_Http$getRequest, config, url, decoder));
+	});
+var _ohanhi$remotedata_http$RemoteData_Http$postTaskWithConfig = F4(
+	function (config, url, decoder, body) {
+		return _ohanhi$remotedata_http$RemoteData_Http$toTask(
+			A5(
+				_ohanhi$remotedata_http$RemoteData_Http$request,
+				config,
+				'POST',
+				url,
+				decoder,
+				_elm_lang$http$Http$jsonBody(body)));
+	});
+var _ohanhi$remotedata_http$RemoteData_Http$putTaskWithConfig = F4(
+	function (config, url, decoder, body) {
+		return _ohanhi$remotedata_http$RemoteData_Http$toTask(
+			A5(
+				_ohanhi$remotedata_http$RemoteData_Http$request,
+				config,
+				'PUT',
+				url,
+				decoder,
+				_elm_lang$http$Http$jsonBody(body)));
+	});
+var _ohanhi$remotedata_http$RemoteData_Http$patchTaskWithConfig = F4(
+	function (config, url, decoder, body) {
+		return _ohanhi$remotedata_http$RemoteData_Http$toTask(
+			A5(
+				_ohanhi$remotedata_http$RemoteData_Http$request,
+				config,
+				'PATCH',
+				url,
+				decoder,
+				_elm_lang$http$Http$jsonBody(body)));
+	});
+var _ohanhi$remotedata_http$RemoteData_Http$deleteTaskWithConfig = F3(
+	function (config, url, body) {
+		return _ohanhi$remotedata_http$RemoteData_Http$toTask(
+			_elm_lang$http$Http$request(
+				{
+					method: 'DELETE',
+					headers: config.headers,
+					url: url,
+					body: _elm_lang$http$Http$jsonBody(body),
+					expect: _elm_lang$http$Http$expectString,
+					timeout: config.timeout,
+					withCredentials: config.withCredentials
+				}));
+	});
+var _ohanhi$remotedata_http$RemoteData_Http$toCmd = function (tagger) {
+	return _elm_lang$http$Http$send(
+		function (_p4) {
+			return tagger(
+				_krisajenkins$remotedata$RemoteData$fromResult(_p4));
+		});
+};
+var _ohanhi$remotedata_http$RemoteData_Http$getWithConfig = F4(
+	function (config, url, tagger, decoder) {
+		return A2(
+			_ohanhi$remotedata_http$RemoteData_Http$toCmd,
+			tagger,
+			A3(_ohanhi$remotedata_http$RemoteData_Http$getRequest, config, url, decoder));
+	});
+var _ohanhi$remotedata_http$RemoteData_Http$postWithConfig = F5(
+	function (config, url, tagger, decoder, body) {
+		return A2(
+			_ohanhi$remotedata_http$RemoteData_Http$toCmd,
+			tagger,
+			A5(
+				_ohanhi$remotedata_http$RemoteData_Http$request,
+				config,
+				'POST',
+				url,
+				decoder,
+				_elm_lang$http$Http$jsonBody(body)));
+	});
+var _ohanhi$remotedata_http$RemoteData_Http$putWithConfig = F5(
+	function (config, url, tagger, decoder, body) {
+		return A2(
+			_ohanhi$remotedata_http$RemoteData_Http$toCmd,
+			tagger,
+			A5(
+				_ohanhi$remotedata_http$RemoteData_Http$request,
+				config,
+				'PUT',
+				url,
+				decoder,
+				_elm_lang$http$Http$jsonBody(body)));
+	});
+var _ohanhi$remotedata_http$RemoteData_Http$patchWithConfig = F5(
+	function (config, url, tagger, decoder, body) {
+		return A2(
+			_ohanhi$remotedata_http$RemoteData_Http$toCmd,
+			tagger,
+			A5(
+				_ohanhi$remotedata_http$RemoteData_Http$request,
+				config,
+				'PATCH',
+				url,
+				decoder,
+				_elm_lang$http$Http$jsonBody(body)));
+	});
+var _ohanhi$remotedata_http$RemoteData_Http$deleteWithConfig = F4(
+	function (config, url, tagger, body) {
+		return A2(
+			_ohanhi$remotedata_http$RemoteData_Http$toCmd,
+			tagger,
+			_elm_lang$http$Http$request(
+				{
+					method: 'DELETE',
+					headers: config.headers,
+					url: url,
+					body: _elm_lang$http$Http$jsonBody(body),
+					expect: _elm_lang$http$Http$expectString,
+					timeout: config.timeout,
+					withCredentials: config.withCredentials
+				}));
+	});
+var _ohanhi$remotedata_http$RemoteData_Http$acceptJson = A2(_elm_lang$http$Http$header, 'Accept', 'application/json');
+var _ohanhi$remotedata_http$RemoteData_Http$defaultConfig = {
+	headers: {
+		ctor: '::',
+		_0: _ohanhi$remotedata_http$RemoteData_Http$acceptJson,
+		_1: {ctor: '[]'}
+	},
+	withCredentials: false,
+	timeout: _elm_lang$core$Maybe$Nothing
+};
+var _ohanhi$remotedata_http$RemoteData_Http$postTask = _ohanhi$remotedata_http$RemoteData_Http$postTaskWithConfig(_ohanhi$remotedata_http$RemoteData_Http$defaultConfig);
+var _ohanhi$remotedata_http$RemoteData_Http$post = _ohanhi$remotedata_http$RemoteData_Http$postWithConfig(_ohanhi$remotedata_http$RemoteData_Http$defaultConfig);
+var _ohanhi$remotedata_http$RemoteData_Http$putTask = _ohanhi$remotedata_http$RemoteData_Http$putTaskWithConfig(_ohanhi$remotedata_http$RemoteData_Http$defaultConfig);
+var _ohanhi$remotedata_http$RemoteData_Http$put = _ohanhi$remotedata_http$RemoteData_Http$putWithConfig(_ohanhi$remotedata_http$RemoteData_Http$defaultConfig);
+var _ohanhi$remotedata_http$RemoteData_Http$patchTask = _ohanhi$remotedata_http$RemoteData_Http$patchTaskWithConfig(_ohanhi$remotedata_http$RemoteData_Http$defaultConfig);
+var _ohanhi$remotedata_http$RemoteData_Http$patch = _ohanhi$remotedata_http$RemoteData_Http$patchWithConfig(_ohanhi$remotedata_http$RemoteData_Http$defaultConfig);
+var _ohanhi$remotedata_http$RemoteData_Http$deleteTask = _ohanhi$remotedata_http$RemoteData_Http$deleteTaskWithConfig(_ohanhi$remotedata_http$RemoteData_Http$defaultConfig);
+var _ohanhi$remotedata_http$RemoteData_Http$delete = _ohanhi$remotedata_http$RemoteData_Http$deleteWithConfig(_ohanhi$remotedata_http$RemoteData_Http$defaultConfig);
+var _ohanhi$remotedata_http$RemoteData_Http$noCache = A2(_elm_lang$http$Http$header, 'Cache-Control', 'no-store, must-revalidate, no-cache, max-age=0');
+var _ohanhi$remotedata_http$RemoteData_Http$noCacheConfig = _elm_lang$core$Native_Utils.update(
+	_ohanhi$remotedata_http$RemoteData_Http$defaultConfig,
+	{
+		headers: {ctor: '::', _0: _ohanhi$remotedata_http$RemoteData_Http$noCache, _1: _ohanhi$remotedata_http$RemoteData_Http$defaultConfig.headers}
+	});
+var _ohanhi$remotedata_http$RemoteData_Http$getTask = _ohanhi$remotedata_http$RemoteData_Http$getTaskWithConfig(_ohanhi$remotedata_http$RemoteData_Http$noCacheConfig);
+var _ohanhi$remotedata_http$RemoteData_Http$get = _ohanhi$remotedata_http$RemoteData_Http$getWithConfig(_ohanhi$remotedata_http$RemoteData_Http$noCacheConfig);
+var _ohanhi$remotedata_http$RemoteData_Http$Config = F3(
+	function (a, b, c) {
+		return {headers: a, withCredentials: b, timeout: c};
+	});
+
+var _virtuaCode$bonjwa_programm$Browser$openTab = _elm_lang$core$Native_Platform.outgoingPort(
+	'openTab',
+	function (v) {
+		return v;
+	});
+
+var _virtuaCode$bonjwa_programm$Data_Broadcast$Broadcast = F4(
+	function (a, b, c, d) {
+		return {id: a, start: b, end: c, topic: d};
+	});
+var _virtuaCode$bonjwa_programm$Data_Broadcast$broadcastDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'topic',
+	_elm_lang$core$Json_Decode$string,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'end',
+		_elm_community$json_extra$Json_Decode_Extra$date,
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'start',
+			_elm_community$json_extra$Json_Decode_Extra$date,
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+				'id',
+				_elm_lang$core$Json_Decode$int,
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_virtuaCode$bonjwa_programm$Data_Broadcast$Broadcast)))));
+var _virtuaCode$bonjwa_programm$Data_Broadcast$broadcastsDecoder = A2(
+	_elm_lang$core$Json_Decode$field,
+	'data',
+	_elm_lang$core$Json_Decode$list(_virtuaCode$bonjwa_programm$Data_Broadcast$broadcastDecoder));
+
+var _virtuaCode$bonjwa_programm$Data_PastBroadcast$PastBroadcast = F5(
+	function (a, b, c, d, e) {
+		return {date: a, game: b, mods: c, link: d, duration: e};
+	});
+var _virtuaCode$bonjwa_programm$Data_PastBroadcast$pastBroadcastDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'duration',
+	_elm_lang$core$Json_Decode$string,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'link',
+		_elm_lang$core$Json_Decode$string,
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'mods',
+			_elm_lang$core$Json_Decode$string,
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+				'game',
+				_elm_lang$core$Json_Decode$string,
+				A3(
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+					'date',
+					_elm_community$json_extra$Json_Decode_Extra$date,
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_virtuaCode$bonjwa_programm$Data_PastBroadcast$PastBroadcast))))));
+var _virtuaCode$bonjwa_programm$Data_PastBroadcast$pastBroadcastsDecoder = _elm_lang$core$Json_Decode$list(_virtuaCode$bonjwa_programm$Data_PastBroadcast$pastBroadcastDecoder);
+
+var _virtuaCode$bonjwa_programm$Util$formatDuration = function (duration) {
+	var _p0 = A2(_elm_lang$core$String$split, ':', duration);
+	if (((_p0.ctor === '::') && (_p0._1.ctor === '::')) && (_p0._1._1.ctor === '[]')) {
+		var unwords = _elm_lang$core$String$join(' ');
+		var intMinutes = _elm_lang$core$String$toInt(_p0._1._0);
+		var intHours = _elm_lang$core$String$toInt(_p0._0);
+		var _p1 = {ctor: '_Tuple2', _0: intHours, _1: intMinutes};
+		if (((_p1.ctor === '_Tuple2') && (_p1._0.ctor === 'Ok')) && (_p1._1.ctor === 'Ok')) {
+			if (_p1._0._0 === 0) {
+				if (_p1._1._0 === 0) {
+					return '0 Min.';
+				} else {
+					return unwords(
+						{
+							ctor: '::',
+							_0: _elm_lang$core$Basics$toString(_p1._1._0),
+							_1: {
+								ctor: '::',
+								_0: 'Min.',
+								_1: {ctor: '[]'}
+							}
+						});
+				}
+			} else {
+				if (_p1._1._0 === 0) {
+					return unwords(
+						{
+							ctor: '::',
+							_0: _elm_lang$core$Basics$toString(_p1._0._0),
+							_1: {
+								ctor: '::',
+								_0: 'Std.',
+								_1: {ctor: '[]'}
+							}
+						});
+				} else {
+					return unwords(
+						{
+							ctor: '::',
+							_0: _elm_lang$core$Basics$toString(_p1._0._0),
+							_1: {
+								ctor: '::',
+								_0: 'Std.',
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$core$Basics$toString(_p1._1._0),
+									_1: {
+										ctor: '::',
+										_0: 'Min.',
+										_1: {ctor: '[]'}
+									}
+								}
+							}
+						});
+				}
+			}
+		} else {
+			return duration;
+		}
+	} else {
+		return duration;
+	}
+};
+var _virtuaCode$bonjwa_programm$Util$formatDateDayName = function (date) {
+	var _p2 = _elm_lang$core$Date$dayOfWeek(date);
+	switch (_p2.ctor) {
 		case 'Mon':
 			return 'Montag';
 		case 'Tue':
@@ -11302,14 +12084,14 @@ var _virtuaCode$bonjwa_programm$Popup$formatDateDayName = function (date) {
 			return 'Sonntag';
 	}
 };
-var _virtuaCode$bonjwa_programm$Popup$formatDate = function (date) {
+var _virtuaCode$bonjwa_programm$Util$formatDate = function (date) {
 	var year = _elm_lang$core$Basics$toString(
 		_elm_lang$core$Date$year(date));
 	var month = _elm_lang$core$Basics$toString(
 		_justinmimbs$elm_date_extra$Date_Extra$monthNumber(date));
 	var day = _elm_lang$core$Basics$toString(
 		_elm_lang$core$Date$day(date));
-	var dayName = _virtuaCode$bonjwa_programm$Popup$formatDateDayName(date);
+	var dayName = _virtuaCode$bonjwa_programm$Util$formatDateDayName(date);
 	return A2(
 		_elm_lang$core$Basics_ops['++'],
 		dayName,
@@ -11327,7 +12109,7 @@ var _virtuaCode$bonjwa_programm$Popup$formatDate = function (date) {
 						month,
 						A2(_elm_lang$core$Basics_ops['++'], '.', year))))));
 };
-var _virtuaCode$bonjwa_programm$Popup$formatTime = function (date) {
+var _virtuaCode$bonjwa_programm$Util$formatTime = function (date) {
 	var minute = A3(
 		_elm_lang$core$String$padLeft,
 		2,
@@ -11345,28 +12127,706 @@ var _virtuaCode$bonjwa_programm$Popup$formatTime = function (date) {
 		hour,
 		A2(_elm_lang$core$Basics_ops['++'], ':', minute));
 };
-var _virtuaCode$bonjwa_programm$Popup$formatTimeRange = F2(
+var _virtuaCode$bonjwa_programm$Util$formatTimeRange = F2(
 	function (start, end) {
-		var endTime = _virtuaCode$bonjwa_programm$Popup$formatTime(end);
-		var startTime = _virtuaCode$bonjwa_programm$Popup$formatTime(start);
+		var endTime = _virtuaCode$bonjwa_programm$Util$formatTime(end);
+		var startTime = _virtuaCode$bonjwa_programm$Util$formatTime(start);
 		return A2(
 			_elm_lang$core$Basics_ops['++'],
 			startTime,
 			A2(_elm_lang$core$Basics_ops['++'], ' - ', endTime));
 	});
-var _virtuaCode$bonjwa_programm$Popup$subtractDay = function (date) {
+var _virtuaCode$bonjwa_programm$Util$dateEqual = F2(
+	function (x, y) {
+		var tripleY = {
+			ctor: '_Tuple3',
+			_0: _elm_lang$core$Date$day(y),
+			_1: _elm_lang$core$Date$month(y),
+			_2: _elm_lang$core$Date$year(y)
+		};
+		var tripleX = {
+			ctor: '_Tuple3',
+			_0: _elm_lang$core$Date$day(x),
+			_1: _elm_lang$core$Date$month(x),
+			_2: _elm_lang$core$Date$year(x)
+		};
+		return _elm_lang$core$Native_Utils.eq(tripleX, tripleY);
+	});
+var _virtuaCode$bonjwa_programm$Util$subtractDay = function (date) {
 	return A3(_justinmimbs$elm_date_extra$Date_Extra$add, _justinmimbs$elm_date_extra$Date_Extra$Day, -1, date);
 };
-var _virtuaCode$bonjwa_programm$Popup$addDay = function (date) {
+var _virtuaCode$bonjwa_programm$Util$addDay = function (date) {
 	return A3(_justinmimbs$elm_date_extra$Date_Extra$add, _justinmimbs$elm_date_extra$Date_Extra$Day, 1, date);
 };
-var _virtuaCode$bonjwa_programm$Popup$addDays = F2(
+var _virtuaCode$bonjwa_programm$Util$addDays = F2(
 	function (days, date) {
 		return A3(_justinmimbs$elm_date_extra$Date_Extra$add, _justinmimbs$elm_date_extra$Date_Extra$Day, days, date);
 	});
+var _virtuaCode$bonjwa_programm$Util_ops = _virtuaCode$bonjwa_programm$Util_ops || {};
+_virtuaCode$bonjwa_programm$Util_ops['=>'] = F2(
+	function (a, b) {
+		return {ctor: '_Tuple2', _0: a, _1: b};
+	});
+
+var _virtuaCode$bonjwa_programm$Views_Container$view = F4(
+	function (containerId, headerContent, navContent, mainContent) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('container'),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$id(containerId),
+					_1: {ctor: '[]'}
+				}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('header'),
+						_1: {ctor: '[]'}
+					},
+					headerContent),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('nav'),
+							_1: {ctor: '[]'}
+						},
+						navContent),
+					_1: {
+						ctor: '::',
+						_0: mainContent,
+						_1: {ctor: '[]'}
+					}
+				}
+			});
+	});
+
+var _virtuaCode$bonjwa_programm$Views_Message$view = function (message) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$id('status'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html$text(message),
+			_1: {ctor: '[]'}
+		});
+};
+
+var _virtuaCode$bonjwa_programm$Page_PastBroadcast$sortPastBroadcasts = _elm_lang$core$List$sortWith(
+	F2(
+		function (a, b) {
+			return A2(_justinmimbs$elm_date_extra$Date_Extra$compare, b.date, a.date);
+		}));
+var _virtuaCode$bonjwa_programm$Page_PastBroadcast$searchPastBroadcasts = F2(
+	function (term, broadcasts) {
+		var match = function (_p0) {
+			var _p1 = _p0;
+			var lowerGame = _elm_lang$core$String$toLower(_p1.game);
+			var inGame = function (term) {
+				return A2(_elm_lang$core$String$contains, term, lowerGame);
+			};
+			var lowerTerm = _elm_lang$core$String$toLower(term);
+			var termWords = _elm_lang$core$String$words(lowerTerm);
+			return A2(_elm_lang$core$List$all, inGame, termWords);
+		};
+		return A2(_elm_lang$core$List$filter, match, broadcasts);
+	});
+var _virtuaCode$bonjwa_programm$Page_PastBroadcast$filterPastBroadcasts = F2(
+	function (today, broadcasts) {
+		return A2(
+			_elm_lang$core$List$filter,
+			function (_p2) {
+				var _p3 = _p2;
+				return A2(_virtuaCode$bonjwa_programm$Util$dateEqual, today, _p3.date);
+			},
+			broadcasts);
+	});
+var _virtuaCode$bonjwa_programm$Page_PastBroadcast$initModel = {broadcasts: _krisajenkins$remotedata$RemoteData$NotAsked, offset: 0, search: _elm_lang$core$Maybe$Nothing, date: _elm_lang$core$Maybe$Nothing};
+var _virtuaCode$bonjwa_programm$Page_PastBroadcast$Model = F4(
+	function (a, b, c, d) {
+		return {broadcasts: a, search: b, offset: c, date: d};
+	});
+var _virtuaCode$bonjwa_programm$Page_PastBroadcast$WithDate = {ctor: 'WithDate'};
+var _virtuaCode$bonjwa_programm$Page_PastBroadcast$Normal = {ctor: 'Normal'};
+var _virtuaCode$bonjwa_programm$Page_PastBroadcast$InputSearch = function (a) {
+	return {ctor: 'InputSearch', _0: a};
+};
+var _virtuaCode$bonjwa_programm$Page_PastBroadcast$SearchFocusResult = function (a) {
+	return {ctor: 'SearchFocusResult', _0: a};
+};
+var _virtuaCode$bonjwa_programm$Page_PastBroadcast$focusSearchField = A2(
+	_elm_lang$core$Task$attempt,
+	_virtuaCode$bonjwa_programm$Page_PastBroadcast$SearchFocusResult,
+	_elm_lang$dom$Dom$focus('search-field'));
+var _virtuaCode$bonjwa_programm$Page_PastBroadcast$CancelSearch = {ctor: 'CancelSearch'};
+var _virtuaCode$bonjwa_programm$Page_PastBroadcast$viewSearchNavigation = function (term) {
+	return {
+		ctor: '::',
+		_0: A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('search-label'),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html$text('SPIEL:'),
+				_1: {ctor: '[]'}
+			}),
+		_1: {
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$input,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$id('search-field'),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('search'),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$type_('text'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$value(term),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Events$onInput(_virtuaCode$bonjwa_programm$Page_PastBroadcast$InputSearch),
+									_1: {ctor: '[]'}
+								}
+							}
+						}
+					}
+				},
+				{ctor: '[]'}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$id('cancel'),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html_Events$onClick(_virtuaCode$bonjwa_programm$Page_PastBroadcast$CancelSearch),
+							_1: {ctor: '[]'}
+						}
+					},
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$span,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('cancel'),
+								_1: {ctor: '[]'}
+							},
+							{ctor: '[]'}),
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			}
+		}
+	};
+};
+var _virtuaCode$bonjwa_programm$Page_PastBroadcast$Search = {ctor: 'Search'};
+var _virtuaCode$bonjwa_programm$Page_PastBroadcast$Response = function (a) {
+	return {ctor: 'Response', _0: a};
+};
+var _virtuaCode$bonjwa_programm$Page_PastBroadcast$requestPastBroadcasts = function () {
+	var url = 'https://bnjw.viceair.com/static/data.json';
+	return A3(_ohanhi$remotedata_http$RemoteData_Http$get, url, _virtuaCode$bonjwa_programm$Page_PastBroadcast$Response, _virtuaCode$bonjwa_programm$Data_PastBroadcast$pastBroadcastsDecoder);
+}();
+var _virtuaCode$bonjwa_programm$Page_PastBroadcast$PrevDay = {ctor: 'PrevDay'};
+var _virtuaCode$bonjwa_programm$Page_PastBroadcast$InitDate = function (a) {
+	return {ctor: 'InitDate', _0: a};
+};
+var _virtuaCode$bonjwa_programm$Page_PastBroadcast$initDate = A2(_elm_lang$core$Task$perform, _virtuaCode$bonjwa_programm$Page_PastBroadcast$InitDate, _elm_lang$core$Date$now);
+var _virtuaCode$bonjwa_programm$Page_PastBroadcast$init = A2(_virtuaCode$bonjwa_programm$Util_ops['=>'], _virtuaCode$bonjwa_programm$Page_PastBroadcast$initModel, _virtuaCode$bonjwa_programm$Page_PastBroadcast$initDate);
+var _virtuaCode$bonjwa_programm$Page_PastBroadcast$ClickedLink = function (a) {
+	return {ctor: 'ClickedLink', _0: a};
+};
+var _virtuaCode$bonjwa_programm$Page_PastBroadcast$viewPastBroadcast = F2(
+	function (style, broadcast) {
+		var dateBadge = _elm_lang$core$Native_Utils.eq(style, _virtuaCode$bonjwa_programm$Page_PastBroadcast$WithDate) ? A2(
+			_elm_lang$html$Html$span,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('date nowrap'),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html$text(
+					_virtuaCode$bonjwa_programm$Util$formatDate(broadcast.date)),
+				_1: {ctor: '[]'}
+			}) : _elm_lang$html$Html$text('');
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('item'),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Events$onClick(
+						_virtuaCode$bonjwa_programm$Page_PastBroadcast$ClickedLink(broadcast.link)),
+					_1: {ctor: '[]'}
+				}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('flex top-line'),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$div,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('game-top game text-ellipsis'),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text(broadcast.game),
+								_1: {ctor: '[]'}
+							}),
+						_1: {
+							ctor: '::',
+							_0: dateBadge,
+							_1: {ctor: '[]'}
+						}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('flex'),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$div,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('mods text-ellipsis'),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text(broadcast.mods),
+									_1: {ctor: '[]'}
+								}),
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$div,
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$class('duration nowrap'),
+										_1: {ctor: '[]'}
+									},
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html$text(
+											_virtuaCode$bonjwa_programm$Util$formatDuration(broadcast.duration)),
+										_1: {ctor: '[]'}
+									}),
+								_1: {ctor: '[]'}
+							}
+						}),
+					_1: {ctor: '[]'}
+				}
+			});
+	});
+var _virtuaCode$bonjwa_programm$Page_PastBroadcast$viewPastBroadcasts = F2(
+	function (style, broadcasts) {
+		return A2(
+			_elm_lang$core$List$map,
+			_virtuaCode$bonjwa_programm$Page_PastBroadcast$viewPastBroadcast(style),
+			broadcasts);
+	});
+var _virtuaCode$bonjwa_programm$Page_PastBroadcast$viewContent = F3(
+	function (date, offset, remoteData) {
+		var _p4 = {ctor: '_Tuple2', _0: remoteData, _1: date};
+		switch (_p4._0.ctor) {
+			case 'NotAsked':
+				return _virtuaCode$bonjwa_programm$Views_Message$view('Daten werden geladen...');
+			case 'Loading':
+				return _virtuaCode$bonjwa_programm$Views_Message$view('Daten werden geladen...');
+			case 'Failure':
+				return _virtuaCode$bonjwa_programm$Views_Message$view('Serveranfrage fehlgeschlagen!');
+			default:
+				if (_p4._1.ctor === 'Nothing') {
+					return _virtuaCode$bonjwa_programm$Views_Message$view('Daten werden geladen...');
+				} else {
+					var offsetDate = A2(_virtuaCode$bonjwa_programm$Util$addDays, offset, _p4._1._0);
+					var visiblePastBroadcasts = A2(_virtuaCode$bonjwa_programm$Page_PastBroadcast$filterPastBroadcasts, offsetDate, _p4._0._0);
+					var _p5 = visiblePastBroadcasts;
+					if (_p5.ctor === '[]') {
+						return _virtuaCode$bonjwa_programm$Views_Message$view('Für diesen Tag existieren keine Past Broadcasts.');
+					} else {
+						return A2(
+							_elm_lang$html$Html$div,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$id('table'),
+								_1: {ctor: '[]'}
+							},
+							A2(_virtuaCode$bonjwa_programm$Page_PastBroadcast$viewPastBroadcasts, _virtuaCode$bonjwa_programm$Page_PastBroadcast$Normal, visiblePastBroadcasts));
+					}
+				}
+		}
+	});
+var _virtuaCode$bonjwa_programm$Page_PastBroadcast$viewContentSearch = F2(
+	function (term, remoteData) {
+		var _p6 = remoteData;
+		switch (_p6.ctor) {
+			case 'NotAsked':
+				return _virtuaCode$bonjwa_programm$Views_Message$view('Daten werden geladen...');
+			case 'Loading':
+				return _virtuaCode$bonjwa_programm$Views_Message$view('Daten werden geladen...');
+			case 'Failure':
+				return _virtuaCode$bonjwa_programm$Views_Message$view('Serveranfrage fehlgeschlagen!');
+			default:
+				var visiblePastBroadcasts = _virtuaCode$bonjwa_programm$Page_PastBroadcast$sortPastBroadcasts(
+					A2(_virtuaCode$bonjwa_programm$Page_PastBroadcast$searchPastBroadcasts, term, _p6._0));
+				var _p7 = visiblePastBroadcasts;
+				if (_p7.ctor === '[]') {
+					return _virtuaCode$bonjwa_programm$Views_Message$view('Für diesen Tag existieren keine Past Broadcasts.');
+				} else {
+					return A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$id('table'),
+							_1: {ctor: '[]'}
+						},
+						A2(_virtuaCode$bonjwa_programm$Page_PastBroadcast$viewPastBroadcasts, _virtuaCode$bonjwa_programm$Page_PastBroadcast$WithDate, visiblePastBroadcasts));
+				}
+		}
+	});
+var _virtuaCode$bonjwa_programm$Page_PastBroadcast$ClickedBack = {ctor: 'ClickedBack'};
+var _virtuaCode$bonjwa_programm$Page_PastBroadcast$NextDay = {ctor: 'NextDay'};
+var _virtuaCode$bonjwa_programm$Page_PastBroadcast$viewNavigation = function (date) {
+	return {
+		ctor: '::',
+		_0: A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$id('prev'),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Events$onClick(_virtuaCode$bonjwa_programm$Page_PastBroadcast$PrevDay),
+					_1: {ctor: '[]'}
+				}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$span,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('prev'),
+						_1: {ctor: '[]'}
+					},
+					{ctor: '[]'}),
+				_1: {ctor: '[]'}
+			}),
+		_1: {
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$id('day'),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text(date),
+					_1: {ctor: '[]'}
+				}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$id('next'),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html_Events$onClick(_virtuaCode$bonjwa_programm$Page_PastBroadcast$NextDay),
+							_1: {ctor: '[]'}
+						}
+					},
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$span,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('next'),
+								_1: {ctor: '[]'}
+							},
+							{ctor: '[]'}),
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			}
+		}
+	};
+};
+var _virtuaCode$bonjwa_programm$Page_PastBroadcast$view = function (_p8) {
+	var _p9 = _p8;
+	var _p17 = _p9.search;
+	var _p16 = _p9.offset;
+	var _p15 = _p9.date;
+	var _p14 = _p9.broadcasts;
+	var dateString = function (_p10) {
+		return A2(
+			_elm_lang$core$Maybe$withDefault,
+			'',
+			A2(
+				_elm_lang$core$Maybe$map,
+				function (_p11) {
+					return _virtuaCode$bonjwa_programm$Util$formatDate(
+						A2(_virtuaCode$bonjwa_programm$Util$addDays, _p16, _p11));
+				},
+				_p10));
+	}(_p15);
+	var navigation = function () {
+		var _p12 = _p17;
+		if (_p12.ctor === 'Nothing') {
+			return _virtuaCode$bonjwa_programm$Page_PastBroadcast$viewNavigation(dateString);
+		} else {
+			return _virtuaCode$bonjwa_programm$Page_PastBroadcast$viewSearchNavigation(_p12._0);
+		}
+	}();
+	var content = function () {
+		var _p13 = _p17;
+		if (_p13.ctor === 'Nothing') {
+			return A3(_virtuaCode$bonjwa_programm$Page_PastBroadcast$viewContent, _p15, _p16, _p14);
+		} else {
+			return A2(_virtuaCode$bonjwa_programm$Page_PastBroadcast$viewContentSearch, _p13._0, _p14);
+		}
+	}();
+	var header = {
+		ctor: '::',
+		_0: A2(
+			_elm_lang$html$Html$span,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('back'),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Events$onClick(_virtuaCode$bonjwa_programm$Page_PastBroadcast$ClickedBack),
+					_1: {ctor: '[]'}
+				}
+			},
+			{ctor: '[]'}),
+		_1: {
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$span,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('title'),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text('PAST BROADCASTS'),
+					_1: {ctor: '[]'}
+				}),
+			_1: {ctor: '[]'}
+		}
+	};
+	var buttons = {
+		ctor: '::',
+		_0: A2(
+			_elm_lang$html$Html$span,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('button'),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Events$onClick(_virtuaCode$bonjwa_programm$Page_PastBroadcast$Search),
+					_1: {ctor: '[]'}
+				}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$img,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$src('../images/search_48_1x.png'),
+						_1: {ctor: '[]'}
+					},
+					{ctor: '[]'}),
+				_1: {ctor: '[]'}
+			}),
+		_1: {ctor: '[]'}
+	};
+	return A4(
+		_virtuaCode$bonjwa_programm$Views_Container$view,
+		'past-broadcasts',
+		A2(_elm_lang$core$Basics_ops['++'], header, buttons),
+		navigation,
+		content);
+};
+var _virtuaCode$bonjwa_programm$Page_PastBroadcast$OpenTab = function (a) {
+	return {ctor: 'OpenTab', _0: a};
+};
+var _virtuaCode$bonjwa_programm$Page_PastBroadcast$Back = {ctor: 'Back'};
+var _virtuaCode$bonjwa_programm$Page_PastBroadcast$NoOp = {ctor: 'NoOp'};
+var _virtuaCode$bonjwa_programm$Page_PastBroadcast$update = F2(
+	function (msg, model) {
+		var _p18 = msg;
+		switch (_p18.ctor) {
+			case 'NextDay':
+				return A2(
+					_virtuaCode$bonjwa_programm$Util_ops['=>'],
+					{
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{offset: model.offset + 1}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					},
+					_virtuaCode$bonjwa_programm$Page_PastBroadcast$NoOp);
+			case 'PrevDay':
+				return A2(
+					_virtuaCode$bonjwa_programm$Util_ops['=>'],
+					{
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{offset: model.offset - 1}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					},
+					_virtuaCode$bonjwa_programm$Page_PastBroadcast$NoOp);
+			case 'InitDate':
+				return A2(
+					_virtuaCode$bonjwa_programm$Util_ops['=>'],
+					{
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{
+								date: _elm_lang$core$Maybe$Just(_p18._0)
+							}),
+						_1: _virtuaCode$bonjwa_programm$Page_PastBroadcast$requestPastBroadcasts
+					},
+					_virtuaCode$bonjwa_programm$Page_PastBroadcast$NoOp);
+			case 'ClickedLink':
+				return A2(
+					_virtuaCode$bonjwa_programm$Util_ops['=>'],
+					{ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none},
+					_virtuaCode$bonjwa_programm$Page_PastBroadcast$OpenTab(_p18._0));
+			case 'ClickedBack':
+				return A2(
+					_virtuaCode$bonjwa_programm$Util_ops['=>'],
+					{ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none},
+					_virtuaCode$bonjwa_programm$Page_PastBroadcast$Back);
+			case 'Response':
+				return A2(
+					_virtuaCode$bonjwa_programm$Util_ops['=>'],
+					{
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{broadcasts: _p18._0}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					},
+					_virtuaCode$bonjwa_programm$Page_PastBroadcast$NoOp);
+			case 'Search':
+				return A2(
+					_virtuaCode$bonjwa_programm$Util_ops['=>'],
+					{
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{
+								search: _elm_lang$core$Maybe$Just('')
+							}),
+						_1: _virtuaCode$bonjwa_programm$Page_PastBroadcast$focusSearchField
+					},
+					_virtuaCode$bonjwa_programm$Page_PastBroadcast$NoOp);
+			case 'CancelSearch':
+				return A2(
+					_virtuaCode$bonjwa_programm$Util_ops['=>'],
+					{
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{search: _elm_lang$core$Maybe$Nothing}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					},
+					_virtuaCode$bonjwa_programm$Page_PastBroadcast$NoOp);
+			case 'SearchFocusResult':
+				return A2(
+					_virtuaCode$bonjwa_programm$Util_ops['=>'],
+					{ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none},
+					_virtuaCode$bonjwa_programm$Page_PastBroadcast$NoOp);
+			default:
+				var _p19 = model.search;
+				if (_p19.ctor === 'Nothing') {
+					return A2(
+						_virtuaCode$bonjwa_programm$Util_ops['=>'],
+						{ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none},
+						_virtuaCode$bonjwa_programm$Page_PastBroadcast$NoOp);
+				} else {
+					return A2(
+						_virtuaCode$bonjwa_programm$Util_ops['=>'],
+						{
+							ctor: '_Tuple2',
+							_0: _elm_lang$core$Native_Utils.update(
+								model,
+								{
+									search: _elm_lang$core$Maybe$Just(_p18._0)
+								}),
+							_1: _elm_lang$core$Platform_Cmd$none
+						},
+						_virtuaCode$bonjwa_programm$Page_PastBroadcast$NoOp);
+				}
+		}
+	});
+
+var _virtuaCode$bonjwa_programm$Route$PastBroadcasts = {ctor: 'PastBroadcasts'};
+
 var _virtuaCode$bonjwa_programm$Popup$subscriptions = function (model) {
 	return _elm_lang$core$Platform_Sub$none;
 };
+var _virtuaCode$bonjwa_programm$Popup$sortBroadcasts = _elm_lang$core$List$sortWith(
+	F2(
+		function (a, b) {
+			return A2(_justinmimbs$elm_date_extra$Date_Extra$compare, a.start, b.start);
+		}));
 var _virtuaCode$bonjwa_programm$Popup$filterBroadcasts = F2(
 	function (today, broadcasts) {
 		var floorDate = A2(_justinmimbs$elm_date_extra$Date_Extra$floor, _justinmimbs$elm_date_extra$Date_Extra$Day, today);
@@ -11374,29 +12834,26 @@ var _virtuaCode$bonjwa_programm$Popup$filterBroadcasts = F2(
 		var isToday = A2(_justinmimbs$elm_date_extra$Date_Extra$isBetween, floorDate, ceilingDate);
 		return A2(
 			_elm_lang$core$List$filter,
-			function (_p1) {
-				var _p2 = _p1;
-				return isToday(_p2.start) && isToday(_p2.end);
+			function (_p0) {
+				var _p1 = _p0;
+				return isToday(_p1.start) && isToday(_p1.end);
 			},
 			broadcasts);
 	});
-var _virtuaCode$bonjwa_programm$Popup$viewBroadcastRow = function (_p3) {
-	var _p4 = _p3;
-	var rowClass = A2(
-		_elm_lang$core$String$join,
-		' ',
-		A2(
-			_elm_lang$core$Basics_ops['++'],
-			{
-				ctor: '::',
-				_0: 'row',
-				_1: {ctor: '[]'}
-			},
-			_p4.now ? {
-				ctor: '::',
-				_0: 'live',
-				_1: {ctor: '[]'}
-			} : {ctor: '[]'}));
+var _virtuaCode$bonjwa_programm$Popup$viewBroadcastRow = function (styledBroadcast) {
+	var _p2 = function () {
+		var _p3 = styledBroadcast;
+		if (_p3.ctor === 'Primary') {
+			return {ctor: '_Tuple2', _0: 'row live', _1: _p3._0};
+		} else {
+			return {ctor: '_Tuple2', _0: 'row', _1: _p3._0};
+		}
+	}();
+	var rowClass = _p2._0;
+	var start = _p2._1.start;
+	var end = _p2._1.end;
+	var topic = _p2._1.topic;
+	var time = A2(_virtuaCode$bonjwa_programm$Util$formatTimeRange, start, end);
 	return A2(
 		_elm_lang$html$Html$div,
 		{
@@ -11424,7 +12881,7 @@ var _virtuaCode$bonjwa_programm$Popup$viewBroadcastRow = function (_p3) {
 						},
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html$text(_p4.time),
+							_0: _elm_lang$html$Html$text(time),
 							_1: {ctor: '[]'}
 						}),
 					_1: {ctor: '[]'}
@@ -11449,7 +12906,7 @@ var _virtuaCode$bonjwa_programm$Popup$viewBroadcastRow = function (_p3) {
 							},
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html$text(_p4.topic),
+								_0: _elm_lang$html$Html$text(topic),
 								_1: {ctor: '[]'}
 							}),
 						_1: {ctor: '[]'}
@@ -11469,89 +12926,107 @@ var _virtuaCode$bonjwa_programm$Popup$viewBroadcastTable = function (broadcasts)
 		},
 		rows);
 };
-var _virtuaCode$bonjwa_programm$Popup$viewMessage = function (message) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$id('status'),
-			_1: {ctor: '[]'}
-		},
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html$text(message),
-			_1: {ctor: '[]'}
-		});
-};
-var _virtuaCode$bonjwa_programm$Popup$Model = F3(
-	function (a, b, c) {
-		return {date: a, offset: b, broadcasts: c};
+var _virtuaCode$bonjwa_programm$Popup$isTimeBetweenBroadcast = F2(
+	function (time, _p4) {
+		var _p5 = _p4;
+		return A3(_justinmimbs$elm_date_extra$Date_Extra$isBetween, _p5.start, _p5.end, time);
 	});
-var _virtuaCode$bonjwa_programm$Popup$Broadcast = F4(
+var _virtuaCode$bonjwa_programm$Popup$Model = F4(
 	function (a, b, c, d) {
-		return {id: a, start: b, end: c, topic: d};
+		return {date: a, offset: b, broadcasts: c, subpage: d};
 	});
-var _virtuaCode$bonjwa_programm$Popup$broadcastDecoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'topic',
-	_elm_lang$core$Json_Decode$string,
-	A3(
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'end',
-		_elm_community$json_extra$Json_Decode_Extra$date,
-		A3(
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'start',
-			_elm_community$json_extra$Json_Decode_Extra$date,
-			A3(
-				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'id',
-				_elm_lang$core$Json_Decode$int,
-				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_virtuaCode$bonjwa_programm$Popup$Broadcast)))));
-var _virtuaCode$bonjwa_programm$Popup$broadcastsDecoder = A2(
-	_elm_lang$core$Json_Decode$field,
-	'data',
-	_elm_lang$core$Json_Decode$list(_virtuaCode$bonjwa_programm$Popup$broadcastDecoder));
-var _virtuaCode$bonjwa_programm$Popup$ViewBroadcast = F3(
-	function (a, b, c) {
-		return {time: a, topic: b, now: c};
-	});
-var _virtuaCode$bonjwa_programm$Popup$toViewBroadcast = F2(
-	function (time, _p5) {
-		var _p6 = _p5;
-		var _p8 = _p6.start;
-		var _p7 = _p6.end;
-		var now = A3(_justinmimbs$elm_date_extra$Date_Extra$isBetween, _p8, _p7, time);
-		return A3(
-			_virtuaCode$bonjwa_programm$Popup$ViewBroadcast,
-			A2(_virtuaCode$bonjwa_programm$Popup$formatTimeRange, _p8, _p7),
-			_p6.topic,
-			now);
-	});
-var _virtuaCode$bonjwa_programm$Popup$Success = function (a) {
-	return {ctor: 'Success', _0: a};
+var _virtuaCode$bonjwa_programm$Popup$PastBroadcastsPage = function (a) {
+	return {ctor: 'PastBroadcastsPage', _0: a};
 };
-var _virtuaCode$bonjwa_programm$Popup$Failed = function (a) {
-	return {ctor: 'Failed', _0: a};
+var _virtuaCode$bonjwa_programm$Popup$Secondary = function (a) {
+	return {ctor: 'Secondary', _0: a};
 };
-var _virtuaCode$bonjwa_programm$Popup$Fetching = {ctor: 'Fetching'};
+var _virtuaCode$bonjwa_programm$Popup$Primary = function (a) {
+	return {ctor: 'Primary', _0: a};
+};
+var _virtuaCode$bonjwa_programm$Popup$styleBroadcast = F2(
+	function (time, broadcast) {
+		var now = A2(_virtuaCode$bonjwa_programm$Popup$isTimeBetweenBroadcast, time, broadcast);
+		return now ? _virtuaCode$bonjwa_programm$Popup$Primary(broadcast) : _virtuaCode$bonjwa_programm$Popup$Secondary(broadcast);
+	});
+var _virtuaCode$bonjwa_programm$Popup$styleBroadcasts = function (time) {
+	return _elm_lang$core$List$map(
+		_virtuaCode$bonjwa_programm$Popup$styleBroadcast(time));
+};
+var _virtuaCode$bonjwa_programm$Popup$viewProgrammContent = F3(
+	function (date, offset, remoteData) {
+		var _p6 = {ctor: '_Tuple2', _0: remoteData, _1: date};
+		switch (_p6._0.ctor) {
+			case 'NotAsked':
+				return _virtuaCode$bonjwa_programm$Views_Message$view('Programm wird geladen...');
+			case 'Loading':
+				return _virtuaCode$bonjwa_programm$Views_Message$view('Serveranfrage fehlgeschlagen!');
+			case 'Failure':
+				return _virtuaCode$bonjwa_programm$Views_Message$view('Serveranfrage fehlgeschlagen!');
+			default:
+				if (_p6._1.ctor === 'Nothing') {
+					return _virtuaCode$bonjwa_programm$Views_Message$view('Programm wird geladen...');
+				} else {
+					var _p7 = _p6._1._0;
+					var offsetDate = A2(_virtuaCode$bonjwa_programm$Util$addDays, offset, _p7);
+					var visibleBroadcasts = A2(
+						_virtuaCode$bonjwa_programm$Popup$styleBroadcasts,
+						_p7,
+						_virtuaCode$bonjwa_programm$Popup$sortBroadcasts(
+							A2(_virtuaCode$bonjwa_programm$Popup$filterBroadcasts, offsetDate, _p6._0._0)));
+					return _virtuaCode$bonjwa_programm$Popup$viewBroadcastTable(visibleBroadcasts);
+				}
+		}
+	});
 var _virtuaCode$bonjwa_programm$Popup$BroadcastResponse = function (a) {
 	return {ctor: 'BroadcastResponse', _0: a};
 };
 var _virtuaCode$bonjwa_programm$Popup$requestBroadcasts = function () {
 	var url = 'https://bnjw.viceair.com/broadcasts';
-	return A2(
-		_elm_lang$http$Http$send,
-		_virtuaCode$bonjwa_programm$Popup$BroadcastResponse,
-		A2(_elm_lang$http$Http$get, url, _virtuaCode$bonjwa_programm$Popup$broadcastsDecoder));
+	return A3(_ohanhi$remotedata_http$RemoteData_Http$get, url, _virtuaCode$bonjwa_programm$Popup$BroadcastResponse, _virtuaCode$bonjwa_programm$Data_Broadcast$broadcastsDecoder);
 }();
+var _virtuaCode$bonjwa_programm$Popup$PastBroadcastMsg = function (a) {
+	return {ctor: 'PastBroadcastMsg', _0: a};
+};
+var _virtuaCode$bonjwa_programm$Popup$showRoute = F2(
+	function (route, model) {
+		var _p8 = route;
+		var _p9 = _virtuaCode$bonjwa_programm$Page_PastBroadcast$init;
+		var pageModel = _p9._0;
+		var cmd = _p9._1;
+		return A2(
+			_virtuaCode$bonjwa_programm$Util_ops['=>'],
+			_elm_lang$core$Native_Utils.update(
+				model,
+				{
+					subpage: _elm_lang$core$Maybe$Just(
+						_virtuaCode$bonjwa_programm$Popup$PastBroadcastsPage(pageModel))
+				}),
+			A2(_elm_lang$core$Platform_Cmd$map, _virtuaCode$bonjwa_programm$Popup$PastBroadcastMsg, cmd));
+	});
 var _virtuaCode$bonjwa_programm$Popup$update = F2(
 	function (msg, model) {
-		var _p9 = msg;
-		switch (_p9.ctor) {
+		var toPage = F5(
+			function (toModel, toMsg, subUpdate, subMsg, subModel) {
+				var _p10 = A2(subUpdate, subMsg, subModel);
+				var newModel = _p10._0;
+				var newCmd = _p10._1;
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							subpage: _elm_lang$core$Maybe$Just(
+								toModel(newModel))
+						}),
+					_1: A2(_elm_lang$core$Platform_Cmd$map, toMsg, newCmd)
+				};
+			});
+		var _p11 = {ctor: '_Tuple2', _0: msg, _1: model.subpage};
+		switch (_p11._0.ctor) {
 			case 'NextDay':
-				var _p10 = model.date;
-				if (_p10.ctor === 'Nothing') {
+				var _p12 = model.date;
+				if (_p12.ctor === 'Nothing') {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				} else {
 					return {
@@ -11563,8 +13038,8 @@ var _virtuaCode$bonjwa_programm$Popup$update = F2(
 					};
 				}
 			case 'PrevDay':
-				var _p11 = model.date;
-				if (_p11.ctor === 'Nothing') {
+				var _p13 = model.date;
+				if (_p13.ctor === 'Nothing') {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				} else {
 					return {
@@ -11575,13 +13050,19 @@ var _virtuaCode$bonjwa_programm$Popup$update = F2(
 						_1: _elm_lang$core$Platform_Cmd$none
 					};
 				}
+			case 'OpenTab':
+				return {
+					ctor: '_Tuple2',
+					_0: model,
+					_1: _virtuaCode$bonjwa_programm$Browser$openTab(_p11._0._0)
+				};
 			case 'ReceiveInitialDate':
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							date: _elm_lang$core$Maybe$Just(_p9._0)
+							date: _elm_lang$core$Maybe$Just(_p11._0._0)
 						}),
 					_1: _virtuaCode$bonjwa_programm$Popup$requestBroadcasts
 				};
@@ -11591,55 +13072,143 @@ var _virtuaCode$bonjwa_programm$Popup$update = F2(
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							date: _elm_lang$core$Maybe$Just(_p9._0)
+							date: _elm_lang$core$Maybe$Just(_p11._0._0)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
-			case 'FetchBroadcasts':
+			case 'BroadcastResponse':
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{broadcasts: _virtuaCode$bonjwa_programm$Popup$Fetching}),
-					_1: _virtuaCode$bonjwa_programm$Popup$requestBroadcasts
+						{broadcasts: _p11._0._0}),
+					_1: _elm_lang$core$Platform_Cmd$none
 				};
+			case 'ShowRoute':
+				return A2(_virtuaCode$bonjwa_programm$Popup$showRoute, _p11._0._0, model);
 			default:
-				if (_p9._0.ctor === 'Ok') {
-					return {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{
-								broadcasts: _virtuaCode$bonjwa_programm$Popup$Success(_p9._0._0)
-							}),
-						_1: _elm_lang$core$Platform_Cmd$none
-					};
+				if (_p11._1.ctor === 'Just') {
+					var _p14 = A2(_virtuaCode$bonjwa_programm$Page_PastBroadcast$update, _p11._0._0, _p11._1._0._0);
+					var pageModel = _p14._0._0;
+					var cmd = _p14._0._1;
+					var msgFromPage = _p14._1;
+					var _p15 = function () {
+						var _p16 = msgFromPage;
+						switch (_p16.ctor) {
+							case 'NoOp':
+								return A2(
+									_virtuaCode$bonjwa_programm$Util_ops['=>'],
+									_elm_lang$core$Native_Utils.update(
+										model,
+										{
+											subpage: _elm_lang$core$Maybe$Just(
+												_virtuaCode$bonjwa_programm$Popup$PastBroadcastsPage(pageModel))
+										}),
+									A2(_elm_lang$core$Platform_Cmd$map, _virtuaCode$bonjwa_programm$Popup$PastBroadcastMsg, cmd));
+							case 'OpenTab':
+								return A2(
+									_virtuaCode$bonjwa_programm$Util_ops['=>'],
+									_elm_lang$core$Native_Utils.update(
+										model,
+										{
+											subpage: _elm_lang$core$Maybe$Just(
+												_virtuaCode$bonjwa_programm$Popup$PastBroadcastsPage(pageModel))
+										}),
+									_elm_lang$core$Platform_Cmd$batch(
+										{
+											ctor: '::',
+											_0: _virtuaCode$bonjwa_programm$Browser$openTab(_p16._0),
+											_1: {
+												ctor: '::',
+												_0: A2(_elm_lang$core$Platform_Cmd$map, _virtuaCode$bonjwa_programm$Popup$PastBroadcastMsg, cmd),
+												_1: {ctor: '[]'}
+											}
+										}));
+							default:
+								return A2(
+									_virtuaCode$bonjwa_programm$Util_ops['=>'],
+									_elm_lang$core$Native_Utils.update(
+										model,
+										{subpage: _elm_lang$core$Maybe$Nothing}),
+									A2(_elm_lang$core$Platform_Cmd$map, _virtuaCode$bonjwa_programm$Popup$PastBroadcastMsg, cmd));
+						}
+					}();
+					var newModel = _p15._0;
+					var command = _p15._1;
+					return A2(_virtuaCode$bonjwa_programm$Util_ops['=>'], newModel, command);
 				} else {
-					return {
-						ctor: '_Tuple2',
-						_0: _elm_lang$core$Native_Utils.update(
-							model,
-							{
-								broadcasts: _virtuaCode$bonjwa_programm$Popup$Failed(_p9._0._0)
-							}),
-						_1: _elm_lang$core$Platform_Cmd$none
-					};
+					return A2(_virtuaCode$bonjwa_programm$Util_ops['=>'], model, _elm_lang$core$Platform_Cmd$none);
 				}
 		}
 	});
-var _virtuaCode$bonjwa_programm$Popup$FetchBroadcasts = {ctor: 'FetchBroadcasts'};
-var _virtuaCode$bonjwa_programm$Popup$viewRefreshButton = A2(
-	_elm_lang$html$Html$button,
-	{
+var _virtuaCode$bonjwa_programm$Popup$OpenTab = function (a) {
+	return {ctor: 'OpenTab', _0: a};
+};
+var _virtuaCode$bonjwa_programm$Popup$ShowRoute = function (a) {
+	return {ctor: 'ShowRoute', _0: a};
+};
+var _virtuaCode$bonjwa_programm$Popup$viewProgrammHeader = {
+	ctor: '::',
+	_0: A2(
+		_elm_lang$html$Html$img,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('bonjwa-logo'),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$src('../images/bonjwa.jpg'),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$alt('Bonjwa Logo'),
+					_1: {ctor: '[]'}
+				}
+			}
+		},
+		{ctor: '[]'}),
+	_1: {
 		ctor: '::',
-		_0: _elm_lang$html$Html_Events$onClick(_virtuaCode$bonjwa_programm$Popup$FetchBroadcasts),
-		_1: {ctor: '[]'}
-	},
-	{
-		ctor: '::',
-		_0: _elm_lang$html$Html$text('Refresh'),
-		_1: {ctor: '[]'}
-	});
+		_0: A2(
+			_elm_lang$html$Html$span,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('title'),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html$text('BONJWA PROGRAMM'),
+				_1: {ctor: '[]'}
+			}),
+		_1: {
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$span,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('button'),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Events$onClick(
+							_virtuaCode$bonjwa_programm$Popup$ShowRoute(_virtuaCode$bonjwa_programm$Route$PastBroadcasts)),
+						_1: {ctor: '[]'}
+					}
+				},
+				{
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$img,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$src('../images/video_48_1x.png'),
+							_1: {ctor: '[]'}
+						},
+						{ctor: '[]'}),
+					_1: {ctor: '[]'}
+				}),
+			_1: {ctor: '[]'}
+		}
+	}
+};
 var _virtuaCode$bonjwa_programm$Popup$ReceiveDate = function (a) {
 	return {ctor: 'ReceiveDate', _0: a};
 };
@@ -11650,212 +13219,119 @@ var _virtuaCode$bonjwa_programm$Popup$ReceiveInitialDate = function (a) {
 var _virtuaCode$bonjwa_programm$Popup$requestInit = A2(_elm_lang$core$Task$perform, _virtuaCode$bonjwa_programm$Popup$ReceiveInitialDate, _elm_lang$core$Date$now);
 var _virtuaCode$bonjwa_programm$Popup$init = {
 	ctor: '_Tuple2',
-	_0: A3(_virtuaCode$bonjwa_programm$Popup$Model, _elm_lang$core$Maybe$Nothing, 0, _virtuaCode$bonjwa_programm$Popup$Fetching),
+	_0: A4(_virtuaCode$bonjwa_programm$Popup$Model, _elm_lang$core$Maybe$Nothing, 0, _krisajenkins$remotedata$RemoteData$NotAsked, _elm_lang$core$Maybe$Nothing),
 	_1: _virtuaCode$bonjwa_programm$Popup$requestInit
 };
 var _virtuaCode$bonjwa_programm$Popup$PrevDay = {ctor: 'PrevDay'};
-var _virtuaCode$bonjwa_programm$Popup$viewPrevButton = A2(
-	_elm_lang$html$Html$button,
-	{
-		ctor: '::',
-		_0: _elm_lang$html$Html_Events$onClick(_virtuaCode$bonjwa_programm$Popup$PrevDay),
-		_1: {ctor: '[]'}
-	},
-	{
-		ctor: '::',
-		_0: _elm_lang$html$Html$text('Previous'),
-		_1: {ctor: '[]'}
-	});
 var _virtuaCode$bonjwa_programm$Popup$NextDay = {ctor: 'NextDay'};
-var _virtuaCode$bonjwa_programm$Popup$viewContainer = F2(
-	function (dateString, content) {
-		return A2(
+var _virtuaCode$bonjwa_programm$Popup$viewProgrammNavigation = function (date) {
+	return {
+		ctor: '::',
+		_0: A2(
 			_elm_lang$html$Html$div,
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$class('container'),
-				_1: {ctor: '[]'}
+				_0: _elm_lang$html$Html_Attributes$id('prev'),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Events$onClick(_virtuaCode$bonjwa_programm$Popup$PrevDay),
+					_1: {ctor: '[]'}
+				}
 			},
 			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$span,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('prev'),
+						_1: {ctor: '[]'}
+					},
+					{ctor: '[]'}),
+				_1: {ctor: '[]'}
+			}),
+		_1: {
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$id('day'),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text(date),
+					_1: {ctor: '[]'}
+				}),
+			_1: {
 				ctor: '::',
 				_0: A2(
 					_elm_lang$html$Html$div,
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('header'),
-						_1: {ctor: '[]'}
+						_0: _elm_lang$html$Html_Attributes$id('next'),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html_Events$onClick(_virtuaCode$bonjwa_programm$Popup$NextDay),
+							_1: {ctor: '[]'}
+						}
 					},
 					{
 						ctor: '::',
 						_0: A2(
-							_elm_lang$html$Html$img,
+							_elm_lang$html$Html$span,
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$src('../images/bonjwa.jpg'),
-								_1: {
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$alt('Bonjwa Logo'),
-									_1: {ctor: '[]'}
-								}
+								_0: _elm_lang$html$Html_Attributes$class('next'),
+								_1: {ctor: '[]'}
 							},
 							{ctor: '[]'}),
-						_1: {
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$span,
-								{ctor: '[]'},
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html$text('BONJWA PROGRAMM'),
-									_1: {ctor: '[]'}
-								}),
-							_1: {ctor: '[]'}
-						}
-					}),
-				_1: {
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$div,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('nav'),
-							_1: {ctor: '[]'}
-						},
-						{
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$div,
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$id('prev'),
-									_1: {
-										ctor: '::',
-										_0: _elm_lang$html$Html_Events$onClick(_virtuaCode$bonjwa_programm$Popup$PrevDay),
-										_1: {ctor: '[]'}
-									}
-								},
-								{
-									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html$span,
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$class('prev'),
-											_1: {ctor: '[]'}
-										},
-										{ctor: '[]'}),
-									_1: {ctor: '[]'}
-								}),
-							_1: {
-								ctor: '::',
-								_0: A2(
-									_elm_lang$html$Html$div,
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$id('day'),
-										_1: {ctor: '[]'}
-									},
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html$text(dateString),
-										_1: {ctor: '[]'}
-									}),
-								_1: {
-									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html$div,
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$id('next'),
-											_1: {
-												ctor: '::',
-												_0: _elm_lang$html$Html_Events$onClick(_virtuaCode$bonjwa_programm$Popup$NextDay),
-												_1: {ctor: '[]'}
-											}
-										},
-										{
-											ctor: '::',
-											_0: A2(
-												_elm_lang$html$Html$span,
-												{
-													ctor: '::',
-													_0: _elm_lang$html$Html_Attributes$class('next'),
-													_1: {ctor: '[]'}
-												},
-												{ctor: '[]'}),
-											_1: {ctor: '[]'}
-										}),
-									_1: {ctor: '[]'}
-								}
-							}
-						}),
-					_1: {
-						ctor: '::',
-						_0: content,
 						_1: {ctor: '[]'}
-					}
-				}
-			});
-	});
-var _virtuaCode$bonjwa_programm$Popup$view = function (model) {
-	var dateString = A2(
-		_elm_lang$core$Maybe$withDefault,
-		'',
-		A2(
-			_elm_lang$core$Maybe$map,
-			function (date) {
-				return _virtuaCode$bonjwa_programm$Popup$formatDate(
-					A2(_virtuaCode$bonjwa_programm$Popup$addDays, model.offset, date));
-			},
-			model.date));
-	var _p12 = model.broadcasts;
-	switch (_p12.ctor) {
-		case 'Fetching':
-			return A2(
-				_virtuaCode$bonjwa_programm$Popup$viewContainer,
-				dateString,
-				_virtuaCode$bonjwa_programm$Popup$viewMessage('Programm wird geladen...'));
-		case 'Success':
-			var _p13 = model.date;
-			if (_p13.ctor === 'Nothing') {
-				return A2(
-					_virtuaCode$bonjwa_programm$Popup$viewContainer,
-					dateString,
-					_virtuaCode$bonjwa_programm$Popup$viewMessage('Programm wird geladen...'));
-			} else {
-				var _p14 = _p13._0;
-				var offsetDate = A2(_virtuaCode$bonjwa_programm$Popup$addDays, model.offset, _p14);
-				var todaysBroadcasts = A2(_virtuaCode$bonjwa_programm$Popup$filterBroadcasts, offsetDate, _p12._0);
-				var viewBroadcasts = A2(
-					_elm_lang$core$List$map,
-					_virtuaCode$bonjwa_programm$Popup$toViewBroadcast(_p14),
-					todaysBroadcasts);
-				return A2(
-					_virtuaCode$bonjwa_programm$Popup$viewContainer,
-					dateString,
-					_virtuaCode$bonjwa_programm$Popup$viewBroadcastTable(viewBroadcasts));
+					}),
+				_1: {ctor: '[]'}
 			}
-		default:
-			return A2(
-				_virtuaCode$bonjwa_programm$Popup$viewContainer,
-				dateString,
-				_virtuaCode$bonjwa_programm$Popup$viewMessage('Serveranfrage fehlgeschlagen!'));
+		}
+	};
+};
+var _virtuaCode$bonjwa_programm$Popup$viewProgrammContainer = F2(
+	function (date, content) {
+		return A4(
+			_virtuaCode$bonjwa_programm$Views_Container$view,
+			'programm-container',
+			_virtuaCode$bonjwa_programm$Popup$viewProgrammHeader,
+			_virtuaCode$bonjwa_programm$Popup$viewProgrammNavigation(date),
+			content);
+	});
+var _virtuaCode$bonjwa_programm$Popup$viewProgramm = function (model) {
+	var content = A3(_virtuaCode$bonjwa_programm$Popup$viewProgrammContent, model.date, model.offset, model.broadcasts);
+	var dateString = function (_p17) {
+		return A2(
+			_elm_lang$core$Maybe$withDefault,
+			'',
+			A2(
+				_elm_lang$core$Maybe$map,
+				function (_p18) {
+					return _virtuaCode$bonjwa_programm$Util$formatDate(
+						A2(_virtuaCode$bonjwa_programm$Util$addDays, model.offset, _p18));
+				},
+				_p17));
+	}(model.date);
+	return A2(_virtuaCode$bonjwa_programm$Popup$viewProgrammContainer, dateString, content);
+};
+var _virtuaCode$bonjwa_programm$Popup$view = function (model) {
+	var _p19 = model.subpage;
+	if (_p19.ctor === 'Nothing') {
+		return _virtuaCode$bonjwa_programm$Popup$viewProgramm(model);
+	} else {
+		return A2(
+			_elm_lang$html$Html$map,
+			_virtuaCode$bonjwa_programm$Popup$PastBroadcastMsg,
+			_virtuaCode$bonjwa_programm$Page_PastBroadcast$view(_p19._0._0));
 	}
 };
 var _virtuaCode$bonjwa_programm$Popup$main = _elm_lang$html$Html$program(
 	{init: _virtuaCode$bonjwa_programm$Popup$init, view: _virtuaCode$bonjwa_programm$Popup$view, update: _virtuaCode$bonjwa_programm$Popup$update, subscriptions: _virtuaCode$bonjwa_programm$Popup$subscriptions})();
-var _virtuaCode$bonjwa_programm$Popup$viewNextButton = A2(
-	_elm_lang$html$Html$button,
-	{
-		ctor: '::',
-		_0: _elm_lang$html$Html_Events$onClick(_virtuaCode$bonjwa_programm$Popup$NextDay),
-		_1: {ctor: '[]'}
-	},
-	{
-		ctor: '::',
-		_0: _elm_lang$html$Html$text('Next'),
-		_1: {ctor: '[]'}
-	});
 
 var Elm = {};
 Elm['Popup'] = Elm['Popup'] || {};
