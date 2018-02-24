@@ -12348,7 +12348,7 @@ var _virtuaCode$bonjwa_programm$Page_PastBroadcast$Response = function (a) {
 	return {ctor: 'Response', _0: a};
 };
 var _virtuaCode$bonjwa_programm$Page_PastBroadcast$requestPastBroadcasts = function () {
-	var url = 'https://bnjw.viceair.com/static/data.json';
+	var url = 'https://bnjw.viceair.com/pastbroadcasts';
 	return A3(_ohanhi$remotedata_http$RemoteData_Http$get, url, _virtuaCode$bonjwa_programm$Page_PastBroadcast$Response, _virtuaCode$bonjwa_programm$Data_PastBroadcast$pastBroadcastsDecoder);
 }();
 var _virtuaCode$bonjwa_programm$Page_PastBroadcast$PrevDay = {ctor: 'PrevDay'};
@@ -13159,8 +13159,13 @@ var _virtuaCode$bonjwa_programm$Popup$viewProgrammHeader = {
 				_0: _elm_lang$html$Html_Attributes$src('../images/bonjwa.jpg'),
 				_1: {
 					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$alt('Bonjwa Logo'),
-					_1: {ctor: '[]'}
+					_0: _elm_lang$html$Html_Events$onClick(
+						_virtuaCode$bonjwa_programm$Popup$OpenTab('https://www.bonjwa.de')),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$alt('Bonjwa Logo'),
+						_1: {ctor: '[]'}
+					}
 				}
 			}
 		},

@@ -244,7 +244,7 @@ viewProgrammContent date offset remoteData =
 
 viewProgrammHeader : List (Html Msg)
 viewProgrammHeader =
-    [ img [ class "bonjwa-logo", src "../images/bonjwa.jpg", alt "Bonjwa Logo" ] []
+    [ img [ class "bonjwa-logo", src "../images/bonjwa.jpg", onClick (OpenTab "https://www.bonjwa.de"), alt "Bonjwa Logo" ] []
     , span [ class "title" ] [ text "BONJWA PROGRAMM" ]
     , span [ class "button", onClick (ShowRoute Route.PastBroadcasts) ]
         [ img [ src "../images/video_48_1x.png" ] []

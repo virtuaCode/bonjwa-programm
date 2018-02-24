@@ -23,7 +23,7 @@ h1 {
     background-color: #219662;
     color: white;
     display: flex;
-    font-size: 18px;
+    font-size: 20px;
     font-weight: bold;
     justify-content: center;
     text-align: right;
@@ -34,6 +34,10 @@ h1 {
     height: 32px;
     width: 32px;
     margin: 0rem 1rem;
+}
+
+.header .bonjwa-logo {
+    cursor: pointer;
 }
 
 .header .button {
@@ -231,7 +235,7 @@ h1 {
 }
 
 #past-broadcasts .date {
-    font-size: 10px;
+    font-size: 11px;
     font-weight: bold;
     color: #219662;
     padding: 2px 4px;
@@ -285,7 +289,7 @@ h1 {
 }
 
 #past-broadcasts .top-line {
-    margin-bottom: 4px;
+    margin-bottom: 5px;
 }
 
 #past-broadcasts .flex {

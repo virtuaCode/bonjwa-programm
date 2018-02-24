@@ -319,6 +319,6 @@ requestPastBroadcasts : Cmd Msg
 requestPastBroadcasts =
     let
         url =
-            "https://bnjw.viceair.com/static/data.json"
+            "https://bnjw.viceair.com/pastbroadcasts"
     in
     get url Response pastBroadcastsDecoder
