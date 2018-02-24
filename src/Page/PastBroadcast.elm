@@ -2,15 +2,16 @@ module Page.PastBroadcast exposing (ExternalMsg(..), Model, Msg, init, update, v
 
 import Data.PastBroadcast exposing (PastBroadcast, PastBroadcasts, PastBroadcastsWebData, pastBroadcastsDecoder)
 import Date exposing (Date, now)
-import Date.Extra
+import Date.Extra exposing (Interval(Day), diff)
 import Dom exposing (Error, focus)
 import Html exposing (..)
 import Html.Attributes exposing (class, id, src, type_, value)
 import Html.Events exposing (onClick, onInput)
+import List.Extra
 import RemoteData exposing (RemoteData(..))
 import RemoteData.Http exposing (get)
 import Task exposing (Task, perform)
-import Util exposing ((=>), addDay, addDays, dateEqual, formatDate, formatDuration)
+import Util exposing ((=>), addDay, addDays, dateEqual, formatDate, formatDuration, srcset)
 import Views.Container as Container
 import Views.Message as Message
 
@@ -81,49 +82,60 @@ update : Msg -> Model -> ( ( Model, Cmd Msg ), ExternalMsg )
 update msg model =
     case msg of
         NextDay ->
-            ( { model | offset = model.offset + 1 }, Cmd.none )
+            { model | offset = model.offset + 1 }
+                => Cmd.none
                 => NoOp
 
         PrevDay ->
-            ( { model | offset = model.offset - 1 }, Cmd.none )
+            { model | offset = model.offset - 1 }
+                => Cmd.none
                 => NoOp
 
         InitDate date ->
-            ( { model | date = Just date }, requestPastBroadcasts )
+            { model | date = Just date }
+                => requestPastBroadcasts
                 => NoOp
 
         ClickedLink link ->
-            ( model, Cmd.none )
+            model
+                => Cmd.none
                 => OpenTab link
 
         ClickedBack ->
-            ( model, Cmd.none )
+            model
+                => Cmd.none
                 => Back
 
         Response broadcasts ->
-            ( { model | broadcasts = broadcasts }, Cmd.none )
+            { model | broadcasts = broadcasts, offset = offsetLatest model.date broadcasts }
+                => Cmd.none
                 => NoOp
 
         Search ->
-            ( { model | search = Just "" }, focusSearchField )
+            { model | search = Just "" }
+                => focusSearchField
                 => NoOp
 
         CancelSearch ->
-            ( { model | search = Nothing }, Cmd.none )
+            { model | search = Nothing }
+                => Cmd.none
                 => NoOp
 
         SearchFocusResult _ ->
-            ( model, Cmd.none )
+            model
+                => Cmd.none
                 => NoOp
 
         InputSearch newTerm ->
             case model.search of
                 Nothing ->
-                    ( model, Cmd.none )
+                    model
+                        => Cmd.none
                         => NoOp
 
                 Just _ ->
-                    ( { model | search = Just newTerm }, Cmd.none )
+                    { model | search = Just newTerm }
+                        => Cmd.none
                         => NoOp
 
 
@@ -200,7 +212,7 @@ view { date, offset, broadcasts, search } =
     let
         buttons =
             [ span [ class "button", onClick Search ]
-                [ img [ src "../images/search_48_1x.png" ] []
+                [ img [ src "../images/search_48_1x.png", srcset [ "../images/search_48_1x.png", "../images/search_48_2x.png" ] ] []
                 ]
             ]
 
@@ -263,7 +275,7 @@ viewPastBroadcast style broadcast =
 
 viewSearchNavigation : String -> List (Html Msg)
 viewSearchNavigation term =
-    [ div [ class "search-label" ] [ text "SPIEL:" ]
+    [ div [ class "search-label" ] [ text "GAME:" ]
     , input [ id "search-field", class "search", type_ "text", value term, onInput InputSearch ] []
     , div [ id "cancel", onClick CancelSearch ]
         [ span [ class "cancel" ] []
@@ -277,6 +289,10 @@ viewNavigation date =
     , div [ id "day" ] [ text date ]
     , div [ id "next", onClick NextDay ] [ span [ class "next" ] [] ]
     ]
+
+
+
+-- HELPER
 
 
 filterPastBroadcasts : Date -> PastBroadcasts -> PastBroadcasts
@@ -309,6 +325,32 @@ searchPastBroadcasts term broadcasts =
 sortPastBroadcasts : PastBroadcasts -> PastBroadcasts
 sortPastBroadcasts =
     List.sortWith (\a b -> Date.Extra.compare b.date a.date)
+
+
+maximumDate : PastBroadcasts -> Maybe Date
+maximumDate broadcasts =
+    broadcasts
+        |> List.map .date
+        |> List.Extra.maximumBy Date.toTime
+
+
+offsetLatest : Maybe Date -> PastBroadcastsWebData -> Int
+offsetLatest maybeDate broadcastsData =
+    case ( maybeDate, broadcastsData ) of
+        ( Just date, Success broadcasts ) ->
+            let
+                maybeLatest =
+                    maximumDate broadcasts
+            in
+            case maybeLatest of
+                Just latest ->
+                    Date.Extra.diff Day date latest
+
+                Nothing ->
+                    0
+
+        _ ->
+            0
 
 
 

@@ -108,36 +108,45 @@ update msg model =
                 ( newModel, newCmd ) =
                     subUpdate subMsg subModel
             in
-            ( { model | subpage = Just (toModel newModel) }, Cmd.map toMsg newCmd )
+            { model | subpage = Just (toModel newModel) }
+                => Cmd.map toMsg newCmd
     in
     case ( msg, model.subpage ) of
         ( NextDay, _ ) ->
             case model.date of
                 Nothing ->
-                    ( model, Cmd.none )
+                    model
+                        => Cmd.none
 
                 Just date ->
-                    ( { model | offset = model.offset + 1 }, Cmd.none )
+                    { model | offset = model.offset + 1 }
+                        => Cmd.none
 
         ( PrevDay, _ ) ->
             case model.date of
                 Nothing ->
-                    ( model, Cmd.none )
+                    model
+                        => Cmd.none
 
                 Just date ->
-                    ( { model | offset = model.offset - 1 }, Cmd.none )
+                    { model | offset = model.offset - 1 }
+                        => Cmd.none
 
         ( OpenTab url, _ ) ->
-            ( model, openTab url )
+            model
+                => openTab url
 
         ( ReceiveInitialDate date, _ ) ->
-            ( { model | date = Just date }, requestBroadcasts )
+            { model | date = Just date }
+                => requestBroadcasts
 
         ( ReceiveDate date, _ ) ->
-            ( { model | date = Just date }, Cmd.none )
+            { model | date = Just date }
+                => Cmd.none
 
         ( BroadcastResponse data, _ ) ->
-            ( { model | broadcasts = data }, Cmd.none )
+            { model | broadcasts = data }
+                => Cmd.none
 
         ( ShowRoute route, _ ) ->
             showRoute route model
@@ -157,10 +166,14 @@ update msg model =
 
                         Page.PastBroadcast.OpenTab link ->
                             { model | subpage = Just (PastBroadcastsPage pageModel) }
-                                => Cmd.batch [ openTab link, Cmd.map PastBroadcastMsg cmd ]
+                                => Cmd.batch
+                                    [ openTab link
+                                    , Cmd.map PastBroadcastMsg cmd
+                                    ]
 
                         Page.PastBroadcast.Back ->
-                            { model | subpage = Nothing } => Cmd.map PastBroadcastMsg cmd
+                            { model | subpage = Nothing }
+                                => Cmd.map PastBroadcastMsg cmd
             in
             newModel
                 => command
@@ -247,7 +260,7 @@ viewProgrammHeader =
     [ img [ class "bonjwa-logo", src "../images/bonjwa.jpg", onClick (OpenTab "https://www.bonjwa.de"), alt "Bonjwa Logo" ] []
     , span [ class "title" ] [ text "BONJWA PROGRAMM" ]
     , span [ class "button", onClick (ShowRoute Route.PastBroadcasts) ]
-        [ img [ src "../images/video_48_1x.png" ] []
+        [ img [ src "../images/video_48_1x.png", srcset [ "../images/video_48_1x.png", "../images/video_48_2x.png" ] ] []
         ]
     ]
 

@@ -2,7 +2,20 @@ module Util exposing (..)
 
 import Date exposing (Date, Day(..))
 import Date.Extra exposing (Interval(..), add)
+import Html exposing (Attribute)
+import Html.Attributes exposing (property)
+import Json.Encode
 import String exposing (padLeft)
+
+
+srcset : List String -> Attribute a
+srcset items =
+    let
+        maps =
+            items
+                |> List.indexedMap (\i item -> String.join "" [ item, " ", toString (i + 1), "x" ])
+    in
+    property "srcset" (maps |> String.join "," >> Json.Encode.string)
 
 
 (=>) : a -> b -> ( a, b )
