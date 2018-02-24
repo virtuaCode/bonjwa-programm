@@ -6,7 +6,7 @@ Bonjwa Programm ist eine WebExtension für den **Firefox** Browser, die den aktu
 
 ## Downloads
 
-Die neuste Version befindet sich unter [Releases](https://github.com/virtuaCode/bonjwa-programm/releases). Einfach die oberste Installationsdatei (bonjwa_programm-0.0.x-an+fx.xpi) herunterladen und installieren.
+Die neuste Version befindet sich unter [Releases](https://github.com/virtuaCode/bonjwa-programm/releases). Einfach die oberste Installationsdatei (bonjwa_programm-0.0.**X**-an+fx.xpi) herunterladen und installieren.
 
 ## Screenshots
 
