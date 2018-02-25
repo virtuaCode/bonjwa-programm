@@ -14348,27 +14348,230 @@ var _virtuaCode$bonjwa_programm$Popup$filterBroadcasts = F2(
 			},
 			broadcasts);
 	});
+var _virtuaCode$bonjwa_programm$Popup$isTimeBetweenBroadcast = F2(
+	function (time, _p2) {
+		var _p3 = _p2;
+		return A3(_justinmimbs$elm_date_extra$Date_Extra$isBetween, _p3.start, _p3.end, time);
+	});
+var _virtuaCode$bonjwa_programm$Popup$Model = F4(
+	function (a, b, c, d) {
+		return {date: a, offset: b, broadcasts: c, subpage: d};
+	});
+var _virtuaCode$bonjwa_programm$Popup$PastBroadcastsPage = function (a) {
+	return {ctor: 'PastBroadcastsPage', _0: a};
+};
+var _virtuaCode$bonjwa_programm$Popup$Secondary = function (a) {
+	return {ctor: 'Secondary', _0: a};
+};
+var _virtuaCode$bonjwa_programm$Popup$Primary = function (a) {
+	return {ctor: 'Primary', _0: a};
+};
+var _virtuaCode$bonjwa_programm$Popup$styleBroadcast = F2(
+	function (time, broadcast) {
+		var now = A2(_virtuaCode$bonjwa_programm$Popup$isTimeBetweenBroadcast, time, broadcast);
+		return now ? _virtuaCode$bonjwa_programm$Popup$Primary(broadcast) : _virtuaCode$bonjwa_programm$Popup$Secondary(broadcast);
+	});
+var _virtuaCode$bonjwa_programm$Popup$styleBroadcasts = function (time) {
+	return _elm_lang$core$List$map(
+		_virtuaCode$bonjwa_programm$Popup$styleBroadcast(time));
+};
+var _virtuaCode$bonjwa_programm$Popup$BroadcastResponse = function (a) {
+	return {ctor: 'BroadcastResponse', _0: a};
+};
+var _virtuaCode$bonjwa_programm$Popup$requestBroadcasts = function () {
+	var url = 'https://bnjw.viceair.com/broadcasts';
+	return A3(_ohanhi$remotedata_http$RemoteData_Http$get, url, _virtuaCode$bonjwa_programm$Popup$BroadcastResponse, _virtuaCode$bonjwa_programm$Data_Broadcast$broadcastsDecoder);
+}();
+var _virtuaCode$bonjwa_programm$Popup$PastBroadcastMsg = function (a) {
+	return {ctor: 'PastBroadcastMsg', _0: a};
+};
+var _virtuaCode$bonjwa_programm$Popup$showRoute = F2(
+	function (route, model) {
+		var _p4 = route;
+		var _p5 = _virtuaCode$bonjwa_programm$Page_PastBroadcast$init;
+		var pageModel = _p5._0;
+		var cmd = _p5._1;
+		return A2(
+			_virtuaCode$bonjwa_programm$Util_ops['=>'],
+			_elm_lang$core$Native_Utils.update(
+				model,
+				{
+					subpage: _elm_lang$core$Maybe$Just(
+						_virtuaCode$bonjwa_programm$Popup$PastBroadcastsPage(pageModel))
+				}),
+			A2(_elm_lang$core$Platform_Cmd$map, _virtuaCode$bonjwa_programm$Popup$PastBroadcastMsg, cmd));
+	});
+var _virtuaCode$bonjwa_programm$Popup$update = F2(
+	function (msg, model) {
+		var toPage = F5(
+			function (toModel, toMsg, subUpdate, subMsg, subModel) {
+				var _p6 = A2(subUpdate, subMsg, subModel);
+				var newModel = _p6._0;
+				var newCmd = _p6._1;
+				return A2(
+					_virtuaCode$bonjwa_programm$Util_ops['=>'],
+					_elm_lang$core$Native_Utils.update(
+						model,
+						{
+							subpage: _elm_lang$core$Maybe$Just(
+								toModel(newModel))
+						}),
+					A2(_elm_lang$core$Platform_Cmd$map, toMsg, newCmd));
+			});
+		var _p7 = {ctor: '_Tuple2', _0: msg, _1: model.subpage};
+		switch (_p7._0.ctor) {
+			case 'NextDay':
+				var _p8 = model.date;
+				if (_p8.ctor === 'Nothing') {
+					return A2(_virtuaCode$bonjwa_programm$Util_ops['=>'], model, _elm_lang$core$Platform_Cmd$none);
+				} else {
+					return A2(
+						_virtuaCode$bonjwa_programm$Util_ops['=>'],
+						_elm_lang$core$Native_Utils.update(
+							model,
+							{offset: model.offset + 1}),
+						_elm_lang$core$Platform_Cmd$none);
+				}
+			case 'PrevDay':
+				var _p9 = model.date;
+				if (_p9.ctor === 'Nothing') {
+					return A2(_virtuaCode$bonjwa_programm$Util_ops['=>'], model, _elm_lang$core$Platform_Cmd$none);
+				} else {
+					return A2(
+						_virtuaCode$bonjwa_programm$Util_ops['=>'],
+						_elm_lang$core$Native_Utils.update(
+							model,
+							{offset: model.offset - 1}),
+						_elm_lang$core$Platform_Cmd$none);
+				}
+			case 'OpenTab':
+				return A2(
+					_virtuaCode$bonjwa_programm$Util_ops['=>'],
+					model,
+					_virtuaCode$bonjwa_programm$Browser$openTab(_p7._0._0));
+			case 'ReceiveInitialDate':
+				return A2(
+					_virtuaCode$bonjwa_programm$Util_ops['=>'],
+					_elm_lang$core$Native_Utils.update(
+						model,
+						{
+							date: _elm_lang$core$Maybe$Just(_p7._0._0)
+						}),
+					_virtuaCode$bonjwa_programm$Popup$requestBroadcasts);
+			case 'ReceiveDate':
+				return A2(
+					_virtuaCode$bonjwa_programm$Util_ops['=>'],
+					_elm_lang$core$Native_Utils.update(
+						model,
+						{
+							date: _elm_lang$core$Maybe$Just(_p7._0._0)
+						}),
+					_elm_lang$core$Platform_Cmd$none);
+			case 'BroadcastResponse':
+				return A2(
+					_virtuaCode$bonjwa_programm$Util_ops['=>'],
+					_elm_lang$core$Native_Utils.update(
+						model,
+						{broadcasts: _p7._0._0}),
+					_elm_lang$core$Platform_Cmd$none);
+			case 'ShowRoute':
+				return A2(_virtuaCode$bonjwa_programm$Popup$showRoute, _p7._0._0, model);
+			default:
+				if (_p7._1.ctor === 'Just') {
+					var _p10 = A2(_virtuaCode$bonjwa_programm$Page_PastBroadcast$update, _p7._0._0, _p7._1._0._0);
+					var pageModel = _p10._0._0;
+					var cmd = _p10._0._1;
+					var msgFromPage = _p10._1;
+					var _p11 = function () {
+						var _p12 = msgFromPage;
+						switch (_p12.ctor) {
+							case 'NoOp':
+								return A2(
+									_virtuaCode$bonjwa_programm$Util_ops['=>'],
+									_elm_lang$core$Native_Utils.update(
+										model,
+										{
+											subpage: _elm_lang$core$Maybe$Just(
+												_virtuaCode$bonjwa_programm$Popup$PastBroadcastsPage(pageModel))
+										}),
+									A2(_elm_lang$core$Platform_Cmd$map, _virtuaCode$bonjwa_programm$Popup$PastBroadcastMsg, cmd));
+							case 'OpenTab':
+								return A2(
+									_virtuaCode$bonjwa_programm$Util_ops['=>'],
+									_elm_lang$core$Native_Utils.update(
+										model,
+										{
+											subpage: _elm_lang$core$Maybe$Just(
+												_virtuaCode$bonjwa_programm$Popup$PastBroadcastsPage(pageModel))
+										}),
+									_elm_lang$core$Platform_Cmd$batch(
+										{
+											ctor: '::',
+											_0: _virtuaCode$bonjwa_programm$Browser$openTab(_p12._0),
+											_1: {
+												ctor: '::',
+												_0: A2(_elm_lang$core$Platform_Cmd$map, _virtuaCode$bonjwa_programm$Popup$PastBroadcastMsg, cmd),
+												_1: {ctor: '[]'}
+											}
+										}));
+							default:
+								return A2(
+									_virtuaCode$bonjwa_programm$Util_ops['=>'],
+									_elm_lang$core$Native_Utils.update(
+										model,
+										{subpage: _elm_lang$core$Maybe$Nothing}),
+									A2(_elm_lang$core$Platform_Cmd$map, _virtuaCode$bonjwa_programm$Popup$PastBroadcastMsg, cmd));
+						}
+					}();
+					var newModel = _p11._0;
+					var command = _p11._1;
+					return A2(_virtuaCode$bonjwa_programm$Util_ops['=>'], newModel, command);
+				} else {
+					return A2(_virtuaCode$bonjwa_programm$Util_ops['=>'], model, _elm_lang$core$Platform_Cmd$none);
+				}
+		}
+	});
+var _virtuaCode$bonjwa_programm$Popup$OpenTab = function (a) {
+	return {ctor: 'OpenTab', _0: a};
+};
 var _virtuaCode$bonjwa_programm$Popup$viewBroadcastRow = function (styledBroadcast) {
-	var _p2 = function () {
-		var _p3 = styledBroadcast;
-		if (_p3.ctor === 'Primary') {
-			return {ctor: '_Tuple2', _0: 'row live', _1: _p3._0};
+	var _p13 = function () {
+		var _p14 = styledBroadcast;
+		if (_p14.ctor === 'Primary') {
+			return {
+				ctor: '_Tuple2',
+				_0: _elm_lang$html$Html$div(
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('row live'),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html_Events$onClick(
+								_virtuaCode$bonjwa_programm$Popup$OpenTab('https://www.twitch.tv/bonjwa')),
+							_1: {ctor: '[]'}
+						}
+					}),
+				_1: _p14._0
+			};
 		} else {
-			return {ctor: '_Tuple2', _0: 'row', _1: _p3._0};
+			return {
+				ctor: '_Tuple2',
+				_0: _elm_lang$html$Html$div(
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('row'),
+						_1: {ctor: '[]'}
+					}),
+				_1: _p14._0
+			};
 		}
 	}();
-	var rowClass = _p2._0;
-	var start = _p2._1.start;
-	var end = _p2._1.end;
-	var topic = _p2._1.topic;
+	var rowElement = _p13._0;
+	var start = _p13._1.start;
+	var end = _p13._1.end;
+	var topic = _p13._1.topic;
 	var time = A2(_virtuaCode$bonjwa_programm$Util$formatTimeRange, start, end);
-	return A2(
-		_elm_lang$html$Html$div,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$class(rowClass),
-			_1: {ctor: '[]'}
-		},
+	return rowElement(
 		{
 			ctor: '::',
 			_0: A2(
@@ -14434,37 +14637,10 @@ var _virtuaCode$bonjwa_programm$Popup$viewBroadcastTable = function (broadcasts)
 		},
 		rows);
 };
-var _virtuaCode$bonjwa_programm$Popup$isTimeBetweenBroadcast = F2(
-	function (time, _p4) {
-		var _p5 = _p4;
-		return A3(_justinmimbs$elm_date_extra$Date_Extra$isBetween, _p5.start, _p5.end, time);
-	});
-var _virtuaCode$bonjwa_programm$Popup$Model = F4(
-	function (a, b, c, d) {
-		return {date: a, offset: b, broadcasts: c, subpage: d};
-	});
-var _virtuaCode$bonjwa_programm$Popup$PastBroadcastsPage = function (a) {
-	return {ctor: 'PastBroadcastsPage', _0: a};
-};
-var _virtuaCode$bonjwa_programm$Popup$Secondary = function (a) {
-	return {ctor: 'Secondary', _0: a};
-};
-var _virtuaCode$bonjwa_programm$Popup$Primary = function (a) {
-	return {ctor: 'Primary', _0: a};
-};
-var _virtuaCode$bonjwa_programm$Popup$styleBroadcast = F2(
-	function (time, broadcast) {
-		var now = A2(_virtuaCode$bonjwa_programm$Popup$isTimeBetweenBroadcast, time, broadcast);
-		return now ? _virtuaCode$bonjwa_programm$Popup$Primary(broadcast) : _virtuaCode$bonjwa_programm$Popup$Secondary(broadcast);
-	});
-var _virtuaCode$bonjwa_programm$Popup$styleBroadcasts = function (time) {
-	return _elm_lang$core$List$map(
-		_virtuaCode$bonjwa_programm$Popup$styleBroadcast(time));
-};
 var _virtuaCode$bonjwa_programm$Popup$viewProgrammContent = F3(
 	function (date, offset, remoteData) {
-		var _p6 = {ctor: '_Tuple2', _0: remoteData, _1: date};
-		switch (_p6._0.ctor) {
+		var _p15 = {ctor: '_Tuple2', _0: remoteData, _1: date};
+		switch (_p15._0.ctor) {
 			case 'NotAsked':
 				return _virtuaCode$bonjwa_programm$Views_Message$view('Programm wird geladen...');
 			case 'Loading':
@@ -14472,179 +14648,20 @@ var _virtuaCode$bonjwa_programm$Popup$viewProgrammContent = F3(
 			case 'Failure':
 				return _virtuaCode$bonjwa_programm$Views_Message$view('Serveranfrage fehlgeschlagen!');
 			default:
-				if (_p6._1.ctor === 'Nothing') {
+				if (_p15._1.ctor === 'Nothing') {
 					return _virtuaCode$bonjwa_programm$Views_Message$view('Programm wird geladen...');
 				} else {
-					var _p7 = _p6._1._0;
-					var offsetDate = A2(_virtuaCode$bonjwa_programm$Util$addDays, offset, _p7);
+					var _p16 = _p15._1._0;
+					var offsetDate = A2(_virtuaCode$bonjwa_programm$Util$addDays, offset, _p16);
 					var visibleBroadcasts = A2(
 						_virtuaCode$bonjwa_programm$Popup$styleBroadcasts,
-						_p7,
+						_p16,
 						_virtuaCode$bonjwa_programm$Popup$sortBroadcasts(
-							A2(_virtuaCode$bonjwa_programm$Popup$filterBroadcasts, offsetDate, _p6._0._0)));
+							A2(_virtuaCode$bonjwa_programm$Popup$filterBroadcasts, offsetDate, _p15._0._0)));
 					return _virtuaCode$bonjwa_programm$Popup$viewBroadcastTable(visibleBroadcasts);
 				}
 		}
 	});
-var _virtuaCode$bonjwa_programm$Popup$BroadcastResponse = function (a) {
-	return {ctor: 'BroadcastResponse', _0: a};
-};
-var _virtuaCode$bonjwa_programm$Popup$requestBroadcasts = function () {
-	var url = 'https://bnjw.viceair.com/broadcasts';
-	return A3(_ohanhi$remotedata_http$RemoteData_Http$get, url, _virtuaCode$bonjwa_programm$Popup$BroadcastResponse, _virtuaCode$bonjwa_programm$Data_Broadcast$broadcastsDecoder);
-}();
-var _virtuaCode$bonjwa_programm$Popup$PastBroadcastMsg = function (a) {
-	return {ctor: 'PastBroadcastMsg', _0: a};
-};
-var _virtuaCode$bonjwa_programm$Popup$showRoute = F2(
-	function (route, model) {
-		var _p8 = route;
-		var _p9 = _virtuaCode$bonjwa_programm$Page_PastBroadcast$init;
-		var pageModel = _p9._0;
-		var cmd = _p9._1;
-		return A2(
-			_virtuaCode$bonjwa_programm$Util_ops['=>'],
-			_elm_lang$core$Native_Utils.update(
-				model,
-				{
-					subpage: _elm_lang$core$Maybe$Just(
-						_virtuaCode$bonjwa_programm$Popup$PastBroadcastsPage(pageModel))
-				}),
-			A2(_elm_lang$core$Platform_Cmd$map, _virtuaCode$bonjwa_programm$Popup$PastBroadcastMsg, cmd));
-	});
-var _virtuaCode$bonjwa_programm$Popup$update = F2(
-	function (msg, model) {
-		var toPage = F5(
-			function (toModel, toMsg, subUpdate, subMsg, subModel) {
-				var _p10 = A2(subUpdate, subMsg, subModel);
-				var newModel = _p10._0;
-				var newCmd = _p10._1;
-				return A2(
-					_virtuaCode$bonjwa_programm$Util_ops['=>'],
-					_elm_lang$core$Native_Utils.update(
-						model,
-						{
-							subpage: _elm_lang$core$Maybe$Just(
-								toModel(newModel))
-						}),
-					A2(_elm_lang$core$Platform_Cmd$map, toMsg, newCmd));
-			});
-		var _p11 = {ctor: '_Tuple2', _0: msg, _1: model.subpage};
-		switch (_p11._0.ctor) {
-			case 'NextDay':
-				var _p12 = model.date;
-				if (_p12.ctor === 'Nothing') {
-					return A2(_virtuaCode$bonjwa_programm$Util_ops['=>'], model, _elm_lang$core$Platform_Cmd$none);
-				} else {
-					return A2(
-						_virtuaCode$bonjwa_programm$Util_ops['=>'],
-						_elm_lang$core$Native_Utils.update(
-							model,
-							{offset: model.offset + 1}),
-						_elm_lang$core$Platform_Cmd$none);
-				}
-			case 'PrevDay':
-				var _p13 = model.date;
-				if (_p13.ctor === 'Nothing') {
-					return A2(_virtuaCode$bonjwa_programm$Util_ops['=>'], model, _elm_lang$core$Platform_Cmd$none);
-				} else {
-					return A2(
-						_virtuaCode$bonjwa_programm$Util_ops['=>'],
-						_elm_lang$core$Native_Utils.update(
-							model,
-							{offset: model.offset - 1}),
-						_elm_lang$core$Platform_Cmd$none);
-				}
-			case 'OpenTab':
-				return A2(
-					_virtuaCode$bonjwa_programm$Util_ops['=>'],
-					model,
-					_virtuaCode$bonjwa_programm$Browser$openTab(_p11._0._0));
-			case 'ReceiveInitialDate':
-				return A2(
-					_virtuaCode$bonjwa_programm$Util_ops['=>'],
-					_elm_lang$core$Native_Utils.update(
-						model,
-						{
-							date: _elm_lang$core$Maybe$Just(_p11._0._0)
-						}),
-					_virtuaCode$bonjwa_programm$Popup$requestBroadcasts);
-			case 'ReceiveDate':
-				return A2(
-					_virtuaCode$bonjwa_programm$Util_ops['=>'],
-					_elm_lang$core$Native_Utils.update(
-						model,
-						{
-							date: _elm_lang$core$Maybe$Just(_p11._0._0)
-						}),
-					_elm_lang$core$Platform_Cmd$none);
-			case 'BroadcastResponse':
-				return A2(
-					_virtuaCode$bonjwa_programm$Util_ops['=>'],
-					_elm_lang$core$Native_Utils.update(
-						model,
-						{broadcasts: _p11._0._0}),
-					_elm_lang$core$Platform_Cmd$none);
-			case 'ShowRoute':
-				return A2(_virtuaCode$bonjwa_programm$Popup$showRoute, _p11._0._0, model);
-			default:
-				if (_p11._1.ctor === 'Just') {
-					var _p14 = A2(_virtuaCode$bonjwa_programm$Page_PastBroadcast$update, _p11._0._0, _p11._1._0._0);
-					var pageModel = _p14._0._0;
-					var cmd = _p14._0._1;
-					var msgFromPage = _p14._1;
-					var _p15 = function () {
-						var _p16 = msgFromPage;
-						switch (_p16.ctor) {
-							case 'NoOp':
-								return A2(
-									_virtuaCode$bonjwa_programm$Util_ops['=>'],
-									_elm_lang$core$Native_Utils.update(
-										model,
-										{
-											subpage: _elm_lang$core$Maybe$Just(
-												_virtuaCode$bonjwa_programm$Popup$PastBroadcastsPage(pageModel))
-										}),
-									A2(_elm_lang$core$Platform_Cmd$map, _virtuaCode$bonjwa_programm$Popup$PastBroadcastMsg, cmd));
-							case 'OpenTab':
-								return A2(
-									_virtuaCode$bonjwa_programm$Util_ops['=>'],
-									_elm_lang$core$Native_Utils.update(
-										model,
-										{
-											subpage: _elm_lang$core$Maybe$Just(
-												_virtuaCode$bonjwa_programm$Popup$PastBroadcastsPage(pageModel))
-										}),
-									_elm_lang$core$Platform_Cmd$batch(
-										{
-											ctor: '::',
-											_0: _virtuaCode$bonjwa_programm$Browser$openTab(_p16._0),
-											_1: {
-												ctor: '::',
-												_0: A2(_elm_lang$core$Platform_Cmd$map, _virtuaCode$bonjwa_programm$Popup$PastBroadcastMsg, cmd),
-												_1: {ctor: '[]'}
-											}
-										}));
-							default:
-								return A2(
-									_virtuaCode$bonjwa_programm$Util_ops['=>'],
-									_elm_lang$core$Native_Utils.update(
-										model,
-										{subpage: _elm_lang$core$Maybe$Nothing}),
-									A2(_elm_lang$core$Platform_Cmd$map, _virtuaCode$bonjwa_programm$Popup$PastBroadcastMsg, cmd));
-						}
-					}();
-					var newModel = _p15._0;
-					var command = _p15._1;
-					return A2(_virtuaCode$bonjwa_programm$Util_ops['=>'], newModel, command);
-				} else {
-					return A2(_virtuaCode$bonjwa_programm$Util_ops['=>'], model, _elm_lang$core$Platform_Cmd$none);
-				}
-		}
-	});
-var _virtuaCode$bonjwa_programm$Popup$OpenTab = function (a) {
-	return {ctor: 'OpenTab', _0: a};
-};
 var _virtuaCode$bonjwa_programm$Popup$ShowRoute = function (a) {
 	return {ctor: 'ShowRoute', _0: a};
 };

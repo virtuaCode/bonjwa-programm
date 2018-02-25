@@ -294,18 +294,18 @@ viewBroadcastTable broadcasts =
 viewBroadcastRow : Styled Broadcast -> Html Msg
 viewBroadcastRow styledBroadcast =
     let
-        ( rowClass, { start, end, topic } ) =
+        ( rowElement, { start, end, topic } ) =
             case styledBroadcast of
                 Primary broadcast ->
-                    ( "row live", broadcast )
+                    ( div [ class "row live", onClick (OpenTab "https://www.twitch.tv/bonjwa") ], broadcast )
 
                 Secondary broadcast ->
-                    ( "row", broadcast )
+                    ( div [ class "row" ], broadcast )
 
         time =
             formatTimeRange start end
     in
-    div [ class rowClass ]
+    rowElement
         [ div [ class "left" ] [ div [ class "time" ] [ text time ] ]
         , div [ class "right" ] [ div [ class "topic" ] [ text topic ] ]
         ]

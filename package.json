@@ -4,7 +4,7 @@
   "description": "Displays the latest schedule for the Bonjwa Twitch channel",
   "scripts": {
     "postinstall": "elm-package install",
-    "build": "elm-make ./src/Popup.elm --warn --output=./dist/popup2/elm.js",
+    "build": "elm-make ./src/Popup.elm --warn --output=./dist/popup/elm.js",
     "dev": "web-ext run -s ./dist"
   },
   "repository": {

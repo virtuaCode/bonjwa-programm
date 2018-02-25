@@ -167,6 +167,10 @@ h1 {
     flex: 1;
 }
 
+#table .live {
+    cursor: pointer;
+}
+
 #table .live .left {
     background: #219662;
     color: #fff;
