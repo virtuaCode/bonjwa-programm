@@ -201,7 +201,7 @@ viewContentSearch term remoteData =
             in
             case visiblePastBroadcasts of
                 [] ->
-                    Message.view "Für diesen Tag existieren keine Past Broadcasts."
+                    Message.view <| "Für den Suchbegriff '" ++ (String.trim term) ++ "' wurden keine passenden Past Broadcasts gefunden."  
 
                 _ ->
                     div [ id "table" ] (viewPastBroadcasts WithDate visiblePastBroadcasts)
@@ -341,10 +341,14 @@ offsetLatest maybeDate broadcastsData =
             let
                 maybeLatest =
                     maximumDate broadcasts
+            
+                floorDay =
+                    Date.Extra.floor Day
+                
             in
             case maybeLatest of
                 Just latest ->
-                    Date.Extra.diff Day date latest
+                    Date.Extra.diff Day (floorDay date) (floorDay latest)
 
                 Nothing ->
                     0

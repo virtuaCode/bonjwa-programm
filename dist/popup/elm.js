@@ -13712,10 +13712,15 @@ var _virtuaCode$bonjwa_programm$Page_PastBroadcast$offsetLatest = F2(
 	function (maybeDate, broadcastsData) {
 		var _p0 = {ctor: '_Tuple2', _0: maybeDate, _1: broadcastsData};
 		if (((_p0.ctor === '_Tuple2') && (_p0._0.ctor === 'Just')) && (_p0._1.ctor === 'Success')) {
+			var floorDay = _justinmimbs$elm_date_extra$Date_Extra$floor(_justinmimbs$elm_date_extra$Date_Extra$Day);
 			var maybeLatest = _virtuaCode$bonjwa_programm$Page_PastBroadcast$maximumDate(_p0._1._0);
 			var _p1 = maybeLatest;
 			if (_p1.ctor === 'Just') {
-				return A3(_justinmimbs$elm_date_extra$Date_Extra$diff, _justinmimbs$elm_date_extra$Date_Extra$Day, _p0._0._0, _p1._0);
+				return A3(
+					_justinmimbs$elm_date_extra$Date_Extra$diff,
+					_justinmimbs$elm_date_extra$Date_Extra$Day,
+					floorDay(_p0._0._0),
+					floorDay(_p1._0));
 			} else {
 				return 0;
 			}
@@ -14013,7 +14018,14 @@ var _virtuaCode$bonjwa_programm$Page_PastBroadcast$viewContentSearch = F2(
 					A2(_virtuaCode$bonjwa_programm$Page_PastBroadcast$searchPastBroadcasts, term, _p8._0));
 				var _p9 = visiblePastBroadcasts;
 				if (_p9.ctor === '[]') {
-					return _virtuaCode$bonjwa_programm$Views_Message$view('Für diesen Tag existieren keine Past Broadcasts.');
+					return _virtuaCode$bonjwa_programm$Views_Message$view(
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'Für den Suchbegriff \'',
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								_elm_lang$core$String$trim(term),
+								'\' wurden keine passenden Past Broadcasts gefunden.')));
 				} else {
 					return A2(
 						_elm_lang$html$Html$div,
