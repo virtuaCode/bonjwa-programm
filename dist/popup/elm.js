@@ -14021,7 +14021,7 @@ var _virtuaCode$bonjwa_programm$Page_PastBroadcast$viewContentSearch = F2(
 					return _virtuaCode$bonjwa_programm$Views_Message$view(
 						A2(
 							_elm_lang$core$Basics_ops['++'],
-							'Für den Suchbegriff \'',
+							'Zu dem Suchbegriff \'',
 							A2(
 								_elm_lang$core$Basics_ops['++'],
 								_elm_lang$core$String$trim(term),

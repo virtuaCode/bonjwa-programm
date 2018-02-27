@@ -201,7 +201,7 @@ viewContentSearch term remoteData =
             in
             case visiblePastBroadcasts of
                 [] ->
-                    Message.view <| "Für den Suchbegriff '" ++ (String.trim term) ++ "' wurden keine passenden Past Broadcasts gefunden."  
+                    Message.view <| "Zu dem Suchbegriff '" ++ (String.trim term) ++ "' wurden keine passenden Past Broadcasts gefunden."  
 
                 _ ->
                     div [ id "table" ] (viewPastBroadcasts WithDate visiblePastBroadcasts)
