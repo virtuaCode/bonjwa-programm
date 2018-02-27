@@ -1,15 +1,17 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto|Roboto+Condensed');
+
 html,
 body {
     background-color: #fff;
-    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-    font-size: 13px;
+    font-family: 'Roboto', sans-serif;
+    font-size: 14px;
     margin: 0px 0px;
     padding: 0 0;
     width: 360px;
 }
 
 h1 {
-    font-size: 15px;
+    font-size: 16px;
 }
 
 .container {
@@ -19,8 +21,9 @@ h1 {
 }
 
 .header {
+    font-family: 'Roboto Condensed', sans-serif;
     align-items: center;
-    background-color: #219662;
+    background-color: #1e9761;
     color: white;
     display: flex;
     font-size: 20px;
@@ -145,40 +148,40 @@ h1 {
 }
 
 #table .row {
-    border-bottom: 1px dotted #bbb;
-    display: flex;
+    border-top: 1px dotted #bbb;
+    background-color: #fff;
+    display: flex;    
+    color: black;
 }
 
-#table .row:last-child {
-    border-bottom: none;
+#table .row:first-child {
+    border-top: none;
 }
 
 #table .left {
-    background-color: #eee;
-    color: black;
+    background: rgba(0, 0, 0, 0.0666);
     display: flex;
     flex: 0 0 110px;
     font-weight: bold;
 }
 
 #table .right {
-    background-color: #fff;
-    color: black;
     flex: 1;
 }
 
-#table .live {
+#table .row.live { 
     cursor: pointer;
-}
-
-#table .live .left {
-    background: #219662;
+    border-top: 1px solid #1e9761;
+    background: #1e9761;
     color: #fff;
 }
 
-#table .live .right {
-    background: #37a172;
-    color: #fff;
+#table .row.live .left {
+    background: transparent;
+}
+
+#table .row.live .right {
+    background: rgba(255, 255, 255, 0.0666);
 }
 
 #table .time {
@@ -227,21 +230,19 @@ h1 {
 }
 
 #past-broadcasts .mods {
-    font-size: 13px;
+    font-size: 12px;
     color: #6c757d;
 }
 
 #past-broadcasts .duration {
     font-size: 10px;
-    font-weight: bold;
     color: black;
     margin-left: auto;
 }
 
 #past-broadcasts .date {
     font-size: 11px;
-    font-weight: bold;
-    color: #219662;
+    color: #1e9761;
     padding: 2px 4px;
     margin-left: auto;
     border: 1px solid;
@@ -300,7 +301,7 @@ h1 {
     display: -webkit-flex;
     display: -moz-flex;
     display: flex;
-    align-items: center;
+    align-items: baseline;
 }
 
 #past-broadcasts .text-ellipsis {
