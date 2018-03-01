@@ -14551,7 +14551,7 @@ var _virtuaCode$bonjwa_programm$Popup$viewBroadcastRow = function (styledBroadca
 		var _p14 = styledBroadcast;
 		if (_p14.ctor === 'Primary') {
 			return {
-				ctor: '_Tuple2',
+				ctor: '_Tuple3',
 				_0: _elm_lang$html$Html$div(
 					{
 						ctor: '::',
@@ -14563,25 +14563,54 @@ var _virtuaCode$bonjwa_programm$Popup$viewBroadcastRow = function (styledBroadca
 							_1: {ctor: '[]'}
 						}
 					}),
-				_1: _p14._0
+				_1: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('live-indicator'),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$span,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('dot'),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text('●'),
+								_1: {ctor: '[]'}
+							}),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('live'),
+							_1: {ctor: '[]'}
+						}
+					}),
+				_2: _p14._0
 			};
 		} else {
 			return {
-				ctor: '_Tuple2',
+				ctor: '_Tuple3',
 				_0: _elm_lang$html$Html$div(
 					{
 						ctor: '::',
 						_0: _elm_lang$html$Html_Attributes$class('row'),
 						_1: {ctor: '[]'}
 					}),
-				_1: _p14._0
+				_1: _elm_lang$html$Html$text(''),
+				_2: _p14._0
 			};
 		}
 	}();
 	var rowElement = _p13._0;
-	var start = _p13._1.start;
-	var end = _p13._1.end;
-	var topic = _p13._1.topic;
+	var indicator = _p13._1;
+	var start = _p13._2.start;
+	var end = _p13._2.end;
+	var topic = _p13._2.topic;
 	var time = A2(_virtuaCode$bonjwa_programm$Util$formatTimeRange, start, end);
 	return rowElement(
 		{
@@ -14620,19 +14649,23 @@ var _virtuaCode$bonjwa_programm$Popup$viewBroadcastRow = function (styledBroadca
 					},
 					{
 						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html$div,
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('topic'),
-								_1: {ctor: '[]'}
-							},
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html$text(topic),
-								_1: {ctor: '[]'}
-							}),
-						_1: {ctor: '[]'}
+						_0: indicator,
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$div,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('topic'),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text(topic),
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						}
 					}),
 				_1: {ctor: '[]'}
 			}
