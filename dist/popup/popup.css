@@ -20,12 +20,10 @@ h1 {
 }
 
 .header {
-    font-family: 'Roboto Condensed', sans-serif;
     align-items: center;
     background-color: #1e9761;
     color: white;
     display: flex;
-    font-size: 20px;
     font-weight: bold;
     justify-content: center;
     text-align: right;
@@ -56,6 +54,7 @@ h1 {
 .header .back {
     color: white;
     display: flex;
+    font-size: 18px;
     align-content: center;
     align-self: stretch;
     transition: background-color 150ms ease-out;
@@ -75,6 +74,8 @@ h1 {
 
 .header .title {
     margin: 0 auto;
+    font-size: 20px;
+    font-family: 'Roboto Condensed', sans-serif;
 }
 
 .nav {
