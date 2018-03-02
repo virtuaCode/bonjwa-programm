@@ -1,4 +1,4 @@
-# Bonjwa Programm ![Icon](dist/icons/icon48.png?raw=true "Popup")
+# Bonjwa Programm ![Icon](dist/icons/icon32.png?raw=true "Popup")
 
 Displays the latest schedule for the [Bonjwa Twitch channel](https://www.twitch.tv/bonjwa)
 
