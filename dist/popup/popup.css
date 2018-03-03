@@ -173,7 +173,7 @@ h1 {
 
 #table .row.live {
     cursor: pointer;
-    border-top: 1px solid #1e9761;
+    border-top-color: #1e9761;
     background: #1e9761;
     color: #fff;
     text-shadow: 0px -1px 0px rgba(0, 0, 0, 0.2), 0px 1px 0px rgba(255, 255, 255, 0.2);
