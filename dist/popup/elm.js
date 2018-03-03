@@ -13825,8 +13825,12 @@ var _virtuaCode$bonjwa_programm$Page_PastBroadcast$viewSearchNavigation = functi
 						_0: _elm_lang$html$Html_Attributes$id('cancel'),
 						_1: {
 							ctor: '::',
-							_0: _elm_lang$html$Html_Events$onClick(_virtuaCode$bonjwa_programm$Page_PastBroadcast$CancelSearch),
-							_1: {ctor: '[]'}
+							_0: _elm_lang$html$Html_Attributes$title('Suche beenden'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Events$onClick(_virtuaCode$bonjwa_programm$Page_PastBroadcast$CancelSearch),
+								_1: {ctor: '[]'}
+							}
 						}
 					},
 					{
@@ -13885,9 +13889,13 @@ var _virtuaCode$bonjwa_programm$Page_PastBroadcast$viewPastBroadcast = F2(
 				_0: _elm_lang$html$Html_Attributes$class('item'),
 				_1: {
 					ctor: '::',
-					_0: _elm_lang$html$Html_Events$onClick(
-						_virtuaCode$bonjwa_programm$Page_PastBroadcast$ClickedLink(broadcast.link)),
-					_1: {ctor: '[]'}
+					_0: _elm_lang$html$Html_Attributes$title(broadcast.link),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Events$onClick(
+							_virtuaCode$bonjwa_programm$Page_PastBroadcast$ClickedLink(broadcast.link)),
+						_1: {ctor: '[]'}
+					}
 				}
 			},
 			{
@@ -14050,8 +14058,12 @@ var _virtuaCode$bonjwa_programm$Page_PastBroadcast$viewNavigation = function (da
 				_0: _elm_lang$html$Html_Attributes$id('prev'),
 				_1: {
 					ctor: '::',
-					_0: _elm_lang$html$Html_Events$onClick(_virtuaCode$bonjwa_programm$Page_PastBroadcast$PrevDay),
-					_1: {ctor: '[]'}
+					_0: _elm_lang$html$Html_Attributes$title('Vorheriger Tag'),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Events$onClick(_virtuaCode$bonjwa_programm$Page_PastBroadcast$PrevDay),
+						_1: {ctor: '[]'}
+					}
 				}
 			},
 			{
@@ -14089,8 +14101,12 @@ var _virtuaCode$bonjwa_programm$Page_PastBroadcast$viewNavigation = function (da
 						_0: _elm_lang$html$Html_Attributes$id('next'),
 						_1: {
 							ctor: '::',
-							_0: _elm_lang$html$Html_Events$onClick(_virtuaCode$bonjwa_programm$Page_PastBroadcast$NextDay),
-							_1: {ctor: '[]'}
+							_0: _elm_lang$html$Html_Attributes$title('Nächster Tag'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Events$onClick(_virtuaCode$bonjwa_programm$Page_PastBroadcast$NextDay),
+								_1: {ctor: '[]'}
+							}
 						}
 					},
 					{
@@ -14153,8 +14169,12 @@ var _virtuaCode$bonjwa_programm$Page_PastBroadcast$view = function (_p10) {
 				_0: _elm_lang$html$Html_Attributes$class('back'),
 				_1: {
 					ctor: '::',
-					_0: _elm_lang$html$Html_Events$onClick(_virtuaCode$bonjwa_programm$Page_PastBroadcast$ClickedBack),
-					_1: {ctor: '[]'}
+					_0: _elm_lang$html$Html_Attributes$title('Zurück'),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Events$onClick(_virtuaCode$bonjwa_programm$Page_PastBroadcast$ClickedBack),
+						_1: {ctor: '[]'}
+					}
 				}
 			},
 			{ctor: '[]'}),
@@ -14184,8 +14204,12 @@ var _virtuaCode$bonjwa_programm$Page_PastBroadcast$view = function (_p10) {
 				_0: _elm_lang$html$Html_Attributes$class('button'),
 				_1: {
 					ctor: '::',
-					_0: _elm_lang$html$Html_Events$onClick(_virtuaCode$bonjwa_programm$Page_PastBroadcast$Search),
-					_1: {ctor: '[]'}
+					_0: _elm_lang$html$Html_Attributes$title('Past Broadcasts durchsuchen'),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Events$onClick(_virtuaCode$bonjwa_programm$Page_PastBroadcast$Search),
+						_1: {ctor: '[]'}
+					}
 				}
 			},
 			{
@@ -14558,9 +14582,13 @@ var _virtuaCode$bonjwa_programm$Popup$viewBroadcastRow = function (styledBroadca
 						_0: _elm_lang$html$Html_Attributes$class('row live'),
 						_1: {
 							ctor: '::',
-							_0: _elm_lang$html$Html_Events$onClick(
-								_virtuaCode$bonjwa_programm$Popup$OpenTab('https://www.twitch.tv/bonjwa')),
-							_1: {ctor: '[]'}
+							_0: _elm_lang$html$Html_Attributes$title('www.twitch.tv/bonjwa'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Events$onClick(
+									_virtuaCode$bonjwa_programm$Popup$OpenTab('https://www.twitch.tv/bonjwa')),
+								_1: {ctor: '[]'}
+							}
 						}
 					}),
 				_1: A2(
@@ -14722,12 +14750,16 @@ var _virtuaCode$bonjwa_programm$Popup$viewProgrammHeader = {
 				_0: _elm_lang$html$Html_Attributes$src('../images/bonjwa.jpg'),
 				_1: {
 					ctor: '::',
-					_0: _elm_lang$html$Html_Events$onClick(
-						_virtuaCode$bonjwa_programm$Popup$OpenTab('https://www.bonjwa.de')),
+					_0: _elm_lang$html$Html_Attributes$title('www.bonjwa.de'),
 					_1: {
 						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$alt('Bonjwa Logo'),
-						_1: {ctor: '[]'}
+						_0: _elm_lang$html$Html_Events$onClick(
+							_virtuaCode$bonjwa_programm$Popup$OpenTab('https://www.bonjwa.de')),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$alt('Bonjwa Logo'),
+							_1: {ctor: '[]'}
+						}
 					}
 				}
 			}
@@ -14756,9 +14788,13 @@ var _virtuaCode$bonjwa_programm$Popup$viewProgrammHeader = {
 					_0: _elm_lang$html$Html_Attributes$class('button'),
 					_1: {
 						ctor: '::',
-						_0: _elm_lang$html$Html_Events$onClick(
-							_virtuaCode$bonjwa_programm$Popup$ShowRoute(_virtuaCode$bonjwa_programm$Route$PastBroadcasts)),
-						_1: {ctor: '[]'}
+						_0: _elm_lang$html$Html_Attributes$title('Past Broadcasts'),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html_Events$onClick(
+								_virtuaCode$bonjwa_programm$Popup$ShowRoute(_virtuaCode$bonjwa_programm$Route$PastBroadcasts)),
+							_1: {ctor: '[]'}
+						}
 					}
 				},
 				{
@@ -14815,8 +14851,12 @@ var _virtuaCode$bonjwa_programm$Popup$viewProgrammNavigation = function (date) {
 				_0: _elm_lang$html$Html_Attributes$id('prev'),
 				_1: {
 					ctor: '::',
-					_0: _elm_lang$html$Html_Events$onClick(_virtuaCode$bonjwa_programm$Popup$PrevDay),
-					_1: {ctor: '[]'}
+					_0: _elm_lang$html$Html_Attributes$title('Vorheriger Tag'),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Events$onClick(_virtuaCode$bonjwa_programm$Popup$PrevDay),
+						_1: {ctor: '[]'}
+					}
 				}
 			},
 			{
@@ -14854,8 +14894,12 @@ var _virtuaCode$bonjwa_programm$Popup$viewProgrammNavigation = function (date) {
 						_0: _elm_lang$html$Html_Attributes$id('next'),
 						_1: {
 							ctor: '::',
-							_0: _elm_lang$html$Html_Events$onClick(_virtuaCode$bonjwa_programm$Popup$NextDay),
-							_1: {ctor: '[]'}
+							_0: _elm_lang$html$Html_Attributes$title('Nächster Tag'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Events$onClick(_virtuaCode$bonjwa_programm$Popup$NextDay),
+								_1: {ctor: '[]'}
+							}
 						}
 					},
 					{

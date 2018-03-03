@@ -5,7 +5,7 @@ import Date exposing (Date, now)
 import Date.Extra exposing (Interval(Day), diff)
 import Dom exposing (Error, focus)
 import Html exposing (..)
-import Html.Attributes exposing (class, id, src, type_, value)
+import Html.Attributes exposing (class, id, src, title, type_, value)
 import Html.Events exposing (onClick, onInput)
 import List.Extra
 import RemoteData exposing (RemoteData(..))
@@ -201,7 +201,7 @@ viewContentSearch term remoteData =
             in
             case visiblePastBroadcasts of
                 [] ->
-                    Message.view <| "Zu dem Suchbegriff '" ++ (String.trim term) ++ "' wurden keine passenden Past Broadcasts gefunden."  
+                    Message.view <| "Zu dem Suchbegriff '" ++ String.trim term ++ "' wurden keine passenden Past Broadcasts gefunden."
 
                 _ ->
                     div [ id "table" ] (viewPastBroadcasts WithDate visiblePastBroadcasts)
@@ -211,13 +211,13 @@ view : Model -> Html Msg
 view { date, offset, broadcasts, search } =
     let
         buttons =
-            [ span [ class "button", onClick Search ]
+            [ span [ class "button", title "Past Broadcasts durchsuchen", onClick Search ]
                 [ img [ src "../images/search_48_1x.png", srcset [ "../images/search_48_1x.png", "../images/search_48_2x.png" ] ] []
                 ]
             ]
 
         header =
-            [ span [ class "back", onClick ClickedBack ] []
+            [ span [ class "back", title "Zurück", onClick ClickedBack ] []
             , span [ class "title" ] [ text "PAST BROADCASTS" ]
             ]
 
@@ -261,7 +261,7 @@ viewPastBroadcast style broadcast =
             else
                 text ""
     in
-    div [ class "item", onClick (ClickedLink broadcast.link) ]
+    div [ class "item", title broadcast.link, onClick (ClickedLink broadcast.link) ]
         [ div [ class "flex top-line" ]
             [ div [ class "game-top game text-ellipsis" ] [ text broadcast.game ]
             , dateBadge
@@ -277,7 +277,7 @@ viewSearchNavigation : String -> List (Html Msg)
 viewSearchNavigation term =
     [ div [ class "search-label" ] [ text "GAME:" ]
     , input [ id "search-field", class "search", type_ "text", value term, onInput InputSearch ] []
-    , div [ id "cancel", onClick CancelSearch ]
+    , div [ id "cancel", title "Suche beenden", onClick CancelSearch ]
         [ span [ class "cancel" ] []
         ]
     ]
@@ -285,9 +285,9 @@ viewSearchNavigation term =
 
 viewNavigation : String -> List (Html Msg)
 viewNavigation date =
-    [ div [ id "prev", onClick PrevDay ] [ span [ class "prev" ] [] ]
+    [ div [ id "prev", title "Vorheriger Tag", onClick PrevDay ] [ span [ class "prev" ] [] ]
     , div [ id "day" ] [ text date ]
-    , div [ id "next", onClick NextDay ] [ span [ class "next" ] [] ]
+    , div [ id "next", title "Nächster Tag", onClick NextDay ] [ span [ class "next" ] [] ]
     ]
 
 
@@ -341,10 +341,9 @@ offsetLatest maybeDate broadcastsData =
             let
                 maybeLatest =
                     maximumDate broadcasts
-            
+
                 floorDay =
                     Date.Extra.floor Day
-                
             in
             case maybeLatest of
                 Just latest ->

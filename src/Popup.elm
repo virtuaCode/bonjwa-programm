@@ -257,9 +257,9 @@ viewProgrammContent date offset remoteData =
 
 viewProgrammHeader : List (Html Msg)
 viewProgrammHeader =
-    [ img [ class "bonjwa-logo", src "../images/bonjwa.jpg", onClick (OpenTab "https://www.bonjwa.de"), alt "Bonjwa Logo" ] []
+    [ img [ class "bonjwa-logo", src "../images/bonjwa.jpg", title "www.bonjwa.de", onClick (OpenTab "https://www.bonjwa.de"), alt "Bonjwa Logo" ] []
     , span [ class "title" ] [ text "BONJWA PROGRAMM" ]
-    , span [ class "button", onClick (ShowRoute Route.PastBroadcasts) ]
+    , span [ class "button", title "Past Broadcasts", onClick (ShowRoute Route.PastBroadcasts) ]
         [ img [ src "../images/video_48_1x.png", srcset [ "../images/video_48_1x.png", "../images/video_48_2x.png" ] ] []
         ]
     ]
@@ -267,9 +267,9 @@ viewProgrammHeader =
 
 viewProgrammNavigation : String -> List (Html Msg)
 viewProgrammNavigation date =
-    [ div [ id "prev", onClick PrevDay ] [ span [ class "prev" ] [] ]
+    [ div [ id "prev", title "Vorheriger Tag", onClick PrevDay ] [ span [ class "prev" ] [] ]
     , div [ id "day" ] [ text date ]
-    , div [ id "next", onClick NextDay ] [ span [ class "next" ] [] ]
+    , div [ id "next", title "Nächster Tag", onClick NextDay ] [ span [ class "next" ] [] ]
     ]
 
 
@@ -297,7 +297,7 @@ viewBroadcastRow styledBroadcast =
         ( rowElement, indicator, { start, end, topic } ) =
             case styledBroadcast of
                 Primary broadcast ->
-                    ( div [ class "row live", onClick (OpenTab "https://www.twitch.tv/bonjwa") ]
+                    ( div [ class "row live", title "www.twitch.tv/bonjwa", onClick (OpenTab "https://www.twitch.tv/bonjwa") ]
                     , div [ class "live-indicator" ]
                         [ span [ class "dot" ] [ text "●" ]
                         , text "live"
