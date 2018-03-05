@@ -1,5 +1,4 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto+Condensed:400,700|Roboto:400,700');
-
 html,
 body {
     background-color: #fff;
@@ -55,8 +54,11 @@ h1 {
 .header .back {
     color: white;
     display: flex;
-    font-size: 18px;
-    align-content: center;
+    width: 52px;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     align-self: stretch;
     transition: background-color 150ms ease-out;
     cursor: pointer;
@@ -69,8 +71,6 @@ h1 {
 .header .back::before {
     content: '◀';
     color: white;
-    padding: 0px 25px;
-    align-self: center;
 }
 
 .header .title {
@@ -80,20 +80,23 @@ h1 {
 }
 
 .nav {
-    align-items: center;
+    min-height: 52px;
     background-color: black;
     color: white;
     display: flex;
-    font-size: 15px;
+    font-size: 16px;
     font-weight: bold;
     justify-content: space-between;
-    min-height: 58px;
+    align-items: center;
 }
 
 #prev {
-    cursor: pointer;
-    font-size: 18px;
-    padding: 15px 25px;
+    width: 52px;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: stretch;
     transition: background-color 150ms ease-out;
     cursor: pointer;
 }
@@ -107,13 +110,17 @@ h1 {
 }
 
 #day {
-    padding: 15px;
+    display: flex;
+    align-items: center;
 }
 
 #next {
-    cursor: pointer;
-    font-size: 18px;
-    padding: 15px 25px;
+    width: 52px;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: stretch;
     transition: background-color 150ms ease-out;
     cursor: pointer;
 }
@@ -305,9 +312,12 @@ h1 {
 }
 
 #past-broadcasts #cancel {
-    cursor: pointer;
     font-size: 22px;
-    padding: 15px 25px;
+    min-width: 52px;
+    display: flex;
+    align-self: stretch;
+    align-items: center;
+    justify-content: center;
     transition: background-color 150ms ease-out;
     cursor: pointer;
 }
