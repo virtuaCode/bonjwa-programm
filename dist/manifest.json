@@ -18,5 +18,12 @@
     "gecko": {
       "update_url": "https://bnjw.viceair.com/static/updates.json"
     }
-  }
+  },
+  "background": {
+    "scripts": ["background/alarms.js"]
+  },
+  "permissions": [
+    "alarms",
+    "notifications"
+  ]
 }

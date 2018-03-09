@@ -79,6 +79,15 @@ h1 {
     font-family: 'Roboto Condensed', sans-serif;
 }
 
+.button {
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: -moz-none;
+    -o-user-select: none;
+    user-select: none;
+    cursor: pointer;
+}
+
 .nav {
     min-height: 52px;
     background-color: black;
@@ -160,6 +169,7 @@ h1 {
     background-color: #fff;
     display: flex;
     color: black;
+    cursor: pointer;
 }
 
 #table .row:first-child {
@@ -176,6 +186,15 @@ h1 {
 
 #table .right {
     flex: 1;
+    position: relative;
+}
+
+#table .row:hover .right {
+    background-color: #f3f3f3;        
+}
+
+#table .row:hover .left {
+    background: rgba(0, 0, 0, 0.1333);       
 }
 
 #table .row.live {
@@ -192,7 +211,6 @@ h1 {
 
 #table .row.live .right {
     background: rgba(255, 255, 255, 0.0666);
-    position: relative;
 }
 
 #table .live .live-indicator {
@@ -213,6 +231,19 @@ h1 {
     line-height: 0px;
     font-size: 12px;
     margin-right: 1px;
+}
+
+#table .row .alarm-indicator {
+    position: absolute;
+    font-size: 9px;
+    margin-top: 3px;
+    margin-right: 5px;
+    text-shadow: none;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    right: 0;
+    top: 0;
+    font-weight: bold;
 }
 
 #table .time {
@@ -351,4 +382,53 @@ h1 {
 
 #past-broadcasts .nowrap {
     white-space: nowrap;
+}
+
+
+/* Dialog */
+
+#dialog {
+    padding: 1em;
+    color: white;
+    background-color: #1e9761;
+}
+
+#dialog img {
+     float: left;
+     margin-right: 1rem;
+}
+
+#dialog .button {
+    color: white;
+    padding: 4px 10px;
+    transition: all 200ms ease-out;
+}
+
+#dialog .button.negative {
+
+}
+
+#dialog .button.negative:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transition: all 50ms linear;
+}
+
+#dialog .button.positive {
+    border: 1px solid white;
+}
+
+#dialog .button.positive:hover {
+    background: white;
+    color: #1e9761;
+    transition: all 50ms linear;
+}
+
+#dialog .footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+}
+
+#dialog .footer .space{
+    margin: 0 0.25em;
 }

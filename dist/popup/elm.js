@@ -13380,11 +13380,40 @@ var _ohanhi$remotedata_http$RemoteData_Http$Config = F3(
 		return {headers: a, withCredentials: b, timeout: c};
 	});
 
+var _virtuaCode$bonjwa_programm$Data_AlarmConfig$AlarmConfig = F3(
+	function (a, b, c) {
+		return {timestamp: a, title: b, message: c};
+	});
+
+var _virtuaCode$bonjwa_programm$Browser$decodeAlarmValue = F2(
+	function (resultToMsg, value) {
+		var result = A2(
+			_elm_lang$core$Json_Decode$decodeValue,
+			_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$float),
+			value);
+		return resultToMsg(result);
+	});
 var _virtuaCode$bonjwa_programm$Browser$openTab = _elm_lang$core$Native_Platform.outgoingPort(
 	'openTab',
 	function (v) {
 		return v;
 	});
+var _virtuaCode$bonjwa_programm$Browser$getAlarm = _elm_lang$core$Native_Platform.outgoingPort(
+	'getAlarm',
+	function (v) {
+		return null;
+	});
+var _virtuaCode$bonjwa_programm$Browser$setAlarm = _elm_lang$core$Native_Platform.outgoingPort(
+	'setAlarm',
+	function (v) {
+		return {timestamp: v.timestamp, title: v.title, message: v.message};
+	});
+var _virtuaCode$bonjwa_programm$Browser$clearAlarm = _elm_lang$core$Native_Platform.outgoingPort(
+	'clearAlarm',
+	function (v) {
+		return null;
+	});
+var _virtuaCode$bonjwa_programm$Browser$receiveAlarm = _elm_lang$core$Native_Platform.incomingPort('receiveAlarm', _elm_lang$core$Json_Decode$value);
 
 var _virtuaCode$bonjwa_programm$Data_Broadcast$Broadcast = F4(
 	function (a, b, c, d) {
@@ -13411,6 +13440,15 @@ var _virtuaCode$bonjwa_programm$Data_Broadcast$broadcastsDecoder = A2(
 	_elm_lang$core$Json_Decode$field,
 	'data',
 	_elm_lang$core$Json_Decode$list(_virtuaCode$bonjwa_programm$Data_Broadcast$broadcastDecoder));
+
+var _virtuaCode$bonjwa_programm$Data_Dialog$Button = F2(
+	function (a, b) {
+		return {text: a, msg: b};
+	});
+var _virtuaCode$bonjwa_programm$Data_Dialog$Dialog = F4(
+	function (a, b, c, d) {
+		return {message: a, icon: b, positive: c, negative: d};
+	});
 
 var _virtuaCode$bonjwa_programm$Data_PastBroadcast$PastBroadcast = F5(
 	function (a, b, c, d, e) {
@@ -14363,9 +14401,142 @@ var _virtuaCode$bonjwa_programm$Page_PastBroadcast$update = F2(
 
 var _virtuaCode$bonjwa_programm$Route$PastBroadcasts = {ctor: 'PastBroadcasts'};
 
-var _virtuaCode$bonjwa_programm$Popup$subscriptions = function (model) {
-	return _elm_lang$core$Platform_Sub$none;
+var _virtuaCode$bonjwa_programm$Views_Dialog$viewButtons = F2(
+	function (positive, negative) {
+		var _p0 = negative;
+		if (_p0.ctor === 'Nothing') {
+			return {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$span,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('button positive'),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html_Events$onClick(positive.msg),
+							_1: {ctor: '[]'}
+						}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(positive.text),
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			};
+		} else {
+			var _p1 = _p0._0;
+			return {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$span,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('button negative'),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html_Events$onClick(_p1.msg),
+							_1: {ctor: '[]'}
+						}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(_p1.text),
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$span,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('space'),
+							_1: {ctor: '[]'}
+						},
+						{ctor: '[]'}),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$span,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('button positive'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Events$onClick(positive.msg),
+									_1: {ctor: '[]'}
+								}
+							},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text(positive.text),
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					}
+				}
+			};
+		}
+	});
+var _virtuaCode$bonjwa_programm$Views_Dialog$viewDialog = function (dialog) {
+	var _p2 = dialog;
+	var message = _p2.message;
+	var icon = _p2.icon;
+	var negative = _p2.negative;
+	var positive = _p2.positive;
+	var buttons = A2(_virtuaCode$bonjwa_programm$Views_Dialog$viewButtons, positive, negative);
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$id('dialog'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$h3,
+				{ctor: '[]'},
+				{
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$img,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$src(icon),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$width(32),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$height(32),
+									_1: {ctor: '[]'}
+								}
+							}
+						},
+						{ctor: '[]'}),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(message),
+						_1: {ctor: '[]'}
+					}
+				}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('footer'),
+						_1: {ctor: '[]'}
+					},
+					buttons),
+				_1: {ctor: '[]'}
+			}
+		});
 };
+
 var _virtuaCode$bonjwa_programm$Popup$sortBroadcasts = _elm_lang$core$List$sortWith(
 	F2(
 		function (a, b) {
@@ -14389,28 +14560,49 @@ var _virtuaCode$bonjwa_programm$Popup$isTimeBetweenBroadcast = F2(
 		var _p3 = _p2;
 		return A3(_justinmimbs$elm_date_extra$Date_Extra$isBetween, _p3.start, _p3.end, time);
 	});
-var _virtuaCode$bonjwa_programm$Popup$Model = F4(
-	function (a, b, c, d) {
-		return {date: a, offset: b, broadcasts: c, subpage: d};
+var _virtuaCode$bonjwa_programm$Popup$initModel = {date: _elm_lang$core$Maybe$Nothing, offset: 0, broadcasts: _krisajenkins$remotedata$RemoteData$NotAsked, subpage: _elm_lang$core$Maybe$Nothing, dialog: _elm_lang$core$Maybe$Nothing, alarm: _elm_lang$core$Maybe$Nothing};
+var _virtuaCode$bonjwa_programm$Popup$Model = F6(
+	function (a, b, c, d, e, f) {
+		return {date: a, offset: b, broadcasts: c, subpage: d, dialog: e, alarm: f};
 	});
 var _virtuaCode$bonjwa_programm$Popup$PastBroadcastsPage = function (a) {
 	return {ctor: 'PastBroadcastsPage', _0: a};
 };
-var _virtuaCode$bonjwa_programm$Popup$Secondary = function (a) {
-	return {ctor: 'Secondary', _0: a};
+var _virtuaCode$bonjwa_programm$Popup$Live = function (a) {
+	return {ctor: 'Live', _0: a};
 };
-var _virtuaCode$bonjwa_programm$Popup$Primary = function (a) {
-	return {ctor: 'Primary', _0: a};
+var _virtuaCode$bonjwa_programm$Popup$Default = function (a) {
+	return {ctor: 'Default', _0: a};
 };
-var _virtuaCode$bonjwa_programm$Popup$styleBroadcast = F2(
-	function (time, broadcast) {
+var _virtuaCode$bonjwa_programm$Popup$Alarm = function (a) {
+	return {ctor: 'Alarm', _0: a};
+};
+var _virtuaCode$bonjwa_programm$Popup$styleBroadcast = F3(
+	function (time, alarm, broadcast) {
 		var now = A2(_virtuaCode$bonjwa_programm$Popup$isTimeBetweenBroadcast, time, broadcast);
-		return now ? _virtuaCode$bonjwa_programm$Popup$Primary(broadcast) : _virtuaCode$bonjwa_programm$Popup$Secondary(broadcast);
+		if (now) {
+			return _virtuaCode$bonjwa_programm$Popup$Live(broadcast);
+		} else {
+			var _p4 = alarm;
+			if (_p4.ctor === 'Nothing') {
+				return _virtuaCode$bonjwa_programm$Popup$Default(broadcast);
+			} else {
+				return _elm_lang$core$Native_Utils.eq(
+					_p4._0,
+					_elm_lang$core$Date$toTime(broadcast.start)) ? _virtuaCode$bonjwa_programm$Popup$Alarm(broadcast) : _virtuaCode$bonjwa_programm$Popup$Default(broadcast);
+			}
+		}
 	});
-var _virtuaCode$bonjwa_programm$Popup$styleBroadcasts = function (time) {
-	return _elm_lang$core$List$map(
-		_virtuaCode$bonjwa_programm$Popup$styleBroadcast(time));
+var _virtuaCode$bonjwa_programm$Popup$styleBroadcasts = F2(
+	function (time, alarm) {
+		return _elm_lang$core$List$map(
+			A2(_virtuaCode$bonjwa_programm$Popup$styleBroadcast, time, alarm));
+	});
+var _virtuaCode$bonjwa_programm$Popup$ActionSetAlarm = function (a) {
+	return {ctor: 'ActionSetAlarm', _0: a};
 };
+var _virtuaCode$bonjwa_programm$Popup$ActionClearAlarm = {ctor: 'ActionClearAlarm'};
+var _virtuaCode$bonjwa_programm$Popup$ActionCancel = {ctor: 'ActionCancel'};
 var _virtuaCode$bonjwa_programm$Popup$BroadcastResponse = function (a) {
 	return {ctor: 'BroadcastResponse', _0: a};
 };
@@ -14423,10 +14615,10 @@ var _virtuaCode$bonjwa_programm$Popup$PastBroadcastMsg = function (a) {
 };
 var _virtuaCode$bonjwa_programm$Popup$showRoute = F2(
 	function (route, model) {
-		var _p4 = route;
-		var _p5 = _virtuaCode$bonjwa_programm$Page_PastBroadcast$init;
-		var pageModel = _p5._0;
-		var cmd = _p5._1;
+		var _p5 = route;
+		var _p6 = _virtuaCode$bonjwa_programm$Page_PastBroadcast$init;
+		var pageModel = _p6._0;
+		var cmd = _p6._1;
 		return A2(
 			_virtuaCode$bonjwa_programm$Util_ops['=>'],
 			_elm_lang$core$Native_Utils.update(
@@ -14441,9 +14633,9 @@ var _virtuaCode$bonjwa_programm$Popup$update = F2(
 	function (msg, model) {
 		var toPage = F5(
 			function (toModel, toMsg, subUpdate, subMsg, subModel) {
-				var _p6 = A2(subUpdate, subMsg, subModel);
-				var newModel = _p6._0;
-				var newCmd = _p6._1;
+				var _p7 = A2(subUpdate, subMsg, subModel);
+				var newModel = _p7._0;
+				var newCmd = _p7._1;
 				return A2(
 					_virtuaCode$bonjwa_programm$Util_ops['=>'],
 					_elm_lang$core$Native_Utils.update(
@@ -14454,287 +14646,179 @@ var _virtuaCode$bonjwa_programm$Popup$update = F2(
 						}),
 					A2(_elm_lang$core$Platform_Cmd$map, toMsg, newCmd));
 			});
-		var _p7 = {ctor: '_Tuple2', _0: msg, _1: model.subpage};
-		switch (_p7._0.ctor) {
-			case 'NextDay':
-				var _p8 = model.date;
-				if (_p8.ctor === 'Nothing') {
-					return A2(_virtuaCode$bonjwa_programm$Util_ops['=>'], model, _elm_lang$core$Platform_Cmd$none);
-				} else {
+		var _p8 = {ctor: '_Tuple2', _0: msg, _1: model.subpage};
+		_v4_13:
+		do {
+			switch (_p8._0.ctor) {
+				case 'NextDay':
+					var _p9 = model.date;
+					if (_p9.ctor === 'Nothing') {
+						return A2(_virtuaCode$bonjwa_programm$Util_ops['=>'], model, _elm_lang$core$Platform_Cmd$none);
+					} else {
+						return A2(
+							_virtuaCode$bonjwa_programm$Util_ops['=>'],
+							_elm_lang$core$Native_Utils.update(
+								model,
+								{offset: model.offset + 1}),
+							_elm_lang$core$Platform_Cmd$none);
+					}
+				case 'PrevDay':
+					var _p10 = model.date;
+					if (_p10.ctor === 'Nothing') {
+						return A2(_virtuaCode$bonjwa_programm$Util_ops['=>'], model, _elm_lang$core$Platform_Cmd$none);
+					} else {
+						return A2(
+							_virtuaCode$bonjwa_programm$Util_ops['=>'],
+							_elm_lang$core$Native_Utils.update(
+								model,
+								{offset: model.offset - 1}),
+							_elm_lang$core$Platform_Cmd$none);
+					}
+				case 'OpenTab':
+					return A2(
+						_virtuaCode$bonjwa_programm$Util_ops['=>'],
+						model,
+						_virtuaCode$bonjwa_programm$Browser$openTab(_p8._0._0));
+				case 'GetAlarm':
+					return A2(
+						_virtuaCode$bonjwa_programm$Util_ops['=>'],
+						model,
+						_virtuaCode$bonjwa_programm$Browser$getAlarm(
+							{ctor: '_Tuple0'}));
+				case 'SetAlarm':
+					return A2(
+						_virtuaCode$bonjwa_programm$Util_ops['=>'],
+						model,
+						_virtuaCode$bonjwa_programm$Browser$setAlarm(_p8._0._0));
+				case 'ReceiveAlarm':
 					return A2(
 						_virtuaCode$bonjwa_programm$Util_ops['=>'],
 						_elm_lang$core$Native_Utils.update(
 							model,
-							{offset: model.offset + 1}),
+							{alarm: _p8._0._0}),
 						_elm_lang$core$Platform_Cmd$none);
-				}
-			case 'PrevDay':
-				var _p9 = model.date;
-				if (_p9.ctor === 'Nothing') {
-					return A2(_virtuaCode$bonjwa_programm$Util_ops['=>'], model, _elm_lang$core$Platform_Cmd$none);
-				} else {
+				case 'ReceiveInitialDate':
 					return A2(
 						_virtuaCode$bonjwa_programm$Util_ops['=>'],
 						_elm_lang$core$Native_Utils.update(
 							model,
-							{offset: model.offset - 1}),
+							{
+								date: _elm_lang$core$Maybe$Just(_p8._0._0)
+							}),
+						_virtuaCode$bonjwa_programm$Popup$requestBroadcasts);
+				case 'ReceiveDate':
+					return A2(
+						_virtuaCode$bonjwa_programm$Util_ops['=>'],
+						_elm_lang$core$Native_Utils.update(
+							model,
+							{
+								date: _elm_lang$core$Maybe$Just(_p8._0._0)
+							}),
 						_elm_lang$core$Platform_Cmd$none);
-				}
-			case 'OpenTab':
-				return A2(
-					_virtuaCode$bonjwa_programm$Util_ops['=>'],
-					model,
-					_virtuaCode$bonjwa_programm$Browser$openTab(_p7._0._0));
-			case 'ReceiveInitialDate':
-				return A2(
-					_virtuaCode$bonjwa_programm$Util_ops['=>'],
-					_elm_lang$core$Native_Utils.update(
-						model,
-						{
-							date: _elm_lang$core$Maybe$Just(_p7._0._0)
-						}),
-					_virtuaCode$bonjwa_programm$Popup$requestBroadcasts);
-			case 'ReceiveDate':
-				return A2(
-					_virtuaCode$bonjwa_programm$Util_ops['=>'],
-					_elm_lang$core$Native_Utils.update(
-						model,
-						{
-							date: _elm_lang$core$Maybe$Just(_p7._0._0)
-						}),
-					_elm_lang$core$Platform_Cmd$none);
-			case 'BroadcastResponse':
-				return A2(
-					_virtuaCode$bonjwa_programm$Util_ops['=>'],
-					_elm_lang$core$Native_Utils.update(
-						model,
-						{broadcasts: _p7._0._0}),
-					_elm_lang$core$Platform_Cmd$none);
-			case 'ShowRoute':
-				return A2(_virtuaCode$bonjwa_programm$Popup$showRoute, _p7._0._0, model);
-			default:
-				if (_p7._1.ctor === 'Just') {
-					var _p10 = A2(_virtuaCode$bonjwa_programm$Page_PastBroadcast$update, _p7._0._0, _p7._1._0._0);
-					var pageModel = _p10._0._0;
-					var cmd = _p10._0._1;
-					var msgFromPage = _p10._1;
-					var _p11 = function () {
-						var _p12 = msgFromPage;
-						switch (_p12.ctor) {
-							case 'NoOp':
-								return A2(
-									_virtuaCode$bonjwa_programm$Util_ops['=>'],
-									_elm_lang$core$Native_Utils.update(
-										model,
-										{
-											subpage: _elm_lang$core$Maybe$Just(
-												_virtuaCode$bonjwa_programm$Popup$PastBroadcastsPage(pageModel))
-										}),
-									A2(_elm_lang$core$Platform_Cmd$map, _virtuaCode$bonjwa_programm$Popup$PastBroadcastMsg, cmd));
-							case 'OpenTab':
-								return A2(
-									_virtuaCode$bonjwa_programm$Util_ops['=>'],
-									_elm_lang$core$Native_Utils.update(
-										model,
-										{
-											subpage: _elm_lang$core$Maybe$Just(
-												_virtuaCode$bonjwa_programm$Popup$PastBroadcastsPage(pageModel))
-										}),
-									_elm_lang$core$Platform_Cmd$batch(
-										{
-											ctor: '::',
-											_0: _virtuaCode$bonjwa_programm$Browser$openTab(_p12._0),
-											_1: {
+				case 'BroadcastResponse':
+					return A2(
+						_virtuaCode$bonjwa_programm$Util_ops['=>'],
+						_elm_lang$core$Native_Utils.update(
+							model,
+							{broadcasts: _p8._0._0}),
+						_elm_lang$core$Platform_Cmd$none);
+				case 'ShowRoute':
+					return A2(_virtuaCode$bonjwa_programm$Popup$showRoute, _p8._0._0, model);
+				case 'PastBroadcastMsg':
+					if (_p8._1.ctor === 'Just') {
+						var _p11 = A2(_virtuaCode$bonjwa_programm$Page_PastBroadcast$update, _p8._0._0, _p8._1._0._0);
+						var pageModel = _p11._0._0;
+						var cmd = _p11._0._1;
+						var msgFromPage = _p11._1;
+						var _p12 = function () {
+							var _p13 = msgFromPage;
+							switch (_p13.ctor) {
+								case 'NoOp':
+									return A2(
+										_virtuaCode$bonjwa_programm$Util_ops['=>'],
+										_elm_lang$core$Native_Utils.update(
+											model,
+											{
+												subpage: _elm_lang$core$Maybe$Just(
+													_virtuaCode$bonjwa_programm$Popup$PastBroadcastsPage(pageModel))
+											}),
+										A2(_elm_lang$core$Platform_Cmd$map, _virtuaCode$bonjwa_programm$Popup$PastBroadcastMsg, cmd));
+								case 'OpenTab':
+									return A2(
+										_virtuaCode$bonjwa_programm$Util_ops['=>'],
+										_elm_lang$core$Native_Utils.update(
+											model,
+											{
+												subpage: _elm_lang$core$Maybe$Just(
+													_virtuaCode$bonjwa_programm$Popup$PastBroadcastsPage(pageModel))
+											}),
+										_elm_lang$core$Platform_Cmd$batch(
+											{
 												ctor: '::',
-												_0: A2(_elm_lang$core$Platform_Cmd$map, _virtuaCode$bonjwa_programm$Popup$PastBroadcastMsg, cmd),
-												_1: {ctor: '[]'}
-											}
-										}));
-							default:
-								return A2(
-									_virtuaCode$bonjwa_programm$Util_ops['=>'],
-									_elm_lang$core$Native_Utils.update(
-										model,
-										{subpage: _elm_lang$core$Maybe$Nothing}),
-									A2(_elm_lang$core$Platform_Cmd$map, _virtuaCode$bonjwa_programm$Popup$PastBroadcastMsg, cmd));
-						}
-					}();
-					var newModel = _p11._0;
-					var command = _p11._1;
-					return A2(_virtuaCode$bonjwa_programm$Util_ops['=>'], newModel, command);
-				} else {
-					return A2(_virtuaCode$bonjwa_programm$Util_ops['=>'], model, _elm_lang$core$Platform_Cmd$none);
-				}
-		}
+												_0: _virtuaCode$bonjwa_programm$Browser$openTab(_p13._0),
+												_1: {
+													ctor: '::',
+													_0: A2(_elm_lang$core$Platform_Cmd$map, _virtuaCode$bonjwa_programm$Popup$PastBroadcastMsg, cmd),
+													_1: {ctor: '[]'}
+												}
+											}));
+								default:
+									return A2(
+										_virtuaCode$bonjwa_programm$Util_ops['=>'],
+										_elm_lang$core$Native_Utils.update(
+											model,
+											{subpage: _elm_lang$core$Maybe$Nothing}),
+										A2(_elm_lang$core$Platform_Cmd$map, _virtuaCode$bonjwa_programm$Popup$PastBroadcastMsg, cmd));
+							}
+						}();
+						var newModel = _p12._0;
+						var command = _p12._1;
+						return A2(_virtuaCode$bonjwa_programm$Util_ops['=>'], newModel, command);
+					} else {
+						break _v4_13;
+					}
+				case 'ShowDialog':
+					return A2(
+						_virtuaCode$bonjwa_programm$Util_ops['=>'],
+						_elm_lang$core$Native_Utils.update(
+							model,
+							{
+								dialog: _elm_lang$core$Maybe$Just(_p8._0._0)
+							}),
+						_elm_lang$core$Platform_Cmd$none);
+				case 'DialogMsg':
+					var newModel = _elm_lang$core$Native_Utils.update(
+						model,
+						{dialog: _elm_lang$core$Maybe$Nothing});
+					var _p14 = _p8._0._0;
+					switch (_p14.ctor) {
+						case 'ActionCancel':
+							return A2(_virtuaCode$bonjwa_programm$Util_ops['=>'], newModel, _elm_lang$core$Platform_Cmd$none);
+						case 'ActionSetAlarm':
+							return A2(
+								_virtuaCode$bonjwa_programm$Util_ops['=>'],
+								newModel,
+								_virtuaCode$bonjwa_programm$Browser$setAlarm(_p14._0));
+						default:
+							return A2(
+								_virtuaCode$bonjwa_programm$Util_ops['=>'],
+								newModel,
+								_virtuaCode$bonjwa_programm$Browser$clearAlarm(
+									{ctor: '_Tuple0'}));
+					}
+				default:
+					break _v4_13;
+			}
+		} while(false);
+		return A2(_virtuaCode$bonjwa_programm$Util_ops['=>'], model, _elm_lang$core$Platform_Cmd$none);
 	});
+var _virtuaCode$bonjwa_programm$Popup$SetAlarm = function (a) {
+	return {ctor: 'SetAlarm', _0: a};
+};
+var _virtuaCode$bonjwa_programm$Popup$GetAlarm = {ctor: 'GetAlarm'};
 var _virtuaCode$bonjwa_programm$Popup$OpenTab = function (a) {
 	return {ctor: 'OpenTab', _0: a};
 };
-var _virtuaCode$bonjwa_programm$Popup$viewBroadcastRow = function (styledBroadcast) {
-	var _p13 = function () {
-		var _p14 = styledBroadcast;
-		if (_p14.ctor === 'Primary') {
-			return {
-				ctor: '_Tuple3',
-				_0: _elm_lang$html$Html$div(
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('row live'),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$title('www.twitch.tv/bonjwa'),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$html$Html_Events$onClick(
-									_virtuaCode$bonjwa_programm$Popup$OpenTab('https://www.twitch.tv/bonjwa')),
-								_1: {ctor: '[]'}
-							}
-						}
-					}),
-				_1: A2(
-					_elm_lang$html$Html$div,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('live-indicator'),
-						_1: {ctor: '[]'}
-					},
-					{
-						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html$span,
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('dot'),
-								_1: {ctor: '[]'}
-							},
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html$text('●'),
-								_1: {ctor: '[]'}
-							}),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$html$Html$text('live'),
-							_1: {ctor: '[]'}
-						}
-					}),
-				_2: _p14._0
-			};
-		} else {
-			return {
-				ctor: '_Tuple3',
-				_0: _elm_lang$html$Html$div(
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('row'),
-						_1: {ctor: '[]'}
-					}),
-				_1: _elm_lang$html$Html$text(''),
-				_2: _p14._0
-			};
-		}
-	}();
-	var rowElement = _p13._0;
-	var indicator = _p13._1;
-	var start = _p13._2.start;
-	var end = _p13._2.end;
-	var topic = _p13._2.topic;
-	var time = A2(_virtuaCode$bonjwa_programm$Util$formatTimeRange, start, end);
-	return rowElement(
-		{
-			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$div,
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('left'),
-					_1: {ctor: '[]'}
-				},
-				{
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$div,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('time'),
-							_1: {ctor: '[]'}
-						},
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html$text(time),
-							_1: {ctor: '[]'}
-						}),
-					_1: {ctor: '[]'}
-				}),
-			_1: {
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$div,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('right'),
-						_1: {ctor: '[]'}
-					},
-					{
-						ctor: '::',
-						_0: indicator,
-						_1: {
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$div,
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('topic'),
-									_1: {ctor: '[]'}
-								},
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html$text(topic),
-									_1: {ctor: '[]'}
-								}),
-							_1: {ctor: '[]'}
-						}
-					}),
-				_1: {ctor: '[]'}
-			}
-		});
-};
-var _virtuaCode$bonjwa_programm$Popup$viewBroadcastTable = function (broadcasts) {
-	var rows = A2(_elm_lang$core$List$map, _virtuaCode$bonjwa_programm$Popup$viewBroadcastRow, broadcasts);
-	return A2(
-		_elm_lang$html$Html$div,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$id('table'),
-			_1: {ctor: '[]'}
-		},
-		rows);
-};
-var _virtuaCode$bonjwa_programm$Popup$viewProgrammContent = F3(
-	function (date, offset, remoteData) {
-		var _p15 = {ctor: '_Tuple2', _0: remoteData, _1: date};
-		switch (_p15._0.ctor) {
-			case 'NotAsked':
-				return _virtuaCode$bonjwa_programm$Views_Message$view('Programm wird geladen...');
-			case 'Loading':
-				return _virtuaCode$bonjwa_programm$Views_Message$view('Serveranfrage fehlgeschlagen!');
-			case 'Failure':
-				return _virtuaCode$bonjwa_programm$Views_Message$view('Serveranfrage fehlgeschlagen!');
-			default:
-				if (_p15._1.ctor === 'Nothing') {
-					return _virtuaCode$bonjwa_programm$Views_Message$view('Programm wird geladen...');
-				} else {
-					var _p16 = _p15._1._0;
-					var offsetDate = A2(_virtuaCode$bonjwa_programm$Util$addDays, offset, _p16);
-					var visibleBroadcasts = A2(
-						_virtuaCode$bonjwa_programm$Popup$styleBroadcasts,
-						_p16,
-						_virtuaCode$bonjwa_programm$Popup$sortBroadcasts(
-							A2(_virtuaCode$bonjwa_programm$Popup$filterBroadcasts, offsetDate, _p15._0._0)));
-					return _virtuaCode$bonjwa_programm$Popup$viewBroadcastTable(visibleBroadcasts);
-				}
-		}
-	});
 var _virtuaCode$bonjwa_programm$Popup$ShowRoute = function (a) {
 	return {ctor: 'ShowRoute', _0: a};
 };
@@ -14826,6 +14910,24 @@ var _virtuaCode$bonjwa_programm$Popup$viewProgrammHeader = {
 		}
 	}
 };
+var _virtuaCode$bonjwa_programm$Popup$ReceiveAlarmError = function (a) {
+	return {ctor: 'ReceiveAlarmError', _0: a};
+};
+var _virtuaCode$bonjwa_programm$Popup$ReceiveAlarm = function (a) {
+	return {ctor: 'ReceiveAlarm', _0: a};
+};
+var _virtuaCode$bonjwa_programm$Popup$handleAlarmResult = function (result) {
+	var _p15 = result;
+	if (_p15.ctor === 'Ok') {
+		return _virtuaCode$bonjwa_programm$Popup$ReceiveAlarm(_p15._0);
+	} else {
+		return _virtuaCode$bonjwa_programm$Popup$ReceiveAlarmError(_p15._0);
+	}
+};
+var _virtuaCode$bonjwa_programm$Popup$subscriptions = function (model) {
+	return _virtuaCode$bonjwa_programm$Browser$receiveAlarm(
+		_virtuaCode$bonjwa_programm$Browser$decodeAlarmValue(_virtuaCode$bonjwa_programm$Popup$handleAlarmResult));
+};
 var _virtuaCode$bonjwa_programm$Popup$ReceiveDate = function (a) {
 	return {ctor: 'ReceiveDate', _0: a};
 };
@@ -14836,9 +14938,279 @@ var _virtuaCode$bonjwa_programm$Popup$ReceiveInitialDate = function (a) {
 var _virtuaCode$bonjwa_programm$Popup$requestInit = A2(_elm_lang$core$Task$perform, _virtuaCode$bonjwa_programm$Popup$ReceiveInitialDate, _elm_lang$core$Date$now);
 var _virtuaCode$bonjwa_programm$Popup$init = {
 	ctor: '_Tuple2',
-	_0: A4(_virtuaCode$bonjwa_programm$Popup$Model, _elm_lang$core$Maybe$Nothing, 0, _krisajenkins$remotedata$RemoteData$NotAsked, _elm_lang$core$Maybe$Nothing),
-	_1: _virtuaCode$bonjwa_programm$Popup$requestInit
+	_0: _virtuaCode$bonjwa_programm$Popup$initModel,
+	_1: _elm_lang$core$Platform_Cmd$batch(
+		{
+			ctor: '::',
+			_0: _virtuaCode$bonjwa_programm$Browser$getAlarm(
+				{ctor: '_Tuple0'}),
+			_1: {
+				ctor: '::',
+				_0: _virtuaCode$bonjwa_programm$Popup$requestInit,
+				_1: {ctor: '[]'}
+			}
+		})
 };
+var _virtuaCode$bonjwa_programm$Popup$DialogMsg = function (a) {
+	return {ctor: 'DialogMsg', _0: a};
+};
+var _virtuaCode$bonjwa_programm$Popup$ShowDialog = function (a) {
+	return {ctor: 'ShowDialog', _0: a};
+};
+var _virtuaCode$bonjwa_programm$Popup$viewBroadcastRow = function (styledBroadcast) {
+	var _p16 = function () {
+		var _p17 = styledBroadcast;
+		switch (_p17.ctor) {
+			case 'Alarm':
+				return _p17._0;
+			case 'Live':
+				return _p17._0;
+			default:
+				return _p17._0;
+		}
+	}();
+	var start = _p16.start;
+	var end = _p16.end;
+	var topic = _p16.topic;
+	var time = A2(_virtuaCode$bonjwa_programm$Util$formatTimeRange, start, end);
+	var _p18 = function () {
+		var _p19 = styledBroadcast;
+		switch (_p19.ctor) {
+			case 'Live':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$html$Html$div(
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('row live'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$title('www.twitch.tv/bonjwa'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Events$onClick(
+										_virtuaCode$bonjwa_programm$Popup$OpenTab('https://www.twitch.tv/bonjwa')),
+									_1: {ctor: '[]'}
+								}
+							}
+						}),
+					_1: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('live-indicator'),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$span,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('dot'),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text('●'),
+									_1: {ctor: '[]'}
+								}),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html$text('live'),
+								_1: {ctor: '[]'}
+							}
+						})
+				};
+			case 'Alarm':
+				var dialog = {
+					message: 'Geplante Erinnerung deaktivieren?',
+					icon: '../images/ic_alarm_off_white_48px.svg',
+					positive: {
+						text: 'Deaktivieren',
+						msg: _virtuaCode$bonjwa_programm$Popup$DialogMsg(_virtuaCode$bonjwa_programm$Popup$ActionClearAlarm)
+					},
+					negative: _elm_lang$core$Maybe$Just(
+						{
+							text: 'Abbrechen',
+							msg: _virtuaCode$bonjwa_programm$Popup$DialogMsg(_virtuaCode$bonjwa_programm$Popup$ActionCancel)
+						})
+				};
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$html$Html$div(
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('row'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$title('Erinnerung deaktivieren'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Events$onClick(
+										_virtuaCode$bonjwa_programm$Popup$ShowDialog(dialog)),
+									_1: {ctor: '[]'}
+								}
+							}
+						}),
+					_1: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('alarm-indicator'),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('alarm'),
+							_1: {ctor: '[]'}
+						})
+				};
+			default:
+				var alarmConfig = {
+					timestamp: _elm_lang$core$Date$toTime(start),
+					title: 'Live-Sendung hat begonnen',
+					message: A2(
+						_elm_lang$core$Basics_ops['++'],
+						time,
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'\n',
+							A2(_elm_lang$core$Basics_ops['++'], topic, '\n\n(Klicken um Twitch zu öffnen)')))
+				};
+				var dialog = {
+					message: 'Erinnerung für den gewählten Programm-Slot aktivieren?',
+					icon: '../images/ic_alarm_white_48px.svg',
+					positive: {
+						text: 'Aktivieren',
+						msg: _virtuaCode$bonjwa_programm$Popup$DialogMsg(
+							_virtuaCode$bonjwa_programm$Popup$ActionSetAlarm(alarmConfig))
+					},
+					negative: _elm_lang$core$Maybe$Just(
+						{
+							text: 'Abbrechen',
+							msg: _virtuaCode$bonjwa_programm$Popup$DialogMsg(_virtuaCode$bonjwa_programm$Popup$ActionCancel)
+						})
+				};
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$html$Html$div(
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('row'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$title('Erinnerung aktivieren'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Events$onClick(
+										_virtuaCode$bonjwa_programm$Popup$ShowDialog(dialog)),
+									_1: {ctor: '[]'}
+								}
+							}
+						}),
+					_1: _elm_lang$html$Html$text('')
+				};
+		}
+	}();
+	var rowElement = _p18._0;
+	var indicator = _p18._1;
+	return rowElement(
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('left'),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('time'),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text(time),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('right'),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: indicator,
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$div,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('topic'),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text(topic),
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						}
+					}),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _virtuaCode$bonjwa_programm$Popup$viewBroadcastTable = function (broadcasts) {
+	var rows = A2(_elm_lang$core$List$map, _virtuaCode$bonjwa_programm$Popup$viewBroadcastRow, broadcasts);
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$id('table'),
+			_1: {ctor: '[]'}
+		},
+		rows);
+};
+var _virtuaCode$bonjwa_programm$Popup$viewProgrammContent = F4(
+	function (date, offset, alarm, remoteData) {
+		var _p20 = {ctor: '_Tuple2', _0: remoteData, _1: date};
+		switch (_p20._0.ctor) {
+			case 'NotAsked':
+				return _virtuaCode$bonjwa_programm$Views_Message$view('Programm wird geladen...');
+			case 'Loading':
+				return _virtuaCode$bonjwa_programm$Views_Message$view('Serveranfrage fehlgeschlagen!');
+			case 'Failure':
+				return _virtuaCode$bonjwa_programm$Views_Message$view('Serveranfrage fehlgeschlagen!');
+			default:
+				if (_p20._1.ctor === 'Nothing') {
+					return _virtuaCode$bonjwa_programm$Views_Message$view('Programm wird geladen...');
+				} else {
+					var _p21 = _p20._1._0;
+					var offsetDate = A2(_virtuaCode$bonjwa_programm$Util$addDays, offset, _p21);
+					var visibleBroadcasts = A3(
+						_virtuaCode$bonjwa_programm$Popup$styleBroadcasts,
+						_p21,
+						alarm,
+						_virtuaCode$bonjwa_programm$Popup$sortBroadcasts(
+							A2(_virtuaCode$bonjwa_programm$Popup$filterBroadcasts, offsetDate, _p20._0._0)));
+					return _virtuaCode$bonjwa_programm$Popup$viewBroadcastTable(visibleBroadcasts);
+				}
+		}
+	});
 var _virtuaCode$bonjwa_programm$Popup$PrevDay = {ctor: 'PrevDay'};
 var _virtuaCode$bonjwa_programm$Popup$NextDay = {ctor: 'NextDay'};
 var _virtuaCode$bonjwa_programm$Popup$viewProgrammNavigation = function (date) {
@@ -14929,30 +15301,35 @@ var _virtuaCode$bonjwa_programm$Popup$viewProgrammContainer = F2(
 			content);
 	});
 var _virtuaCode$bonjwa_programm$Popup$viewProgramm = function (model) {
-	var content = A3(_virtuaCode$bonjwa_programm$Popup$viewProgrammContent, model.date, model.offset, model.broadcasts);
-	var dateString = function (_p17) {
+	var content = A4(_virtuaCode$bonjwa_programm$Popup$viewProgrammContent, model.date, model.offset, model.alarm, model.broadcasts);
+	var dateString = function (_p22) {
 		return A2(
 			_elm_lang$core$Maybe$withDefault,
 			'',
 			A2(
 				_elm_lang$core$Maybe$map,
-				function (_p18) {
+				function (_p23) {
 					return _virtuaCode$bonjwa_programm$Util$formatDate(
-						A2(_virtuaCode$bonjwa_programm$Util$addDays, model.offset, _p18));
+						A2(_virtuaCode$bonjwa_programm$Util$addDays, model.offset, _p23));
 				},
-				_p17));
+				_p22));
 	}(model.date);
 	return A2(_virtuaCode$bonjwa_programm$Popup$viewProgrammContainer, dateString, content);
 };
 var _virtuaCode$bonjwa_programm$Popup$view = function (model) {
-	var _p19 = model.subpage;
-	if (_p19.ctor === 'Nothing') {
-		return _virtuaCode$bonjwa_programm$Popup$viewProgramm(model);
+	var _p24 = model.dialog;
+	if (_p24.ctor === 'Nothing') {
+		var _p25 = model.subpage;
+		if (_p25.ctor === 'Nothing') {
+			return _virtuaCode$bonjwa_programm$Popup$viewProgramm(model);
+		} else {
+			return A2(
+				_elm_lang$html$Html$map,
+				_virtuaCode$bonjwa_programm$Popup$PastBroadcastMsg,
+				_virtuaCode$bonjwa_programm$Page_PastBroadcast$view(_p25._0._0));
+		}
 	} else {
-		return A2(
-			_elm_lang$html$Html$map,
-			_virtuaCode$bonjwa_programm$Popup$PastBroadcastMsg,
-			_virtuaCode$bonjwa_programm$Page_PastBroadcast$view(_p19._0._0));
+		return _virtuaCode$bonjwa_programm$Views_Dialog$viewDialog(_p24._0);
 	}
 };
 var _virtuaCode$bonjwa_programm$Popup$main = _elm_lang$html$Html$program(
