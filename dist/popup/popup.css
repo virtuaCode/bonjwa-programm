@@ -51,6 +51,13 @@ h1 {
     cursor: pointer;
 }
 
+.header .button.button-emote img {
+    height: 28px;
+    width: 28px;
+    margin: 0rem calc(1rem - 2px);
+    cursor: pointer;
+}
+
 .header .back {
     color: white;
     display: flex;

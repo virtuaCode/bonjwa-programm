@@ -14741,30 +14741,33 @@ var _virtuaCode$bonjwa_programm$Popup$ShowRoute = function (a) {
 var _virtuaCode$bonjwa_programm$Popup$viewProgrammHeader = {
 	ctor: '::',
 	_0: A2(
-		_elm_lang$html$Html$img,
+		_elm_lang$html$Html$span,
 		{
 			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$class('bonjwa-logo'),
+			_0: _elm_lang$html$Html_Attributes$class('button button-emote'),
 			_1: {
 				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$src('../images/bonjwa.jpg'),
+				_0: _elm_lang$html$Html_Attributes$title('www.bonjwa.de'),
 				_1: {
 					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$title('www.bonjwa.de'),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$html$Html_Events$onClick(
-							_virtuaCode$bonjwa_programm$Popup$OpenTab('https://www.bonjwa.de')),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$alt('Bonjwa Logo'),
-							_1: {ctor: '[]'}
-						}
-					}
+					_0: _elm_lang$html$Html_Events$onClick(
+						_virtuaCode$bonjwa_programm$Popup$OpenTab('https://www.bonjwa.de')),
+					_1: {ctor: '[]'}
 				}
 			}
 		},
-		{ctor: '[]'}),
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$img,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$src('../images/chill_28.png'),
+					_1: {ctor: '[]'}
+				},
+				{ctor: '[]'}),
+			_1: {ctor: '[]'}
+		}),
 	_1: {
 		ctor: '::',
 		_0: A2(
@@ -14776,7 +14779,7 @@ var _virtuaCode$bonjwa_programm$Popup$viewProgrammHeader = {
 			},
 			{
 				ctor: '::',
-				_0: _elm_lang$html$Html$text('BONJWA PROGRAMM'),
+				_0: _elm_lang$html$Html$text('PROGRAMM'),
 				_1: {ctor: '[]'}
 			}),
 		_1: {
@@ -14788,7 +14791,7 @@ var _virtuaCode$bonjwa_programm$Popup$viewProgrammHeader = {
 					_0: _elm_lang$html$Html_Attributes$class('button'),
 					_1: {
 						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$title('Past Broadcasts'),
+						_0: _elm_lang$html$Html_Attributes$title('PAST BROADCASTS'),
 						_1: {
 							ctor: '::',
 							_0: _elm_lang$html$Html_Events$onClick(
