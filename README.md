@@ -10,7 +10,7 @@ Bonjwa Programm ist ein Add-on für den **Firefox** Browser, die den aktuellen P
 
 ## Downloads
 
-Die neuste Version befindet sich unter [Releases](https://github.com/virtuaCode/bonjwa-programm/releases). Einfach die oberste Installationsdatei (bonjwa_programm-0.0.**X**-an+fx.xpi) herunterladen und installieren.
+Die neuste Version kann über [addons.mozilla.org](https://addons.mozilla.org/de/firefox/addon/bonjwa-programm/) heruntergeladen werden.
 
 ## Screenshots
 

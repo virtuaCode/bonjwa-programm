@@ -5,7 +5,7 @@
   "author": "Michael Schmidt",
   "description": "Displays the latest schedule for the Bonjwa Twitch channel",
   "homepage_url": "https://github.com/virtuaCode/bonjwa-programm",
-  "version": "0.0.5",
+  "version": "1.0.0",
   "browser_action": {
     "default_icon": "icons/icon.png",
     "default_popup": "popup/popup.html"
@@ -13,10 +13,5 @@
   "icons": {
     "32": "icons/icon32.png",
     "48": "icons/icon48.png"
-  },
-  "applications": {
-    "gecko": {
-      "update_url": "https://bnjw.viceair.com/static/updates.json"
-    }
   }
 }

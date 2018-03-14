@@ -1,9 +1,9 @@
 {
   "name": "bonjwa-schedule",
-  "version": "0.0.5",
+  "version": "1.0.0",
   "description": "Displays the latest schedule for the Bonjwa Twitch channel",
   "scripts": {
-    "postinstall": "elm-package install",
+    "postinstall": "elm-package install -y",
     "build": "elm-make ./src/Popup.elm --warn --output=./dist/popup/elm.js",
     "dev": "web-ext run -s ./dist"
   },
