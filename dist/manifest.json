@@ -14,11 +14,6 @@
     "32": "icons/icon32.png",
     "48": "icons/icon48.png"
   },
-  "applications": {
-    "gecko": {
-      "update_url": "https://bnjw.viceair.com/static/updates.json"
-    }
-  },
   "background": {
     "scripts": ["background/alarms.js"]
   },
