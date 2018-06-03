@@ -14819,9 +14819,6 @@ var _virtuaCode$bonjwa_programm$Popup$GetAlarm = {ctor: 'GetAlarm'};
 var _virtuaCode$bonjwa_programm$Popup$OpenTab = function (a) {
 	return {ctor: 'OpenTab', _0: a};
 };
-var _virtuaCode$bonjwa_programm$Popup$ShowRoute = function (a) {
-	return {ctor: 'ShowRoute', _0: a};
-};
 var _virtuaCode$bonjwa_programm$Popup$viewProgrammHeader = {
 	ctor: '::',
 	_0: A2(
@@ -14863,52 +14860,11 @@ var _virtuaCode$bonjwa_programm$Popup$viewProgrammHeader = {
 				_0: _elm_lang$html$Html$text('BONJWA PROGRAMM'),
 				_1: {ctor: '[]'}
 			}),
-		_1: {
-			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$span,
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('button'),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$title('Past Broadcasts'),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$html$Html_Events$onClick(
-								_virtuaCode$bonjwa_programm$Popup$ShowRoute(_virtuaCode$bonjwa_programm$Route$PastBroadcasts)),
-							_1: {ctor: '[]'}
-						}
-					}
-				},
-				{
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$img,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$src('../images/video_48_1x.png'),
-							_1: {
-								ctor: '::',
-								_0: _virtuaCode$bonjwa_programm$Util$srcset(
-									{
-										ctor: '::',
-										_0: '../images/video_48_1x.png',
-										_1: {
-											ctor: '::',
-											_0: '../images/video_48_2x.png',
-											_1: {ctor: '[]'}
-										}
-									}),
-								_1: {ctor: '[]'}
-							}
-						},
-						{ctor: '[]'}),
-					_1: {ctor: '[]'}
-				}),
-			_1: {ctor: '[]'}
-		}
+		_1: {ctor: '[]'}
 	}
+};
+var _virtuaCode$bonjwa_programm$Popup$ShowRoute = function (a) {
+	return {ctor: 'ShowRoute', _0: a};
 };
 var _virtuaCode$bonjwa_programm$Popup$ReceiveAlarmError = function (a) {
 	return {ctor: 'ReceiveAlarmError', _0: a};

@@ -331,9 +331,9 @@ viewProgrammHeader : List (Html Msg)
 viewProgrammHeader =
     [ img [ class "bonjwa-logo", src "../images/bonjwa.jpg", title "www.bonjwa.de", onClick (OpenTab "https://www.bonjwa.de"), alt "Bonjwa Logo" ] []
     , span [ class "title" ] [ text "BONJWA PROGRAMM" ]
-    , span [ class "button", title "Past Broadcasts", onClick (ShowRoute Route.PastBroadcasts) ]
-        [ img [ src "../images/video_48_1x.png", srcset [ "../images/video_48_1x.png", "../images/video_48_2x.png" ] ] []
-        ]
+    --, span [ class "button", title "Past Broadcasts", onClick (ShowRoute Route.PastBroadcasts) ]
+    --    [ img [ src "../images/video_48_1x.png", srcset [ "../images/video_48_1x.png", "../images/video_48_2x.png" ] ] []
+    --    ]
     ]
 
 
