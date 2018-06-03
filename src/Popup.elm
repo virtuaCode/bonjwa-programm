@@ -1,7 +1,9 @@
 module Popup exposing (main)
 
-import Browser exposing (openTab)
+import Browser exposing (clearAlarm, decodeAlarmValue, getAlarm, openTab, receiveAlarm, setAlarm)
+import Data.AlarmConfig exposing (..)
 import Data.Broadcast exposing (..)
+import Data.Dialog as Dialog exposing (Button, Dialog)
 import Date exposing (Date, Day(..))
 import Date.Extra exposing (Interval(..), ceiling, floor, isBetween)
 import Html exposing (..)
@@ -14,6 +16,7 @@ import Route exposing (Route(..))
 import Task
 import Util exposing (..)
 import Views.Container as Container
+import Views.Dialog
 import Views.Message as Message
 
 
@@ -44,35 +47,54 @@ type alias Model =
     , offset : Int
     , broadcasts : BroadcastsWebData
     , subpage : Maybe Page
+    , dialog : Maybe (Dialog.Dialog Msg)
+    , alarm : Maybe Float
     }
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( Model Nothing 0 NotAsked Nothing
-    , requestInit
-    )
+    ( initModel, Cmd.batch [ getAlarm (), requestInit ] )
+
+
+initModel : Model
+initModel =
+    { date = Nothing
+    , offset = 0
+    , broadcasts = NotAsked
+    , subpage = Nothing
+    , dialog = Nothing
+    , alarm = Nothing
+    }
 
 
 
 -- BROADCAST
 
 
-styleBroadcasts : Date -> Broadcasts -> List (Styled Broadcast)
-styleBroadcasts time =
-    List.map (styleBroadcast time)
+styleBroadcasts : Date -> Maybe Float -> Broadcasts -> List (Styled Broadcast)
+styleBroadcasts time alarm =
+    List.map (styleBroadcast time alarm)
 
 
-styleBroadcast : Date -> Broadcast -> Styled Broadcast
-styleBroadcast time broadcast =
+styleBroadcast : Date -> Maybe Float -> Broadcast -> Styled Broadcast
+styleBroadcast time alarm broadcast =
     let
         now =
             isTimeBetweenBroadcast time broadcast
     in
     if now then
-        Primary broadcast
+        Live broadcast
     else
-        Secondary broadcast
+        case alarm of
+            Nothing ->
+                Default broadcast
+
+            Just time ->
+                if time == Date.toTime broadcast.start then
+                    Alarm broadcast
+                else
+                    Default broadcast
 
 
 isTimeBetweenBroadcast : Date -> Broadcast -> Bool
@@ -81,8 +103,15 @@ isTimeBetweenBroadcast time { start, end } =
 
 
 type Styled a
-    = Primary a
-    | Secondary a
+    = Alarm a
+    | Default a
+    | Live a
+
+
+type DialogAction
+    = ActionCancel
+    | ActionClearAlarm
+    | ActionSetAlarm AlarmConfig
 
 
 
@@ -92,10 +121,16 @@ type Styled a
 type Msg
     = NextDay
     | PrevDay
+    | ShowDialog (Dialog Msg)
+    | DialogMsg DialogAction
     | ReceiveInitialDate Date
     | ReceiveDate Date
+    | ReceiveAlarm (Maybe Float)
+    | ReceiveAlarmError String
     | ShowRoute Route
     | OpenTab String
+    | GetAlarm
+    | SetAlarm AlarmConfig
     | PastBroadcastMsg Page.PastBroadcast.Msg
     | BroadcastResponse BroadcastsWebData
 
@@ -136,6 +171,18 @@ update msg model =
             model
                 => openTab url
 
+        ( GetAlarm, _ ) ->
+            model
+                => getAlarm ()
+
+        ( SetAlarm config, _ ) ->
+            model
+                => setAlarm config
+
+        ( ReceiveAlarm alarm, _ ) ->
+            { model | alarm = alarm }
+                => Cmd.none
+
         ( ReceiveInitialDate date, _ ) ->
             { model | date = Just date }
                 => requestBroadcasts
@@ -152,8 +199,6 @@ update msg model =
             showRoute route model
 
         ( PastBroadcastMsg subMsg, Just (PastBroadcastsPage subModel) ) ->
-            --toPage PastBroadcastsPage PastBroadcastMsg Page.PastBroadcast.update subMsg subModel
-            --    ( { model | subpage = Page.PastBroadcast.update subMsg subModel }, Cmd.none )
             let
                 ( ( pageModel, cmd ), msgFromPage ) =
                     Page.PastBroadcast.update subMsg subModel
@@ -178,6 +223,28 @@ update msg model =
             newModel
                 => command
 
+        ( ShowDialog dialog, _ ) ->
+            { model | dialog = Just dialog }
+                => Cmd.none
+
+        ( DialogMsg dialogMsg, _ ) ->
+            let
+                newModel =
+                    { model | dialog = Nothing }
+            in
+            case dialogMsg of
+                ActionCancel ->
+                    newModel
+                        => Cmd.none
+
+                ActionSetAlarm config ->
+                    newModel
+                        => setAlarm config
+
+                ActionClearAlarm ->
+                    newModel
+                        => clearAlarm ()
+
         ( _, _ ) ->
             model
                 => Cmd.none
@@ -201,13 +268,18 @@ showRoute route model =
 
 view : Model -> Html Msg
 view model =
-    case model.subpage of
+    case model.dialog of
         Nothing ->
-            viewProgramm model
+            case model.subpage of
+                Nothing ->
+                    viewProgramm model
 
-        Just (PastBroadcastsPage subModel) ->
-            Page.PastBroadcast.view subModel
-                |> Html.map PastBroadcastMsg
+                Just (PastBroadcastsPage subModel) ->
+                    Page.PastBroadcast.view subModel
+                        |> Html.map PastBroadcastMsg
+
+        Just dialog ->
+            Views.Dialog.viewDialog dialog
 
 
 
@@ -221,13 +293,13 @@ viewProgramm model =
             model.date |> Maybe.map (addDays model.offset >> formatDate) >> Maybe.withDefault ""
 
         content =
-            viewProgrammContent model.date model.offset model.broadcasts
+            viewProgrammContent model.date model.offset model.alarm model.broadcasts
     in
     viewProgrammContainer dateString content
 
 
-viewProgrammContent : Maybe Date -> Int -> BroadcastsWebData -> Html Msg
-viewProgrammContent date offset remoteData =
+viewProgrammContent : Maybe Date -> Int -> Maybe Float -> BroadcastsWebData -> Html Msg
+viewProgrammContent date offset alarm remoteData =
     case ( remoteData, date ) of
         ( NotAsked, _ ) ->
             Message.view "Programm wird geladen..."
@@ -250,7 +322,7 @@ viewProgrammContent date offset remoteData =
                     broadcasts
                         |> filterBroadcasts offsetDate
                         |> sortBroadcasts
-                        |> styleBroadcasts currentDate
+                        |> styleBroadcasts currentDate alarm
             in
             viewBroadcastTable visibleBroadcasts
 
@@ -261,9 +333,9 @@ viewProgrammHeader =
         [ img [ src "../images/chill_28.png" ] []
         ]
     , span [ class "title" ] [ text "PROGRAMM" ]
-    , span [ class "button", title "PAST BROADCASTS", onClick (ShowRoute Route.PastBroadcasts) ]
-        [ img [ src "../images/video_48_1x.png", srcset [ "../images/video_48_1x.png", "../images/video_48_2x.png" ] ] []
-        ]
+    --, span [ class "button", title "Past Broadcasts", onClick (ShowRoute Route.PastBroadcasts) ]
+    --    [ img [ src "../images/video_48_1x.png", srcset [ "../images/video_48_1x.png", "../images/video_48_2x.png" ] ] []
+    --    ]
     ]
 
 
@@ -296,25 +368,63 @@ viewBroadcastTable broadcasts =
 viewBroadcastRow : Styled Broadcast -> Html Msg
 viewBroadcastRow styledBroadcast =
     let
-        ( rowElement, indicator, { start, end, topic } ) =
+        { start, end, topic } =
             case styledBroadcast of
-                Primary broadcast ->
+                Alarm broadcast ->
+                    broadcast
+
+                Live broadcast ->
+                    broadcast
+
+                Default broadcast ->
+                    broadcast
+
+        time =
+            formatTimeRange start end
+
+        ( rowElement, indicator ) =
+            case styledBroadcast of
+                Live broadcast ->
                     ( div [ class "row live", title "www.twitch.tv/bonjwa", onClick (OpenTab "https://www.twitch.tv/bonjwa") ]
                     , div [ class "live-indicator" ]
                         [ span [ class "dot" ] [ text "●" ]
                         , text "live"
                         ]
-                    , broadcast
                     )
 
-                Secondary broadcast ->
-                    ( div [ class "row" ]
+                Alarm broadcast ->
+                    let
+                        dialog =
+                            { message = "Geplante Erinnerung deaktivieren?"
+                            , icon = "../images/ic_alarm_off_white_48px.svg"
+                            , positive = { text = "Deaktivieren", msg = DialogMsg ActionClearAlarm }
+                            , negative = Just { text = "Abbrechen", msg = DialogMsg ActionCancel }
+                            }
+                    in
+                    ( div [ class "row", title "Erinnerung deaktivieren", onClick (ShowDialog dialog) ]
+                    , div [ class "alarm-indicator" ]
+                        [ text "alarm"
+                        ]
+                    )
+
+                Default broadcast ->
+                    let
+                        alarmConfig =
+                            { timestamp = Date.toTime start
+                            , title = "Live-Sendung hat begonnen"
+                            , message = time ++ "\n" ++ topic ++ "\n\n(Klicken um Twitch zu öffnen)"
+                            }
+
+                        dialog =
+                            { message = "Erinnerung für den gewählten Programm-Slot aktivieren?"
+                            , icon = "../images/ic_alarm_white_48px.svg"
+                            , positive = { text = "Aktivieren", msg = DialogMsg (ActionSetAlarm alarmConfig) }
+                            , negative = Just { text = "Abbrechen", msg = DialogMsg ActionCancel }
+                            }
+                    in
+                    ( div [ class "row", title "Erinnerung aktivieren", onClick (ShowDialog dialog) ]
                     , text ""
-                    , broadcast
                     )
-
-        time =
-            formatTimeRange start end
     in
     rowElement
         [ div [ class "left" ] [ div [ class "time" ] [ text time ] ]
@@ -351,7 +461,17 @@ sortBroadcasts =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.none
+    receiveAlarm (decodeAlarmValue handleAlarmResult)
+
+
+handleAlarmResult : Result String (Maybe Float) -> Msg
+handleAlarmResult result =
+    case result of
+        Ok time ->
+            ReceiveAlarm time
+
+        Err err ->
+            ReceiveAlarmError err
 
 
 
