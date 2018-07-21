@@ -2,7 +2,7 @@
 
 Displays the latest schedule for the [Bonjwa Twitch channel](https://www.twitch.tv/bonjwa)
 
-Bonjwa Programm ist ein Add-on für den **Firefox** Browser, die den aktuellen Programmplan und Links zu älteren Übertragungen von den Bonjwa Twitch-Channel bereitstellt.
+Bonjwa Programm ist ein Add-on für den **Firefox** Browser, die den aktuellen Programmplan vom Bonjwa Twitch-Channel bereitstellt.
 
 ## Hinweis!
 
@@ -15,4 +15,3 @@ Die neuste Version kann über [addons.mozilla.org](https://addons.mozilla.org/de
 ## Screenshots
 
 ![Programm Screenshot](screenshots/screenshot_1.png?raw=true "Programm")
-![Past Broadcasts Screenshot](screenshots/screenshot_2.png?raw=true "Past Broadcasts")
