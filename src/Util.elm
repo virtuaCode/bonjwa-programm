@@ -15,7 +15,7 @@ srcset items =
             items
                 |> List.indexedMap (\i item -> String.join "" [ item, " ", toString (i + 1), "x" ])
     in
-    property "srcset" (maps |> String.join "," >> Json.Encode.string)
+        property "srcset" (maps |> String.join "," >> Json.Encode.string)
 
 
 (=>) : a -> b -> ( a, b )
@@ -47,7 +47,7 @@ dateEqual x y =
         tripleY =
             ( Date.day y, Date.month y, Date.year y )
     in
-    tripleX == tripleY
+        tripleX == tripleY
 
 
 formatTimeRange : Date -> Date -> String
@@ -59,7 +59,7 @@ formatTimeRange start end =
         endTime =
             formatTime end
     in
-    startTime ++ " - " ++ endTime
+        startTime ++ " - " ++ endTime
 
 
 formatTime : Date -> String
@@ -71,7 +71,7 @@ formatTime date =
         minute =
             padLeft 2 '0' <| toString <| Date.minute date
     in
-    hour ++ ":" ++ minute
+        hour ++ ":" ++ minute
 
 
 formatDate : Date -> String
@@ -89,7 +89,7 @@ formatDate date =
         year =
             toString <| Date.year date
     in
-    dayName ++ ", " ++ day ++ "." ++ month ++ "." ++ year
+        dayName ++ ", " ++ day ++ "." ++ month ++ "." ++ year
 
 
 formatDateDayName : Date -> String
@@ -131,21 +131,21 @@ formatDuration duration =
                 unwords =
                     String.join " "
             in
-            case ( intHours, intMinutes ) of
-                ( Ok 0, Ok 0 ) ->
-                    "0 Min."
+                case ( intHours, intMinutes ) of
+                    ( Ok 0, Ok 0 ) ->
+                        "0 Min."
 
-                ( Ok 0, Ok minutes ) ->
-                    unwords [ toString minutes, "Min." ]
+                    ( Ok 0, Ok minutes ) ->
+                        unwords [ toString minutes, "Min." ]
 
-                ( Ok hours, Ok 0 ) ->
-                    unwords [ toString hours, "Std." ]
+                    ( Ok hours, Ok 0 ) ->
+                        unwords [ toString hours, "Std." ]
 
-                ( Ok hours, Ok minutes ) ->
-                    unwords [ toString hours, "Std.", toString minutes, "Min." ]
+                    ( Ok hours, Ok minutes ) ->
+                        unwords [ toString hours, "Std.", toString minutes, "Min." ]
 
-                _ ->
-                    duration
+                    _ ->
+                        duration
 
         _ ->
             duration

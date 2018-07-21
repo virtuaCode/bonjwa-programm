@@ -193,7 +193,9 @@ h1 {
 
 #table .right {
     flex: 1;
+    padding: 5px 6px;
     position: relative;
+    overflow: hidden;
 }
 
 #table .row:hover .right {
@@ -263,6 +265,20 @@ h1 {
 #table .topic {
     padding: 10px;
     text-align: center;
+}
+
+#table .game {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+#table .streamers {
+    margin-top: 4px;
+    font-size: 12px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 #past-broadcasts #table {

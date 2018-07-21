@@ -13415,27 +13415,35 @@ var _virtuaCode$bonjwa_programm$Browser$clearAlarm = _elm_lang$core$Native_Platf
 	});
 var _virtuaCode$bonjwa_programm$Browser$receiveAlarm = _elm_lang$core$Native_Platform.incomingPort('receiveAlarm', _elm_lang$core$Json_Decode$value);
 
-var _virtuaCode$bonjwa_programm$Data_Broadcast$Broadcast = F4(
-	function (a, b, c, d) {
-		return {id: a, start: b, end: c, topic: d};
+var _virtuaCode$bonjwa_programm$Data_Broadcast$Broadcast = F6(
+	function (a, b, c, d, e, f) {
+		return {id: a, start: b, end: c, topic: d, game: e, streamers: f};
 	});
 var _virtuaCode$bonjwa_programm$Data_Broadcast$broadcastDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'topic',
+	'streamers',
 	_elm_lang$core$Json_Decode$string,
 	A3(
 		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'end',
-		_elm_community$json_extra$Json_Decode_Extra$date,
+		'game',
+		_elm_lang$core$Json_Decode$string,
 		A3(
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'start',
-			_elm_community$json_extra$Json_Decode_Extra$date,
+			'topic',
+			_elm_lang$core$Json_Decode$string,
 			A3(
 				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'id',
-				_elm_lang$core$Json_Decode$int,
-				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_virtuaCode$bonjwa_programm$Data_Broadcast$Broadcast)))));
+				'end',
+				_elm_community$json_extra$Json_Decode_Extra$date,
+				A3(
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+					'start',
+					_elm_community$json_extra$Json_Decode_Extra$date,
+					A3(
+						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+						'id',
+						_elm_lang$core$Json_Decode$int,
+						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_virtuaCode$bonjwa_programm$Data_Broadcast$Broadcast)))))));
 var _virtuaCode$bonjwa_programm$Data_Broadcast$broadcastsDecoder = A2(
 	_elm_lang$core$Json_Decode$field,
 	'data',
@@ -14825,46 +14833,24 @@ var _virtuaCode$bonjwa_programm$Popup$viewProgrammHeader = {
 		_elm_lang$html$Html$span,
 		{
 			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$class('button button-emote'),
+			_0: _elm_lang$html$Html_Attributes$class('title button'),
 			_1: {
 				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$title('www.bonjwa.de'),
+				_0: _elm_lang$html$Html_Attributes$title('www.bonjwa.de/programm'),
 				_1: {
 					ctor: '::',
 					_0: _elm_lang$html$Html_Events$onClick(
-						_virtuaCode$bonjwa_programm$Popup$OpenTab('https://www.bonjwa.de')),
+						_virtuaCode$bonjwa_programm$Popup$OpenTab('https://www.bonjwa.de/programm')),
 					_1: {ctor: '[]'}
 				}
 			}
 		},
 		{
 			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$img,
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$src('../images/chill_28.png'),
-					_1: {ctor: '[]'}
-				},
-				{ctor: '[]'}),
+			_0: _elm_lang$html$Html$text('PROGRAMM'),
 			_1: {ctor: '[]'}
 		}),
-	_1: {
-		ctor: '::',
-		_0: A2(
-			_elm_lang$html$Html$span,
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$class('title'),
-				_1: {ctor: '[]'}
-			},
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html$text('PROGRAMM'),
-				_1: {ctor: '[]'}
-			}),
-		_1: {ctor: '[]'}
-	}
+	_1: {ctor: '[]'}
 };
 var _virtuaCode$bonjwa_programm$Popup$ShowRoute = function (a) {
 	return {ctor: 'ShowRoute', _0: a};
@@ -14931,6 +14917,8 @@ var _virtuaCode$bonjwa_programm$Popup$viewBroadcastRow = function (styledBroadca
 	var start = _p16.start;
 	var end = _p16.end;
 	var topic = _p16.topic;
+	var game = _p16.game;
+	var streamers = _p16.streamers;
 	var time = A2(_virtuaCode$bonjwa_programm$Util$formatTimeRange, start, end);
 	var _p18 = function () {
 		var _p19 = styledBroadcast;
@@ -15118,15 +15106,37 @@ var _virtuaCode$bonjwa_programm$Popup$viewBroadcastRow = function (styledBroadca
 								_elm_lang$html$Html$div,
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('topic'),
+									_0: _elm_lang$html$Html_Attributes$class('game'),
 									_1: {ctor: '[]'}
 								},
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html$text(topic),
+									_0: A2(
+										_elm_lang$html$Html$strong,
+										{ctor: '[]'},
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html$text(game),
+											_1: {ctor: '[]'}
+										}),
 									_1: {ctor: '[]'}
 								}),
-							_1: {ctor: '[]'}
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$div,
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$class('streamers'),
+										_1: {ctor: '[]'}
+									},
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html$text(streamers),
+										_1: {ctor: '[]'}
+									}),
+								_1: {ctor: '[]'}
+							}
 						}
 					}),
 				_1: {ctor: '[]'}

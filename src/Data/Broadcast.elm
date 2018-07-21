@@ -22,6 +22,8 @@ type alias Broadcast =
     , start : Date
     , end : Date
     , topic : String
+    , game : String
+    , streamers : String
     }
 
 
@@ -49,3 +51,5 @@ broadcastDecoder =
         |> required "start" date
         |> required "end" date
         |> required "topic" string
+        |> required "game" string
+        |> required "streamers" string

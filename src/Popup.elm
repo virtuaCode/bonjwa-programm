@@ -83,18 +83,18 @@ styleBroadcast time alarm broadcast =
         now =
             isTimeBetweenBroadcast time broadcast
     in
-    if now then
-        Live broadcast
-    else
-        case alarm of
-            Nothing ->
-                Default broadcast
-
-            Just time ->
-                if time == Date.toTime broadcast.start then
-                    Alarm broadcast
-                else
+        if now then
+            Live broadcast
+        else
+            case alarm of
+                Nothing ->
                     Default broadcast
+
+                Just time ->
+                    if time == Date.toTime broadcast.start then
+                        Alarm broadcast
+                    else
+                        Default broadcast
 
 
 isTimeBetweenBroadcast : Date -> Broadcast -> Bool
@@ -143,111 +143,111 @@ update msg model =
                 ( newModel, newCmd ) =
                     subUpdate subMsg subModel
             in
-            { model | subpage = Just (toModel newModel) }
-                => Cmd.map toMsg newCmd
+                { model | subpage = Just (toModel newModel) }
+                    => Cmd.map toMsg newCmd
     in
-    case ( msg, model.subpage ) of
-        ( NextDay, _ ) ->
-            case model.date of
-                Nothing ->
-                    model
-                        => Cmd.none
+        case ( msg, model.subpage ) of
+            ( NextDay, _ ) ->
+                case model.date of
+                    Nothing ->
+                        model
+                            => Cmd.none
 
-                Just date ->
-                    { model | offset = model.offset + 1 }
-                        => Cmd.none
+                    Just date ->
+                        { model | offset = model.offset + 1 }
+                            => Cmd.none
 
-        ( PrevDay, _ ) ->
-            case model.date of
-                Nothing ->
-                    model
-                        => Cmd.none
+            ( PrevDay, _ ) ->
+                case model.date of
+                    Nothing ->
+                        model
+                            => Cmd.none
 
-                Just date ->
-                    { model | offset = model.offset - 1 }
-                        => Cmd.none
+                    Just date ->
+                        { model | offset = model.offset - 1 }
+                            => Cmd.none
 
-        ( OpenTab url, _ ) ->
-            model
-                => openTab url
+            ( OpenTab url, _ ) ->
+                model
+                    => openTab url
 
-        ( GetAlarm, _ ) ->
-            model
-                => getAlarm ()
+            ( GetAlarm, _ ) ->
+                model
+                    => getAlarm ()
 
-        ( SetAlarm config, _ ) ->
-            model
-                => setAlarm config
+            ( SetAlarm config, _ ) ->
+                model
+                    => setAlarm config
 
-        ( ReceiveAlarm alarm, _ ) ->
-            { model | alarm = alarm }
-                => Cmd.none
+            ( ReceiveAlarm alarm, _ ) ->
+                { model | alarm = alarm }
+                    => Cmd.none
 
-        ( ReceiveInitialDate date, _ ) ->
-            { model | date = Just date }
-                => requestBroadcasts
+            ( ReceiveInitialDate date, _ ) ->
+                { model | date = Just date }
+                    => requestBroadcasts
 
-        ( ReceiveDate date, _ ) ->
-            { model | date = Just date }
-                => Cmd.none
+            ( ReceiveDate date, _ ) ->
+                { model | date = Just date }
+                    => Cmd.none
 
-        ( BroadcastResponse data, _ ) ->
-            { model | broadcasts = data }
-                => Cmd.none
+            ( BroadcastResponse data, _ ) ->
+                { model | broadcasts = data }
+                    => Cmd.none
 
-        ( ShowRoute route, _ ) ->
-            showRoute route model
+            ( ShowRoute route, _ ) ->
+                showRoute route model
 
-        ( PastBroadcastMsg subMsg, Just (PastBroadcastsPage subModel) ) ->
-            let
-                ( ( pageModel, cmd ), msgFromPage ) =
-                    Page.PastBroadcast.update subMsg subModel
+            ( PastBroadcastMsg subMsg, Just (PastBroadcastsPage subModel) ) ->
+                let
+                    ( ( pageModel, cmd ), msgFromPage ) =
+                        Page.PastBroadcast.update subMsg subModel
 
-                ( newModel, command ) =
-                    case msgFromPage of
-                        Page.PastBroadcast.NoOp ->
-                            { model | subpage = Just (PastBroadcastsPage pageModel) }
-                                => Cmd.map PastBroadcastMsg cmd
+                    ( newModel, command ) =
+                        case msgFromPage of
+                            Page.PastBroadcast.NoOp ->
+                                { model | subpage = Just (PastBroadcastsPage pageModel) }
+                                    => Cmd.map PastBroadcastMsg cmd
 
-                        Page.PastBroadcast.OpenTab link ->
-                            { model | subpage = Just (PastBroadcastsPage pageModel) }
-                                => Cmd.batch
-                                    [ openTab link
-                                    , Cmd.map PastBroadcastMsg cmd
-                                    ]
+                            Page.PastBroadcast.OpenTab link ->
+                                { model | subpage = Just (PastBroadcastsPage pageModel) }
+                                    => Cmd.batch
+                                        [ openTab link
+                                        , Cmd.map PastBroadcastMsg cmd
+                                        ]
 
-                        Page.PastBroadcast.Back ->
-                            { model | subpage = Nothing }
-                                => Cmd.map PastBroadcastMsg cmd
-            in
-            newModel
-                => command
-
-        ( ShowDialog dialog, _ ) ->
-            { model | dialog = Just dialog }
-                => Cmd.none
-
-        ( DialogMsg dialogMsg, _ ) ->
-            let
-                newModel =
-                    { model | dialog = Nothing }
-            in
-            case dialogMsg of
-                ActionCancel ->
+                            Page.PastBroadcast.Back ->
+                                { model | subpage = Nothing }
+                                    => Cmd.map PastBroadcastMsg cmd
+                in
                     newModel
-                        => Cmd.none
+                        => command
 
-                ActionSetAlarm config ->
-                    newModel
-                        => setAlarm config
+            ( ShowDialog dialog, _ ) ->
+                { model | dialog = Just dialog }
+                    => Cmd.none
 
-                ActionClearAlarm ->
-                    newModel
-                        => clearAlarm ()
+            ( DialogMsg dialogMsg, _ ) ->
+                let
+                    newModel =
+                        { model | dialog = Nothing }
+                in
+                    case dialogMsg of
+                        ActionCancel ->
+                            newModel
+                                => Cmd.none
 
-        ( _, _ ) ->
-            model
-                => Cmd.none
+                        ActionSetAlarm config ->
+                            newModel
+                                => setAlarm config
+
+                        ActionClearAlarm ->
+                            newModel
+                                => clearAlarm ()
+
+            ( _, _ ) ->
+                model
+                    => Cmd.none
 
 
 showRoute : Route -> Model -> ( Model, Cmd Msg )
@@ -258,8 +258,8 @@ showRoute route model =
                 ( pageModel, cmd ) =
                     Page.PastBroadcast.init
             in
-            { model | subpage = Just (PastBroadcastsPage pageModel) }
-                => Cmd.map PastBroadcastMsg cmd
+                { model | subpage = Just (PastBroadcastsPage pageModel) }
+                    => Cmd.map PastBroadcastMsg cmd
 
 
 
@@ -295,7 +295,7 @@ viewProgramm model =
         content =
             viewProgrammContent model.date model.offset model.alarm model.broadcasts
     in
-    viewProgrammContainer dateString content
+        viewProgrammContainer dateString content
 
 
 viewProgrammContent : Maybe Date -> Int -> Maybe Float -> BroadcastsWebData -> Html Msg
@@ -324,15 +324,16 @@ viewProgrammContent date offset alarm remoteData =
                         |> sortBroadcasts
                         |> styleBroadcasts currentDate alarm
             in
-            viewBroadcastTable visibleBroadcasts
+                viewBroadcastTable visibleBroadcasts
 
 
 viewProgrammHeader : List (Html Msg)
 viewProgrammHeader =
-    [ span [ class "button button-emote", title "www.bonjwa.de", onClick (OpenTab "https://www.bonjwa.de") ]
-        [ img [ src "../images/chill_28.png" ] []
-        ]
-    , span [ class "title" ] [ text "PROGRAMM" ]
+    [ span [ class "title button", title "www.bonjwa.de/programm", onClick (OpenTab "https://www.bonjwa.de/programm") ] [ text "PROGRAMM" ]
+
+    --, span [ class "button button-emote", title "www.bonjwa.de", onClick (OpenTab "https://www.bonjwa.de") ]
+    --    [ img [ src "../images/chill_28.png" ] []
+    --    ]
     --, span [ class "button", title "Past Broadcasts", onClick (ShowRoute Route.PastBroadcasts) ]
     --    [ img [ src "../images/video_48_1x.png", srcset [ "../images/video_48_1x.png", "../images/video_48_2x.png" ] ] []
     --    ]
@@ -362,13 +363,13 @@ viewBroadcastTable broadcasts =
         rows =
             List.map viewBroadcastRow broadcasts
     in
-    div [ id "table" ] rows
+        div [ id "table" ] rows
 
 
 viewBroadcastRow : Styled Broadcast -> Html Msg
 viewBroadcastRow styledBroadcast =
     let
-        { start, end, topic } =
+        { start, end, topic, game, streamers } =
             case styledBroadcast of
                 Alarm broadcast ->
                     broadcast
@@ -401,11 +402,11 @@ viewBroadcastRow styledBroadcast =
                             , negative = Just { text = "Abbrechen", msg = DialogMsg ActionCancel }
                             }
                     in
-                    ( div [ class "row", title "Erinnerung deaktivieren", onClick (ShowDialog dialog) ]
-                    , div [ class "alarm-indicator" ]
-                        [ text "alarm"
-                        ]
-                    )
+                        ( div [ class "row", title "Erinnerung deaktivieren", onClick (ShowDialog dialog) ]
+                        , div [ class "alarm-indicator" ]
+                            [ text "alarm"
+                            ]
+                        )
 
                 Default broadcast ->
                     let
@@ -422,17 +423,20 @@ viewBroadcastRow styledBroadcast =
                             , negative = Just { text = "Abbrechen", msg = DialogMsg ActionCancel }
                             }
                     in
-                    ( div [ class "row", title "Erinnerung aktivieren", onClick (ShowDialog dialog) ]
-                    , text ""
-                    )
+                        ( div [ class "row", title "Erinnerung aktivieren", onClick (ShowDialog dialog) ]
+                        , text ""
+                        )
     in
-    rowElement
-        [ div [ class "left" ] [ div [ class "time" ] [ text time ] ]
-        , div [ class "right" ]
-            [ indicator
-            , div [ class "topic" ] [ text topic ]
+        rowElement
+            [ div [ class "left" ] [ div [ class "time" ] [ text time ] ]
+            , div [ class "right" ]
+                [ indicator
+                , div [ class "game" ]
+                    [ strong [] [ text game ]
+                    ]
+                , div [ class "streamers" ] [ text streamers ]
+                ]
             ]
-        ]
 
 
 filterBroadcasts : Date -> Broadcasts -> Broadcasts
@@ -447,7 +451,7 @@ filterBroadcasts today broadcasts =
         isToday =
             Date.Extra.isBetween floorDate ceilingDate
     in
-    List.filter (\{ start, end } -> isToday start && isToday end) broadcasts
+        List.filter (\{ start, end } -> isToday start && isToday end) broadcasts
 
 
 sortBroadcasts : Broadcasts -> Broadcasts
@@ -498,4 +502,4 @@ requestBroadcasts =
         url =
             "https://bnjw.viceair.com/broadcasts"
     in
-    Remote.get url BroadcastResponse broadcastsDecoder
+        Remote.get url BroadcastResponse broadcastsDecoder

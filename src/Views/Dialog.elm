@@ -15,13 +15,13 @@ viewDialog dialog =
         buttons =
             viewButtons positive negative
     in
-    div [ id "dialog" ]
-        [ h3 []
-            [ img [ src icon, width 32, height 32 ] []
-            , text message
+        div [ id "dialog" ]
+            [ h3 []
+                [ img [ src icon, width 32, height 32 ] []
+                , text message
+                ]
+            , div [ class "footer" ] buttons
             ]
-        , div [ class "footer" ] buttons
-        ]
 
 
 viewButtons : Button msg -> Maybe (Button msg) -> List (Html msg)

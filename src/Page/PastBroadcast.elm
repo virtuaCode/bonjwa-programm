@@ -172,12 +172,12 @@ viewContent date offset remoteData =
                     broadcasts
                         |> filterPastBroadcasts offsetDate
             in
-            case visiblePastBroadcasts of
-                [] ->
-                    Message.view "Für diesen Tag existieren keine Past Broadcasts."
+                case visiblePastBroadcasts of
+                    [] ->
+                        Message.view "Für diesen Tag existieren keine Past Broadcasts."
 
-                _ ->
-                    div [ id "table" ] (viewPastBroadcasts Normal visiblePastBroadcasts)
+                    _ ->
+                        div [ id "table" ] (viewPastBroadcasts Normal visiblePastBroadcasts)
 
 
 viewContentSearch : String -> PastBroadcastsWebData -> Html Msg
@@ -199,12 +199,12 @@ viewContentSearch term remoteData =
                         |> searchPastBroadcasts term
                         |> sortPastBroadcasts
             in
-            case visiblePastBroadcasts of
-                [] ->
-                    Message.view <| "Zu dem Suchbegriff '" ++ String.trim term ++ "' wurden keine passenden Past Broadcasts gefunden."
+                case visiblePastBroadcasts of
+                    [] ->
+                        Message.view <| "Zu dem Suchbegriff '" ++ String.trim term ++ "' wurden keine passenden Past Broadcasts gefunden."
 
-                _ ->
-                    div [ id "table" ] (viewPastBroadcasts WithDate visiblePastBroadcasts)
+                    _ ->
+                        div [ id "table" ] (viewPastBroadcasts WithDate visiblePastBroadcasts)
 
 
 view : Model -> Html Msg
@@ -240,11 +240,11 @@ view { date, offset, broadcasts, search } =
                 Just term ->
                     viewSearchNavigation term
     in
-    Container.view
-        "past-broadcasts"
-        (header ++ buttons)
-        navigation
-        content
+        Container.view
+            "past-broadcasts"
+            (header ++ buttons)
+            navigation
+            content
 
 
 viewPastBroadcasts : Style -> List PastBroadcast -> List (Html Msg)
@@ -261,16 +261,16 @@ viewPastBroadcast style broadcast =
             else
                 text ""
     in
-    div [ class "item", title broadcast.link, onClick (ClickedLink broadcast.link) ]
-        [ div [ class "flex top-line" ]
-            [ div [ class "game-top game text-ellipsis" ] [ text broadcast.game ]
-            , dateBadge
+        div [ class "item", title broadcast.link, onClick (ClickedLink broadcast.link) ]
+            [ div [ class "flex top-line" ]
+                [ div [ class "game-top game text-ellipsis" ] [ text broadcast.game ]
+                , dateBadge
+                ]
+            , div [ class "flex" ]
+                [ div [ class "mods text-ellipsis" ] [ text broadcast.mods ]
+                , div [ class "duration nowrap" ] [ text (formatDuration broadcast.duration) ]
+                ]
             ]
-        , div [ class "flex" ]
-            [ div [ class "mods text-ellipsis" ] [ text broadcast.mods ]
-            , div [ class "duration nowrap" ] [ text (formatDuration broadcast.duration) ]
-            ]
-        ]
 
 
 viewSearchNavigation : String -> List (Html Msg)
@@ -317,9 +317,9 @@ searchPastBroadcasts term broadcasts =
                 inGame term =
                     String.contains term lowerGame
             in
-            List.all inGame termWords
+                List.all inGame termWords
     in
-    List.filter match broadcasts
+        List.filter match broadcasts
 
 
 sortPastBroadcasts : PastBroadcasts -> PastBroadcasts
@@ -345,12 +345,12 @@ offsetLatest maybeDate broadcastsData =
                 floorDay =
                     Date.Extra.floor Day
             in
-            case maybeLatest of
-                Just latest ->
-                    Date.Extra.diff Day (floorDay date) (floorDay latest)
+                case maybeLatest of
+                    Just latest ->
+                        Date.Extra.diff Day (floorDay date) (floorDay latest)
 
-                Nothing ->
-                    0
+                    Nothing ->
+                        0
 
         _ ->
             0
@@ -366,4 +366,4 @@ requestPastBroadcasts =
         url =
             "https://bnjw.viceair.com/pastbroadcasts"
     in
-    get url Response pastBroadcastsDecoder
+        get url Response pastBroadcastsDecoder
