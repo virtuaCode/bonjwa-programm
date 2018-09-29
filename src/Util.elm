@@ -1,11 +1,11 @@
-module Util exposing (..)
+module Util exposing (addDay, addDays, compareDate, dateEqual, formatDate, formatDateDayName, formatDuration, formatTime, formatTimeRange, isDateBetween, pair, pairLeft, srcset, subtractDay, toMonthNumber)
 
-import Date exposing (Date, Day(..))
-import Date.Extra exposing (Interval(..), add)
 import Html exposing (Attribute)
 import Html.Attributes exposing (property)
 import Json.Encode
-import String exposing (padLeft)
+import String exposing (fromInt, padLeft)
+import Time exposing (Month(..), Weekday(..), toDay, toHour, toMinute, toMonth, toWeekday, toYear, utc)
+import Time.Extra exposing (Interval(..))
 
 
 srcset : List String -> Attribute a
@@ -13,88 +13,121 @@ srcset items =
     let
         maps =
             items
-                |> List.indexedMap (\i item -> String.join "" [ item, " ", toString (i + 1), "x" ])
+                |> List.indexedMap (\i item -> String.join "" [ item, " ", fromInt (i + 1), "x" ])
     in
-        property "srcset" (maps |> String.join "," >> Json.Encode.string)
+    property "srcset" (maps |> String.join "," >> Json.Encode.string)
 
 
-(=>) : a -> b -> ( a, b )
-(=>) a b =
+pair : a -> b -> ( a, b )
+pair a b =
     ( a, b )
 
 
-addDays : Int -> Date -> Date
-addDays days date =
-    Date.Extra.add Day days date
+pairLeft : a -> b -> c -> ( ( a, b ), c )
+pairLeft a b c =
+    ( ( a, b ), c )
 
 
-addDay : Date -> Date
-addDay date =
-    Date.Extra.add Day 1 date
+compareDate : Time.Zone -> Time.Posix -> Time.Posix -> Order
+compareDate zone a b =
+    let
+        difference =
+            Time.Extra.diff Millisecond zone b a
+    in
+    if difference > 0 then
+        GT
+
+    else if difference == 0 then
+        EQ
+
+    else
+        LT
 
 
-subtractDay : Date -> Date
-subtractDay date =
-    Date.Extra.add Day -1 date
+addDays : Int -> Time.Zone -> Time.Posix -> Time.Posix
+addDays days zone date =
+    Time.Extra.add Day days zone date
 
 
-dateEqual : Date -> Date -> Bool
+addDay : Time.Zone -> Time.Posix -> Time.Posix
+addDay zone date =
+    addDays 1 zone date
+
+
+subtractDay : Time.Zone -> Time.Posix -> Time.Posix
+subtractDay zone date =
+    addDays -1 zone date
+
+
+isDateBetween : Time.Zone -> Time.Posix -> Time.Posix -> Time.Posix -> Bool
+isDateBetween zone lower upper date =
+    let
+        lowerDiff =
+            Time.Extra.diff Millisecond zone lower date
+
+        upperDiff =
+            Time.Extra.diff Millisecond zone upper date
+    in
+    lowerDiff > 0 && upperDiff <= 0
+
+
+dateEqual : Time.Posix -> Time.Posix -> Bool
 dateEqual x y =
     let
         tripleX =
-            ( Date.day x, Date.month x, Date.year x )
+            ( toDay utc x, toMonth utc x, toYear utc x )
 
         tripleY =
-            ( Date.day y, Date.month y, Date.year y )
+            ( toDay utc y, toMonth utc y, toYear utc y )
     in
-        tripleX == tripleY
+    tripleX == tripleY
 
 
-formatTimeRange : Date -> Date -> String
-formatTimeRange start end =
+formatTimeRange : Time.Zone -> Time.Posix -> Time.Posix -> String
+formatTimeRange zone start end =
     let
         startTime =
-            formatTime start
+            formatTime zone start
 
         endTime =
-            formatTime end
+            formatTime zone end
     in
-        startTime ++ " - " ++ endTime
+    startTime ++ " - " ++ endTime
 
 
-formatTime : Date -> String
-formatTime date =
+formatTime : Time.Zone -> Time.Posix -> String
+formatTime zone date =
     let
         hour =
-            padLeft 2 '0' <| toString <| Date.hour date
+            toHour zone date |> fromInt |> padLeft 2 '0'
 
         minute =
-            padLeft 2 '0' <| toString <| Date.minute date
+            toMinute zone date |> fromInt |> padLeft 2 '0'
     in
-        hour ++ ":" ++ minute
+    hour ++ ":" ++ minute
 
 
-formatDate : Date -> String
-formatDate date =
+formatDate : Time.Zone -> Time.Posix -> String
+formatDate zone date =
     let
         dayName =
-            formatDateDayName date
+            formatDateDayName zone date
 
         day =
-            toString <| Date.day date
+            toDay zone date |> fromInt
 
         month =
-            toString <| Date.Extra.monthNumber date
+            toMonth zone date |> toMonthNumber |> fromInt
 
         year =
-            toString <| Date.year date
+            toYear zone date |> fromInt
     in
-        dayName ++ ", " ++ day ++ "." ++ month ++ "." ++ year
+    dayName ++ ", " ++ day ++ "." ++ month ++ "." ++ year
 
 
-formatDateDayName : Date -> String
-formatDateDayName date =
-    case Date.dayOfWeek date of
+formatDateDayName : Time.Zone -> Time.Posix -> String
+formatDateDayName zone date =
+    case toWeekday zone date of
         Mon ->
             "Montag"
 
@@ -117,6 +150,46 @@ formatDateDayName date =
             "Sonntag"
 
 
+toMonthNumber : Month -> Int
+toMonthNumber month =
+    case month of
+        Jan ->
+            1
+
+        Feb ->
+            2
+
+        Mar ->
+            3
+
+        Apr ->
+            4
+
+        May ->
+            5
+
+        Jun ->
+            6
+
+        Jul ->
+            7
+
+        Aug ->
+            8
+
+        Sep ->
+            9
+
+        Oct ->
+            10
+
+        Nov ->
+            11
+
+        Dec ->
+            12
+
+
 formatDuration : String -> String
 formatDuration duration =
     case String.split ":" duration of
@@ -131,21 +204,21 @@ formatDuration duration =
                 unwords =
                     String.join " "
             in
-                case ( intHours, intMinutes ) of
-                    ( Ok 0, Ok 0 ) ->
-                        "0 Min."
+            case ( intHours, intMinutes ) of
+                ( Just 0, Just 0 ) ->
+                    "0 Min."
 
-                    ( Ok 0, Ok minutes ) ->
-                        unwords [ toString minutes, "Min." ]
+                ( Just 0, Just minutes ) ->
+                    unwords [ fromInt minutes, "Min." ]
 
-                    ( Ok hours, Ok 0 ) ->
-                        unwords [ toString hours, "Std." ]
+                ( Just hours, Just 0 ) ->
+                    unwords [ fromInt hours, "Std." ]
 
-                    ( Ok hours, Ok minutes ) ->
-                        unwords [ toString hours, "Std.", toString minutes, "Min." ]
+                ( Just hours, Just minutes ) ->
+                    unwords [ fromInt hours, "Std.", fromInt minutes, "Min." ]
 
-                    _ ->
-                        duration
+                _ ->
+                    duration
 
         _ ->
             duration

@@ -3,8 +3,9 @@
   "version": "1.1.1",
   "description": "Displays the latest schedule for the Bonjwa Twitch channel",
   "scripts": {
-    "postinstall": "elm-package install -y",
-    "build": "elm-make ./src/Popup.elm --warn --output=./dist/popup/elm.js",
+    "build": "elm make ./src/Popup.elm --optimize --output=dist/popup/elm.js",
+    "build:watch": "nodemon -e elm --exec npm run build",
+    "format": "elm-format ./src/",
     "dev": "web-ext run -s ./dist"
   },
   "repository": {
@@ -24,10 +25,11 @@
   },
   "homepage": "https://github.com/virtuaCode/bonjwa-programm#readme",
   "dependencies": {
-    "elm": "0.18.0",
-    "elm-format": "^0.6.1-alpha"
+    "elm": "^0.19.0",
+    "elm-format": "^0.8.0"
   },
   "devDependencies": {
-    "web-ext": "^2.4.0"
+    "web-ext": "^2.4.0",
+    "nodemon": "^1.18.4"
   }
 }

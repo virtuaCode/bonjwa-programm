@@ -1,17 +1,18 @@
-module Data.PastBroadcast exposing (..)
+module Data.PastBroadcast exposing (PastBroadcast, PastBroadcasts, PastBroadcastsWebData, pastBroadcastDecoder, pastBroadcastsDecoder)
 
-import Date exposing (Date)
-import Json.Decode exposing (Decoder, field, int, list, string)
-import Json.Decode.Extra exposing (date)
-import Json.Decode.Pipeline exposing (decode, required)
+import Json.Decode exposing (Decoder, field, int, list, string, succeed)
+import Json.Decode.Extra exposing (datetime)
+import Json.Decode.Pipeline exposing (required)
 import RemoteData exposing (WebData)
+import Time
+
 
 
 -- PastBroadcast
 
 
 type alias PastBroadcast =
-    { date : Date
+    { date : Time.Posix
     , game : String
     , mods : String
     , link : String
@@ -38,8 +39,8 @@ pastBroadcastsDecoder =
 
 pastBroadcastDecoder : Decoder PastBroadcast
 pastBroadcastDecoder =
-    decode PastBroadcast
-        |> required "date" date
+    succeed PastBroadcast
+        |> required "date" datetime
         |> required "game" string
         |> required "mods" string
         |> required "link" string

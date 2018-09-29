@@ -2,7 +2,7 @@ module Data.AlarmConfig exposing (AlarmConfig)
 
 
 type alias AlarmConfig =
-    { timestamp : Float
+    { timestamp : Int
     , title : String
     , message : String
     }

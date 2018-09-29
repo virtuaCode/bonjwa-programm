@@ -1,6 +1,9 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const div = document.getElementById('main');
-    const app = Elm.Popup.embed(div);
+    const mainDiv = document.getElementById('main');
+    const app = Elm.Popup.init({
+        node: mainDiv,
+        flags: 1
+    });
 
     app.ports.openTab.subscribe(function (url) {
         const creating = browser.tabs.create({

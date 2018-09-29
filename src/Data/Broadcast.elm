@@ -1,17 +1,17 @@
-module Data.Broadcast
-    exposing
-        ( Broadcast
-        , Broadcasts
-        , BroadcastsWebData
-        , broadcastDecoder
-        , broadcastsDecoder
-        )
+module Data.Broadcast exposing
+    ( Broadcast
+    , Broadcasts
+    , BroadcastsWebData
+    , broadcastDecoder
+    , broadcastsDecoder
+    )
 
-import Date exposing (Date)
-import Json.Decode exposing (Decoder, field, int, list, string)
-import Json.Decode.Extra exposing (date)
-import Json.Decode.Pipeline exposing (decode, required)
+import Json.Decode exposing (Decoder, field, int, list, string, succeed)
+import Json.Decode.Extra exposing (datetime)
+import Json.Decode.Pipeline exposing (required)
 import RemoteData exposing (WebData)
+import Time
+
 
 
 -- Broadcast
@@ -19,8 +19,8 @@ import RemoteData exposing (WebData)
 
 type alias Broadcast =
     { id : Int
-    , start : Date
-    , end : Date
+    , start : Time.Posix
+    , end : Time.Posix
     , topic : String
     , game : String
     , streamers : String
@@ -46,10 +46,10 @@ broadcastsDecoder =
 
 broadcastDecoder : Decoder Broadcast
 broadcastDecoder =
-    decode Broadcast
+    succeed Broadcast
         |> required "id" int
-        |> required "start" date
-        |> required "end" date
+        |> required "start" datetime
+        |> required "end" datetime
         |> required "topic" string
         |> required "game" string
         |> required "streamers" string
