@@ -68,17 +68,17 @@ isDateBetween zone lower upper date =
         upperDiff =
             Time.Extra.diff Millisecond zone upper date
     in
-    lowerDiff > 0 && upperDiff <= 0
+    lowerDiff > 0 && upperDiff < 0
 
 
-dateEqual : Time.Posix -> Time.Posix -> Bool
-dateEqual x y =
+dateEqual : Time.Zone -> Time.Posix -> Time.Posix -> Bool
+dateEqual zone x y =
     let
         tripleX =
-            ( toDay utc x, toMonth utc x, toYear utc x )
+            ( toDay zone x, toMonth zone x, toYear zone x )
 
         tripleY =
-            ( toDay utc y, toMonth utc y, toYear utc y )
+            ( toDay zone y, toMonth zone y, toYear zone y )
     in
     tripleX == tripleY
 

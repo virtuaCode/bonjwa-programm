@@ -184,7 +184,7 @@ viewContent zone date offset remoteData =
 
                 visiblePastBroadcasts =
                     broadcasts
-                        |> filterPastBroadcasts offsetDate
+                        |> filterPastBroadcasts zone offsetDate
             in
             case visiblePastBroadcasts of
                 [] ->
@@ -310,9 +310,9 @@ viewNavigation date =
 -- HELPER
 
 
-filterPastBroadcasts : Time.Posix -> PastBroadcasts -> PastBroadcasts
-filterPastBroadcasts today broadcasts =
-    List.filter (\{ date } -> dateEqual today date) broadcasts
+filterPastBroadcasts : Time.Zone -> Time.Posix -> PastBroadcasts -> PastBroadcasts
+filterPastBroadcasts zone today broadcasts =
+    List.filter (\{ date } -> dateEqual zone today date) broadcasts
 
 
 searchPastBroadcasts : String -> PastBroadcasts -> PastBroadcasts

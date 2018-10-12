@@ -5,6 +5,7 @@ import BrowserInterface exposing (clearAlarm, decodeAlarmValue, getAlarm, openTa
 import Data.AlarmConfig exposing (..)
 import Data.Broadcast exposing (..)
 import Data.Dialog as Dialog exposing (Button, Dialog)
+import Debug exposing (log)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -76,31 +77,41 @@ initModel =
 -- BROADCAST
 
 
-styleBroadcasts : Time.Zone -> Time.Posix -> Maybe Int -> Broadcasts -> List (Styled Broadcast)
-styleBroadcasts zone time alarm =
-    List.map (styleBroadcast zone time alarm)
+styleBroadcasts : Time.Zone -> Time.Posix -> Time.Posix -> Maybe Int -> Broadcasts -> List (Styled Broadcast)
+styleBroadcasts zone time offsetTime alarm =
+    List.map (styleBroadcast zone time offsetTime alarm)
 
 
-styleBroadcast : Time.Zone -> Time.Posix -> Maybe Int -> Broadcast -> Styled Broadcast
-styleBroadcast zone time alarm broadcast =
+styleBroadcast : Time.Zone -> Time.Posix -> Time.Posix -> Maybe Int -> Broadcast -> Styled Broadcast
+styleBroadcast zone time offsetTime alarm broadcast =
     let
         now =
             isTimeBetweenBroadcast zone time broadcast
+
+        spanType =
+            getSpanType zone offsetTime broadcast
     in
     if now then
-        Live broadcast
+        Styled Live spanType broadcast
 
     else
         case alarm of
             Nothing ->
-                Default broadcast
+                if Time.posixToMillis time > Time.posixToMillis broadcast.start then
+                    Styled NoAlarm spanType broadcast
+
+                else
+                    Styled Default spanType broadcast
 
             Just alarmTime ->
                 if alarmTime == Time.posixToMillis broadcast.start then
-                    Alarm broadcast
+                    Styled Alarm spanType broadcast
+
+                else if Time.posixToMillis time > Time.posixToMillis broadcast.start then
+                    Styled NoAlarm spanType broadcast
 
                 else
-                    Default broadcast
+                    Styled Default spanType broadcast
 
 
 isTimeBetweenBroadcast : Time.Zone -> Time.Posix -> Broadcast -> Bool
@@ -108,10 +119,47 @@ isTimeBetweenBroadcast zone time { start, end } =
     isDateBetween zone start end time
 
 
+getSpanType : Time.Zone -> Time.Posix -> Broadcast -> Span
+getSpanType zone date { start, end } =
+    let
+        ceilingDate =
+            Time.Extra.ceiling Day zone date
+
+        floorDate =
+            Time.Extra.floor Day zone date
+
+        startEqual =
+            dateEqual zone date start
+
+        endEqual =
+            dateEqual zone date end
+    in
+    case ( not startEqual && floorDate /= start, not endEqual && ceilingDate /= end ) of
+        ( True, False ) ->
+            Previous
+
+        ( False, True ) ->
+            Next
+
+        ( _, _ ) ->
+            None
+
+
 type Styled a
-    = Alarm a
-    | Default a
-    | Live a
+    = Styled Style Span a
+
+
+type Style
+    = Alarm
+    | Live
+    | Default
+    | NoAlarm
+
+
+type Span
+    = None
+    | Next
+    | Previous
 
 
 type DialogAction
@@ -353,7 +401,7 @@ viewProgrammContent zone date offset alarm remoteData =
                     broadcasts
                         |> filterBroadcasts timezone offsetDate
                         |> sortBroadcasts timezone
-                        |> styleBroadcasts timezone currentDate alarm
+                        |> styleBroadcasts timezone currentDate offsetDate alarm
             in
             viewBroadcastTable timezone visibleBroadcasts
 
@@ -403,23 +451,39 @@ viewBroadcastTable zone broadcasts =
 viewBroadcastRow : Time.Zone -> Styled Broadcast -> Html Msg
 viewBroadcastRow zone styledBroadcast =
     let
+        (Styled style spanType broadcast) =
+            styledBroadcast
+
         { start, end, topic, game, streamers } =
-            case styledBroadcast of
-                Alarm broadcast ->
-                    broadcast
+            broadcast
 
-                Live broadcast ->
-                    broadcast
+        streamersText =
+            if streamers == "" then
+                game
 
-                Default broadcast ->
-                    broadcast
+            else
+                streamers
 
-        time =
+        timeText =
             formatTimeRange zone start end
 
+        time =
+            viewBroadcastTime zone spanType broadcast
+
+        timeClass =
+            case spanType of
+                Next ->
+                    "time time-next-span"
+
+                Previous ->
+                    "time time-previous-span"
+
+                None ->
+                    "time"
+
         ( rowElement, indicator ) =
-            case styledBroadcast of
-                Live broadcast ->
+            case style of
+                Live ->
                     ( div [ class "row live", title "www.twitch.tv/bonjwa", onClick (OpenTab "https://www.twitch.tv/bonjwa") ]
                     , div [ class "live-indicator" ]
                         [ span [ class "dot" ] [ text "●" ]
@@ -427,7 +491,7 @@ viewBroadcastRow zone styledBroadcast =
                         ]
                     )
 
-                Alarm broadcast ->
+                Alarm ->
                     let
                         dialog =
                             { message = "Geplante Erinnerung deaktivieren?"
@@ -442,12 +506,17 @@ viewBroadcastRow zone styledBroadcast =
                         ]
                     )
 
-                Default broadcast ->
+                NoAlarm ->
+                    ( div [ class "row" ]
+                    , text ""
+                    )
+
+                Default ->
                     let
                         alarmConfig =
                             { timestamp = Time.posixToMillis start
                             , title = "Live-Sendung hat begonnen"
-                            , message = time ++ "\n" ++ topic ++ "\n\n(Klicken um Twitch zu öffnen)"
+                            , message = timeText ++ "\n" ++ topic ++ "\n\n(Klicken um Twitch zu öffnen)"
                             }
 
                         dialog =
@@ -462,13 +531,13 @@ viewBroadcastRow zone styledBroadcast =
                     )
     in
     rowElement
-        [ div [ class "left" ] [ div [ class "time" ] [ text time ] ]
+        [ div [ class "left" ] [ div [ class timeClass ] time ]
         , div [ class "right" ]
             [ indicator
             , div [ class "game" ]
                 [ strong [] [ text game ]
                 ]
-            , div [ class "streamers" ] [ text streamers ]
+            , div [ class "streamers" ] [ text streamersText ]
             ]
         ]
 
@@ -491,6 +560,28 @@ filterBroadcasts zone today broadcasts =
 sortBroadcasts : Time.Zone -> Broadcasts -> Broadcasts
 sortBroadcasts zone =
     List.sortWith (\a b -> compareDate zone a.start b.start)
+
+
+viewBroadcastTime : Time.Zone -> Span -> Broadcast -> List (Html Msg)
+viewBroadcastTime zone spanType broadcast =
+    let
+        timeLeft =
+            case spanType of
+                Previous ->
+                    span [ class "previous-span" ] [ text (formatTime zone broadcast.start) ]
+
+                _ ->
+                    span [] [ text (formatTime zone broadcast.start) ]
+
+        timeRight =
+            case spanType of
+                Next ->
+                    span [ class "next-span" ] [ text (formatTime zone broadcast.end) ]
+
+                _ ->
+                    span [] [ text (formatTime zone broadcast.end) ]
+    in
+    [ timeLeft, text " - ", timeRight ]
 
 
 

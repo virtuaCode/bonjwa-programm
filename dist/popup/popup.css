@@ -1,457 +1,488 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto+Condensed:400,700|Roboto:400,700');
 html,
 body {
-    background-color: #fff;
-    font-family: 'Roboto', sans-serif;
-    font-size: 14px;
-    margin: 0px 0px;
-    padding: 0 0;
-    width: 360px;
+  background-color: #fff;
+  font-family: 'Roboto', sans-serif;
+  font-size: 14px;
+  margin: 0px 0px;
+  padding: 0 0;
+  width: 360px;
 }
 
 h1 {
-    font-size: 16px;
+  font-size: 16px;
 }
 
 .container {
-    position: relative;
-    display: flex;
-    flex-direction: column;
+  position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
 .header {
-    align-items: center;
-    background-color: #1e9761;
-    color: white;
-    display: flex;
-    font-weight: bold;
-    justify-content: center;
-    text-align: right;
-    min-height: 52px;
+  align-items: center;
+  background-color: #1e9761;
+  color: white;
+  display: flex;
+  font-weight: bold;
+  justify-content: center;
+  text-align: right;
+  min-height: 52px;
 }
 
 .header img {
-    height: 32px;
-    width: 32px;
-    margin: 0rem 1rem;
+  height: 32px;
+  width: 32px;
+  margin: 0rem 1rem;
 }
 
 .header .bonjwa-logo {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .header .button {
-    display: flex;
+  display: flex;
 }
 
 .header .button img {
-    height: 24px;
-    width: 24px;
-    margin: 0rem 1rem;
-    cursor: pointer;
+  height: 24px;
+  width: 24px;
+  margin: 0rem 1rem;
+  cursor: pointer;
 }
 
 .header .button.button-emote img {
-    height: 28px;
-    width: 28px;
-    margin: 0rem calc(1rem - 2px);
-    cursor: pointer;
+  height: 28px;
+  width: 28px;
+  margin: 0rem calc(1rem - 2px);
+  cursor: pointer;
 }
 
 .header .back {
-    color: white;
-    display: flex;
-    width: 52px;
-    font-size: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    align-self: stretch;
-    transition: background-color 150ms ease-out;
-    cursor: pointer;
+  color: white;
+  display: flex;
+  width: 52px;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  transition: background-color 150ms ease-out;
+  cursor: pointer;
 }
 
 .header .back:hover {
-    background-color: rgba(255, 255, 255, 0.2);
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 .header .back::before {
-    content: '◀';
-    color: white;
+  content: '◀';
+  color: white;
 }
 
 .header .title {
-    margin: 0 auto;
-    font-size: 20px;
-    font-family: 'Roboto Condensed', sans-serif;
+  margin: 0 auto;
+  font-size: 20px;
+  font-family: 'Roboto Condensed', sans-serif;
 }
 
 .button {
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: -moz-none;
-    -o-user-select: none;
-    user-select: none;
-    cursor: pointer;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: -moz-none;
+  -o-user-select: none;
+  user-select: none;
+  cursor: pointer;
 }
 
 .nav {
-    min-height: 52px;
-    background-color: black;
-    color: white;
-    display: flex;
-    font-size: 16px;
-    font-weight: bold;
-    justify-content: space-between;
-    align-items: center;
+  min-height: 52px;
+  background-color: black;
+  color: white;
+  display: flex;
+  font-size: 16px;
+  font-weight: bold;
+  justify-content: space-between;
+  align-items: center;
 }
 
 #prev {
-    width: 52px;
-    font-size: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    align-self: stretch;
-    transition: background-color 150ms ease-out;
-    cursor: pointer;
+  width: 52px;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  transition: background-color 150ms ease-out;
+  cursor: pointer;
 }
 
 #prev:hover {
-    background-color: rgba(255, 255, 255, 0.2);
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 .prev::before {
-    content: '◀';
+  content: '◀';
 }
 
 #day {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 }
 
 #next {
-    width: 52px;
-    font-size: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    align-self: stretch;
-    transition: background-color 150ms ease-out;
-    cursor: pointer;
+  width: 52px;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  transition: background-color 150ms ease-out;
+  cursor: pointer;
 }
 
 #next:hover {
-    background-color: rgba(255, 255, 255, 0.2);
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 .next::before {
-    content: '▶';
+  content: '▶';
 }
 
 #status {
-    background: #eee;
-    color: #333;
-    font-size: 16px;
-    font-weight: lighter;
-    padding: 35px 20px;
-    text-align: center;
-    flex: 1 auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  background: #eee;
+  color: #333;
+  font-size: 16px;
+  font-weight: lighter;
+  padding: 35px 20px;
+  text-align: center;
+  flex: 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .hidden {
-    display: none !important;
+  display: none !important;
 }
 
 #table {
-    max-height: 420px;
-    overflow-y: auto;
+  max-height: 420px;
+  overflow-y: auto;
 }
 
 #table .row {
-    border-top: 1px solid rgba(0, 0, 0, 0.0666);
-    background-color: #fff;
-    display: flex;
-    color: black;
-    cursor: pointer;
+  border-top: 1px solid rgba(0, 0, 0, 0.0666);
+  background-color: #fff;
+  display: flex;
+  color: black;
+  cursor: pointer;
 }
 
 #table .row:first-child {
-    border-top: none;
+  border-top: none;
 }
 
 #table .left {
-    background: rgba(0, 0, 0, 0.0666);
-    display: flex;
-    flex: 0 0 110px;
-    /* text-shadow: 0px 1px 0px rgba(0, 0, 0, 0.2), 0px -1px 0px rgba(255, 255, 255, 1); */
-    border-right: 1px solid rgba(0, 0, 0, 0.0666);
+  background: rgba(0, 0, 0, 0.0666);
+  display: flex;
+  flex: 0 0 110px;
+  /* text-shadow: 0px 1px 0px rgba(0, 0, 0, 0.2), 0px -1px 0px rgba(255, 255, 255, 1); */
+  border-right: 1px solid rgba(0, 0, 0, 0.0666);
 }
 
 #table .right {
-    flex: 1;
-    padding: 5px 6px;
-    position: relative;
-    overflow: hidden;
+  flex: 1;
+  padding: 5px 6px;
+  position: relative;
+  overflow: hidden;
 }
 
 #table .row:hover .right {
-    background-color: #f3f3f3;        
+  background-color: #f3f3f3;
 }
 
 #table .row:hover .left {
-    background: rgba(0, 0, 0, 0.1333);       
+  background: rgba(0, 0, 0, 0.1333);
 }
 
 #table .row.live {
-    cursor: pointer;
-    border-top-color: #1e9761;
-    background: #1e9761;
-    color: #fff;
-    text-shadow: 0px -1px 0px rgba(0, 0, 0, 0.2), 0px 1px 0px rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  border-top-color: #1e9761;
+  background: #1e9761;
+  color: #fff;
+  text-shadow: 0px -1px 0px rgba(0, 0, 0, 0.2), 0px 1px 0px rgba(255, 255, 255, 0.2);
 }
 
 #table .row.live .left {
-    background: transparent;
+  background: transparent;
 }
 
 #table .row.live .right {
-    background: rgba(255, 255, 255, 0.0666);
+  background: rgba(255, 255, 255, 0.0666);
 }
 
 #table .live .live-indicator {
-    position: absolute;
-    font-size: 9px;
-    margin-top: 3px;
-    margin-right: 5px;
-    text-shadow: none;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    right: 0;
-    top: 0;
-    font-weight: bold;
+  position: absolute;
+  font-size: 9px;
+  margin-top: 3px;
+  margin-right: 5px;
+  text-shadow: none;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  right: 0;
+  top: 0;
+  font-weight: bold;
 }
 
 #table .live .live-indicator .dot {
-    color: red;
-    line-height: 0px;
-    font-size: 12px;
-    margin-right: 1px;
+  color: red;
+  line-height: 0px;
+  font-size: 12px;
+  margin-right: 1px;
 }
 
 #table .row .alarm-indicator {
-    position: absolute;
-    font-size: 9px;
-    margin-top: 3px;
-    margin-right: 5px;
-    text-shadow: none;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    right: 0;
-    top: 0;
-    font-weight: bold;
+  position: absolute;
+  font-size: 9px;
+  margin-top: 3px;
+  margin-right: 5px;
+  text-shadow: none;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  right: 0;
+  top: 0;
+  font-weight: bold;
 }
 
 #table .time {
-    margin: auto auto;
-    padding: 10px;
-    text-align: center;
-    vertical-align: middle;
+  margin: auto auto;
+  padding: 10px;
+  text-align: center;
+  vertical-align: middle;
+  position: relative;
 }
 
 #table .topic {
-    padding: 10px;
-    text-align: center;
+  padding: 10px;
+  text-align: center;
 }
 
 #table .game {
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 #table .streamers {
-    margin-top: 4px;
-    font-size: 12px;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
+  margin-top: 4px;
+  font-size: 12px;
+  min-height: 12px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 #past-broadcasts #table {
-    max-height: 420px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
+  max-height: 420px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
 }
 
 #past-broadcasts .item {
-    padding: 9px;
-    padding-top: 8px;
-    display: flex;
-    flex-direction: column;
-    border-bottom: 1px dotted lightgray;
-    background-color: white;
-    cursor: pointer;
+  padding: 9px;
+  padding-top: 8px;
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px dotted lightgray;
+  background-color: white;
+  cursor: pointer;
 }
 
 #past-broadcasts .item:hover {
-    background-color: #f3f3f3;
+  background-color: #f3f3f3;
 }
 
 #past-broadcasts .item:active {
-    background-color: #f3f3f3;
+  background-color: #f3f3f3;
 }
 
 #past-broadcasts .item:last-child {
-    border-bottom: none;
+  border-bottom: none;
 }
 
 #past-broadcasts .game {
-    font-weight: bold;
-    font-size: 14px;
-    margin-top: 2px;
-    align-self: end;
+  font-weight: bold;
+  font-size: 14px;
+  margin-top: 2px;
+  align-self: end;
 }
 
 #past-broadcasts .mods {
-    font-size: 12px;
-    color: #6c757d;
+  font-size: 12px;
+  color: #6c757d;
 }
 
 #past-broadcasts .duration {
-    font-size: 10px;
-    color: black;
-    margin-left: auto;
+  font-size: 10px;
+  color: black;
+  margin-left: auto;
 }
 
 #past-broadcasts .date {
-    font-size: 11px;
-    color: #1e9761;
-    padding: 2px 4px;
-    margin-left: auto;
-    border: 1px solid;
+  font-size: 11px;
+  color: #1e9761;
+  padding: 2px 4px;
+  margin-left: auto;
+  border: 1px solid;
 }
 
 #past-broadcasts .bottom-line {
-    display: flex;
-    align-items: center;
-    justify-content: end;
+  display: flex;
+  align-items: center;
+  justify-content: end;
 }
 
 #past-broadcasts .search {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    border: none;
-    background: transparent;
-    color: white;
-    font-size: 18px;
-    font-weight: bold;
-    border-bottom: 2px solid white;
-    margin: 0 1rem;
-    display: block;
-    flex: 1;
-    min-width: 0;
-    padding-left: 0.25rem;
-    padding-right: 0.25rem;
-    text-align: center;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  border-bottom: 2px solid white;
+  margin: 0 1rem;
+  display: block;
+  flex: 1;
+  min-width: 0;
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
+  text-align: center;
 }
 
 #past-broadcasts .search-label {
-    margin-left: 1rem;
+  margin-left: 1rem;
 }
 
 #past-broadcasts #cancel {
-    font-size: 22px;
-    min-width: 52px;
-    display: flex;
-    align-self: stretch;
-    align-items: center;
-    justify-content: center;
-    transition: background-color 150ms ease-out;
-    cursor: pointer;
+  font-size: 22px;
+  min-width: 52px;
+  display: flex;
+  align-self: stretch;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 150ms ease-out;
+  cursor: pointer;
 }
 
 #past-broadcasts #cancel:hover {
-    background-color: rgba(255, 255, 255, 0.2);
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 #past-broadcasts .cancel::before {
-    content: '\00d7';
+  content: '\00d7';
 }
 
 #past-broadcasts .top-line {
-    margin-bottom: 5px;
+  margin-bottom: 5px;
 }
 
 #past-broadcasts .flex {
-    display: -webkit-flex;
-    display: -moz-flex;
-    display: flex;
-    align-items: baseline;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: flex;
+  align-items: baseline;
 }
 
 #past-broadcasts .text-ellipsis {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    min-width: 0;
-    margin-right: 1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  margin-right: 1rem;
 }
 
 #past-broadcasts .nowrap {
-    white-space: nowrap;
+  white-space: nowrap;
 }
-
 
 /* Dialog */
 
 #dialog {
-    padding: 1em;
-    color: white;
-    background-color: #1e9761;
+  padding: 1em;
+  color: white;
+  background-color: #1e9761;
 }
 
 #dialog img {
-     float: left;
-     margin-right: 1rem;
+  float: left;
+  margin-right: 1rem;
 }
 
 #dialog .button {
-    color: white;
-    padding: 4px 10px;
-    transition: all 200ms ease-out;
+  color: white;
+  padding: 4px 10px;
+  transition: all 200ms ease-out;
 }
 
-#dialog .button.negative {
-
-}
+#dialog .button.negative {}
 
 #dialog .button.negative:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transition: all 50ms linear;
+  background: rgba(255, 255, 255, 0.2);
+  transition: all 50ms linear;
 }
 
 #dialog .button.positive {
-    border: 1px solid white;
+  border: 1px solid white;
 }
 
 #dialog .button.positive:hover {
-    background: white;
-    color: #1e9761;
-    transition: all 50ms linear;
+  background: white;
+  color: #1e9761;
+  transition: all 50ms linear;
 }
 
 #dialog .footer {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
 }
 
-#dialog .footer .space{
-    margin: 0 0.25em;
+#dialog .footer .space {
+  margin: 0 0.25em;
+}
+
+.next-span {
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.live .next-span {
+  color: rgba(255, 255, 255, 0.66);
+}
+
+.next-span::after {
+  content: '▶';
+  font-size: 9px;
+  position: absolute;
+  right: 0px;
+  top: 11px;
+}
+
+.previous-span {
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.live .previous-span {
+  color: rgba(255, 255, 255, 0.66);
+}
+
+.previous-span::before {
+  content: '◀';
+  font-size: 9px;
+  position: absolute;
+  left: 0px;
+  top: 11px;
 }

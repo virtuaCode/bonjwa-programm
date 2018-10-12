@@ -4,7 +4,8 @@
   "description": "Displays the latest schedule for the Bonjwa Twitch channel",
   "scripts": {
     "build": "elm make ./src/Popup.elm --optimize --output=dist/popup/elm.js",
-    "build:watch": "nodemon -e elm --exec npm run build",
+    "build:dev": "elm make ./src/Popup.elm --output=dist/popup/elm.js",
+    "build:watch": "nodemon -e elm --exec npm run build:dev",
     "format": "elm-format ./src/",
     "dev": "web-ext run -s ./dist"
   },

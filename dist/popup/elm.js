@@ -7936,16 +7936,16 @@ var author$project$Popup$update = F2(
 var author$project$Page$PastBroadcast$ClickedBack = {$: 1};
 var author$project$Page$PastBroadcast$Search = {$: 6};
 var author$project$Page$PastBroadcast$Normal = 0;
-var author$project$Util$dateEqual = F2(
-	function (x, y) {
+var author$project$Util$dateEqual = F3(
+	function (zone, x, y) {
 		var tripleY = _Utils_Tuple3(
-			A2(elm$time$Time$toDay, elm$time$Time$utc, y),
-			A2(elm$time$Time$toMonth, elm$time$Time$utc, y),
-			A2(elm$time$Time$toYear, elm$time$Time$utc, y));
+			A2(elm$time$Time$toDay, zone, y),
+			A2(elm$time$Time$toMonth, zone, y),
+			A2(elm$time$Time$toYear, zone, y));
 		var tripleX = _Utils_Tuple3(
-			A2(elm$time$Time$toDay, elm$time$Time$utc, x),
-			A2(elm$time$Time$toMonth, elm$time$Time$utc, x),
-			A2(elm$time$Time$toYear, elm$time$Time$utc, x));
+			A2(elm$time$Time$toDay, zone, x),
+			A2(elm$time$Time$toMonth, zone, x),
+			A2(elm$time$Time$toYear, zone, x));
 		return _Utils_eq(tripleX, tripleY);
 	});
 var elm$core$List$filter = F2(
@@ -7959,13 +7959,13 @@ var elm$core$List$filter = F2(
 			_List_Nil,
 			list);
 	});
-var author$project$Page$PastBroadcast$filterPastBroadcasts = F2(
-	function (today, broadcasts) {
+var author$project$Page$PastBroadcast$filterPastBroadcasts = F3(
+	function (zone, today, broadcasts) {
 		return A2(
 			elm$core$List$filter,
 			function (_n0) {
 				var date = _n0.a3;
-				return A2(author$project$Util$dateEqual, today, date);
+				return A3(author$project$Util$dateEqual, zone, today, date);
 			},
 			broadcasts);
 	});
@@ -8391,7 +8391,7 @@ var author$project$Page$PastBroadcast$viewContent = F4(
 					var broadcasts = _n0.a.a;
 					var currentDate = _n0.b.a;
 					var offsetDate = A3(author$project$Util$addDays, offset, zone, currentDate);
-					var visiblePastBroadcasts = A2(author$project$Page$PastBroadcast$filterPastBroadcasts, offsetDate, broadcasts);
+					var visiblePastBroadcasts = A3(author$project$Page$PastBroadcast$filterPastBroadcasts, zone, offsetDate, broadcasts);
 					if (!visiblePastBroadcasts.b) {
 						return author$project$Views$Message$view('Für diesen Tag existieren keine Past Broadcasts.');
 					} else {
@@ -8885,7 +8885,7 @@ var author$project$Util$isDateBetween = F4(
 	function (zone, lower, upper, date) {
 		var upperDiff = A4(justinmimbs$time_extra$Time$Extra$diff, 15, zone, upper, date);
 		var lowerDiff = A4(justinmimbs$time_extra$Time$Extra$diff, 15, zone, lower, date);
-		return (lowerDiff > 0) && (upperDiff <= 0);
+		return (lowerDiff > 0) && (upperDiff < 0);
 	});
 var justinmimbs$time_extra$Time$Extra$ceiling = F3(
 	function (interval, zone, posix) {
@@ -8913,41 +8913,77 @@ var author$project$Popup$sortBroadcasts = function (zone) {
 				return A3(author$project$Util$compareDate, zone, a.bt, b.bt);
 			}));
 };
-var author$project$Popup$Alarm = function (a) {
-	return {$: 0, a: a};
-};
-var author$project$Popup$Default = function (a) {
-	return {$: 1, a: a};
-};
-var author$project$Popup$Live = function (a) {
-	return {$: 2, a: a};
-};
+var author$project$Popup$Alarm = 0;
+var author$project$Popup$Default = 2;
+var author$project$Popup$Live = 1;
+var author$project$Popup$NoAlarm = 3;
+var author$project$Popup$Styled = F3(
+	function (a, b, c) {
+		return {$: 0, a: a, b: b, c: c};
+	});
+var author$project$Popup$Next = 1;
+var author$project$Popup$None = 0;
+var author$project$Popup$Previous = 2;
+var author$project$Popup$getSpanType = F3(
+	function (zone, date, _n0) {
+		var start = _n0.bt;
+		var end = _n0.a6;
+		var startEqual = A3(author$project$Util$dateEqual, zone, date, start);
+		var floorDate = A3(justinmimbs$time_extra$Time$Extra$floor, 11, zone, date);
+		var endEqual = A3(author$project$Util$dateEqual, zone, date, end);
+		var ceilingDate = A3(justinmimbs$time_extra$Time$Extra$ceiling, 11, zone, date);
+		var _n1 = _Utils_Tuple2(
+			(!startEqual) && (!_Utils_eq(floorDate, start)),
+			(!endEqual) && (!_Utils_eq(ceilingDate, end)));
+		_n1$2:
+		while (true) {
+			if (_n1.a) {
+				if (!_n1.b) {
+					return 2;
+				} else {
+					break _n1$2;
+				}
+			} else {
+				if (_n1.b) {
+					return 1;
+				} else {
+					break _n1$2;
+				}
+			}
+		}
+		return 0;
+	});
 var author$project$Popup$isTimeBetweenBroadcast = F3(
 	function (zone, time, _n0) {
 		var start = _n0.bt;
 		var end = _n0.a6;
 		return A4(author$project$Util$isDateBetween, zone, start, end, time);
 	});
-var author$project$Popup$styleBroadcast = F4(
-	function (zone, time, alarm, broadcast) {
+var author$project$Popup$styleBroadcast = F5(
+	function (zone, time, offsetTime, alarm, broadcast) {
+		var spanType = A3(author$project$Popup$getSpanType, zone, offsetTime, broadcast);
 		var now = A3(author$project$Popup$isTimeBetweenBroadcast, zone, time, broadcast);
 		if (now) {
-			return author$project$Popup$Live(broadcast);
+			return A3(author$project$Popup$Styled, 1, spanType, broadcast);
 		} else {
 			if (alarm.$ === 1) {
-				return author$project$Popup$Default(broadcast);
+				return (_Utils_cmp(
+					elm$time$Time$posixToMillis(time),
+					elm$time$Time$posixToMillis(broadcast.bt)) > 0) ? A3(author$project$Popup$Styled, 3, spanType, broadcast) : A3(author$project$Popup$Styled, 2, spanType, broadcast);
 			} else {
 				var alarmTime = alarm.a;
 				return _Utils_eq(
 					alarmTime,
-					elm$time$Time$posixToMillis(broadcast.bt)) ? author$project$Popup$Alarm(broadcast) : author$project$Popup$Default(broadcast);
+					elm$time$Time$posixToMillis(broadcast.bt)) ? A3(author$project$Popup$Styled, 0, spanType, broadcast) : ((_Utils_cmp(
+					elm$time$Time$posixToMillis(time),
+					elm$time$Time$posixToMillis(broadcast.bt)) > 0) ? A3(author$project$Popup$Styled, 3, spanType, broadcast) : A3(author$project$Popup$Styled, 2, spanType, broadcast));
 			}
 		}
 	});
-var author$project$Popup$styleBroadcasts = F3(
-	function (zone, time, alarm) {
+var author$project$Popup$styleBroadcasts = F4(
+	function (zone, time, offsetTime, alarm) {
 		return elm$core$List$map(
-			A3(author$project$Popup$styleBroadcast, zone, time, alarm));
+			A4(author$project$Popup$styleBroadcast, zone, time, offsetTime, alarm));
 	});
 var author$project$Popup$ActionCancel = {$: 0};
 var author$project$Popup$ActionClearAlarm = {$: 1};
@@ -9003,6 +9039,63 @@ var author$project$Util$formatTime = F2(
 				A2(elm$time$Time$toHour, zone, date)));
 		return hour + (':' + minute);
 	});
+var author$project$Popup$viewBroadcastTime = F3(
+	function (zone, spanType, broadcast) {
+		var timeRight = function () {
+			if (spanType === 1) {
+				return A2(
+					elm$html$Html$span,
+					_List_fromArray(
+						[
+							elm$html$Html$Attributes$class('next-span')
+						]),
+					_List_fromArray(
+						[
+							elm$html$Html$text(
+							A2(author$project$Util$formatTime, zone, broadcast.a6))
+						]));
+			} else {
+				return A2(
+					elm$html$Html$span,
+					_List_Nil,
+					_List_fromArray(
+						[
+							elm$html$Html$text(
+							A2(author$project$Util$formatTime, zone, broadcast.a6))
+						]));
+			}
+		}();
+		var timeLeft = function () {
+			if (spanType === 2) {
+				return A2(
+					elm$html$Html$span,
+					_List_fromArray(
+						[
+							elm$html$Html$Attributes$class('previous-span')
+						]),
+					_List_fromArray(
+						[
+							elm$html$Html$text(
+							A2(author$project$Util$formatTime, zone, broadcast.bt))
+						]));
+			} else {
+				return A2(
+					elm$html$Html$span,
+					_List_Nil,
+					_List_fromArray(
+						[
+							elm$html$Html$text(
+							A2(author$project$Util$formatTime, zone, broadcast.bt))
+						]));
+			}
+		}();
+		return _List_fromArray(
+			[
+				timeLeft,
+				elm$html$Html$text(' - '),
+				timeRight
+			]);
+	});
 var author$project$Util$formatTimeRange = F3(
 	function (zone, start, end) {
 		var startTime = A2(author$project$Util$formatTime, zone, start);
@@ -9012,29 +9105,32 @@ var author$project$Util$formatTimeRange = F3(
 var elm$html$Html$strong = _VirtualDom_node('strong');
 var author$project$Popup$viewBroadcastRow = F2(
 	function (zone, styledBroadcast) {
-		var _n0 = function () {
-			switch (styledBroadcast.$) {
-				case 0:
-					var broadcast = styledBroadcast.a;
-					return broadcast;
+		var _n0 = styledBroadcast;
+		var style = _n0.a;
+		var spanType = _n0.b;
+		var broadcast = _n0.c;
+		var _n1 = broadcast;
+		var start = _n1.bt;
+		var end = _n1.a6;
+		var topic = _n1.bA;
+		var game = _n1.a9;
+		var streamers = _n1.bv;
+		var timeText = A3(author$project$Util$formatTimeRange, zone, start, end);
+		var streamersText = (streamers === '') ? game : streamers;
+		var time = A3(author$project$Popup$viewBroadcastTime, zone, spanType, broadcast);
+		var timeClass = function () {
+			switch (spanType) {
+				case 1:
+					return 'time time-next-span';
 				case 2:
-					var broadcast = styledBroadcast.a;
-					return broadcast;
+					return 'time time-previous-span';
 				default:
-					var broadcast = styledBroadcast.a;
-					return broadcast;
+					return 'time';
 			}
 		}();
-		var start = _n0.bt;
-		var end = _n0.a6;
-		var topic = _n0.bA;
-		var game = _n0.a9;
-		var streamers = _n0.bv;
-		var time = A3(author$project$Util$formatTimeRange, zone, start, end);
 		var _n2 = function () {
-			switch (styledBroadcast.$) {
-				case 2:
-					var broadcast = styledBroadcast.a;
+			switch (style) {
+				case 1:
 					return _Utils_Tuple2(
 						elm$html$Html$div(
 							_List_fromArray(
@@ -9065,7 +9161,6 @@ var author$project$Popup$viewBroadcastRow = F2(
 									elm$html$Html$text('live')
 								])));
 				case 0:
-					var broadcast = styledBroadcast.a;
 					var dialog = {
 						bc: '../images/ic_alarm_off_white_48px.svg',
 						bi: 'Geplante Erinnerung deaktivieren?',
@@ -9098,10 +9193,17 @@ var author$project$Popup$viewBroadcastRow = F2(
 								[
 									elm$html$Html$text('alarm')
 								])));
+				case 3:
+					return _Utils_Tuple2(
+						elm$html$Html$div(
+							_List_fromArray(
+								[
+									elm$html$Html$Attributes$class('row')
+								])),
+						elm$html$Html$text(''));
 				default:
-					var broadcast = styledBroadcast.a;
 					var alarmConfig = {
-						bi: time + ('\n' + (topic + '\n\n(Klicken um Twitch zu öffnen)')),
+						bi: timeText + ('\n' + (topic + '\n\n(Klicken um Twitch zu öffnen)')),
 						by: elm$time$Time$posixToMillis(start),
 						bz: 'Live-Sendung hat begonnen'
 					};
@@ -9148,12 +9250,9 @@ var author$project$Popup$viewBroadcastRow = F2(
 							elm$html$Html$div,
 							_List_fromArray(
 								[
-									elm$html$Html$Attributes$class('time')
+									elm$html$Html$Attributes$class(timeClass)
 								]),
-							_List_fromArray(
-								[
-									elm$html$Html$text(time)
-								]))
+							time)
 						])),
 					A2(
 					elm$html$Html$div,
@@ -9188,7 +9287,7 @@ var author$project$Popup$viewBroadcastRow = F2(
 								]),
 							_List_fromArray(
 								[
-									elm$html$Html$text(streamers)
+									elm$html$Html$text(streamersText)
 								]))
 						]))
 				]));
@@ -9228,10 +9327,11 @@ var author$project$Popup$viewProgrammContent = F5(
 					var timezone = _n3.a.a;
 					var currentDate = _n3.b.a;
 					var offsetDate = A3(author$project$Util$addDays, offset, timezone, currentDate);
-					var visibleBroadcasts = A4(
+					var visibleBroadcasts = A5(
 						author$project$Popup$styleBroadcasts,
 						timezone,
 						currentDate,
+						offsetDate,
 						alarm,
 						A2(
 							author$project$Popup$sortBroadcasts,
